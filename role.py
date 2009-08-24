@@ -12,6 +12,8 @@ Based on the DCI PoC of David Byers and Serge Beaumont
 Money transfer example by David Byers and Serge Beaumont.
 """
 
+from operator import attrgetter
+
 
 class RoleType(type):
     """
@@ -43,6 +45,14 @@ class RoleType(type):
       ...
     AttributeError: 'Person' object has no attribute '__roles__'
 
+    Roles can be added by calling the ``apply()`` method:
+
+    >>> carpenter = Carpenter.apply(person)
+    >>> carpenter.__roles__
+    (<class '__main__.Carpenter'>,)
+
+    Or by calling the role on the subject:
+
     >>> carpenter = Carpenter(person)
     >>> carpenter.__roles__
     (<class '__main__.Carpenter'>,)
@@ -59,7 +69,7 @@ class RoleType(type):
 
     Objects can contain multiple roles:
 
-    >>> biking_carpenter = Biker(carpenter)
+    >>> biking_carpenter = Biker.apply(carpenter)
     >>> biking_carpenter.__roles__
     (<class '__main__.Biker'>, <class '__main__.Carpenter'>)
     
@@ -69,6 +79,14 @@ class RoleType(type):
     <class '__main__.Person+Carpenter+Biker'>
     >>> biking_carpenter.__class__.__bases__
     (<class '__main__.Biker'>, <class '__main__.Carpenter'>, <class '__main__.Person'>)
+
+    Roles can be revoked:
+
+    >>> biker = Carpenter.revoke(biking_carpenter)
+    >>> biker.__roles__
+    (<class '__main__.Biker'>,)
+    >>> biker.__class__.__bases__
+    (<class '__main__.Biker'>, <class '__main__.Person'>)
 
     Caching
     -------
@@ -124,7 +142,26 @@ class RoleType(type):
         return newsubj
 
 
-    def __call__(role, subj):
+    def newclass(role, cls, rolebases):
+        """
+        Create a new role class and cache it
+        """
+        role_cache = RoleType._role_cache
+        try:
+            rolecls = role_cache[rolebases]
+        except KeyError:
+            # Role class not yet defined, define a new class
+            namegetter = attrgetter('__name__')
+            names = map(namegetter, rolebases)
+            names.reverse()
+            rolename = "+".join(names)
+            #rolename = cls.__name__ + "+" + role.__name__
+            rolecls = type(rolename, rolebases, {})
+            role_cache[rolebases] = rolecls
+        return rolecls
+
+
+    def apply(role, subj):
         """
         Call is invoked when new instances of a class (role) are requested.
         """
@@ -135,23 +172,38 @@ class RoleType(type):
         except AttributeError:
             # __roles__ is not defined, provide dummy (no roles)
             rolebases = (role, cls)
-            roles = (role,)
         else:
             # Create a sibling class
             rolebases = (role,) + cls.__bases__
-            roles = (role,) + cls.__roles__
 
-        role_cache = RoleType._role_cache
+        rolecls = role.newclass(cls, rolebases)
         try:
-            rolecls = role_cache[rolebases]
-        except KeyError:
-            # Role class not yet defined, define a new class
-            rolename = cls.__name__ + "+" + role.__name__
-            rolecls = type(rolename, rolebases, {})
-            rolecls.__roles__ = roles
-            role_cache[rolebases] = rolecls
+            roles = (role,) + cls.__roles__
+        except AttributeError:
+            roles = (role,)
+        rolecls.__roles__ = roles
 
         return role.dup(rolecls, subj)
+
+
+    def revoke(role, subj):
+        """
+        Retract the role from subj. Returning a new subject (or the same one,
+        if ``dup()`` has been overwritten).
+        """
+        cls = type(subj)
+        if role not in cls.__roles__:
+            return subj
+        rolebases = tuple(b for b in cls.__bases__ if b is not role)
+
+        rolecls = role.newclass(cls, rolebases)
+        roles = tuple(r for r in cls.__roles__ if r is not role)
+        rolecls.__roles__ = roles
+        return role.dup(rolecls, subj)
+
+
+    def __call__(role, subj):
+        return role.apply(subj)
 
 
 if __name__ == '__main__':
