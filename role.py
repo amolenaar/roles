@@ -5,6 +5,36 @@ Pythonic implementation of the DCI (Data Context Interaction) pattern
 The difference with mixins is that this role is applied only to the subject
 instance, not to the subject class (alas, a new class is constructed).
 
+Roles can be applied and revoked. Multiple roles can be applied to an instance.
+Revocation can happen in any particular order.
+
+As a basic example, consider some domain class:
+
+>>> class DomainClass(object):
+...     def __init__(self, a=3):
+...         self.a = a
+>>> instance = DomainClass()
+
+The instance should participate in a collaboration in which it fulfills a
+particular role:
+
+>>> class MyRole(object):
+...     __metaclass__ = RoleType
+...     def rolefunc(self):
+...          return self.a
+
+>>> inrole = MyRole(instance)
+>>> inrole       # doctest: +ELLIPSIS
+<__main__.DomainClass+MyRole object at 0x...>
+>>> isinstance(inrole, DomainClass)
+True
+
+Now the inrole instance can be invoked with the rolefunc() method as if
+it was the DomainClass' one:
+
+>>> inrole.rolefunc()
+3
+
 Author: Arjan Molenaar
 
 Based on the DCI PoC of David Byers and Serge Beaumont
@@ -13,13 +43,25 @@ Money transfer example by David Byers and Serge Beaumont.
 """
 
 from operator import attrgetter
+from cache import cached
+
+
+def shalowclone(obj):
+    """
+    Duplicate the instance, but share the state (__dict__) with the original
+    instance.
+    """
+    from copy import copy
+    newobj = copy(obj)
+    newobj.__dict__ = obj.__dict__
+    return newobj
 
 
 class RoleType(type):
     """
     ``RoleType`` is a metaclass that provides role support to classes. The
-    initialization process has been altered to provide addition and (in the
-    future) removal of roles.
+    initialization process has been altered to provide addition and removal of
+    roles.
 
     It starts with a normal class:
 
@@ -47,45 +89,47 @@ class RoleType(type):
 
     Roles can be added by calling the ``apply()`` method:
 
-    >>> carpenter = Carpenter.apply(person)
-    >>> carpenter.__roles__
+    >>> Carpenter.apply(person)    # doctest: +ELLIPSIS
+    <__main__.Person+Carpenter object at 0x...>
+    >>> person.__roles__
     (<class '__main__.Carpenter'>,)
 
     Or by calling the role on the subject:
 
-    >>> carpenter = Carpenter(person)
-    >>> carpenter.__roles__
-    (<class '__main__.Carpenter'>,)
+    >>> Carpenter(person)  # doctest: +ELLIPSIS
+    <__main__.Person+Carpenter object at 0x...>
 
     The persons methods can be invoked:
 
-    >>> carpenter.am()
+    >>> person.am()
     Joe is
 
     As well as the role's methods:
 
-    >>> carpenter.chop()
+    >>> person.chop()
     Joe chops
 
     Objects can contain multiple roles:
 
-    >>> biking_carpenter = Biker.apply(carpenter)
-    >>> biking_carpenter.__roles__
+    >>> Biker.apply(person)   # doctest: +ELLIPSIS
+    <__main__.Person+Carpenter+Biker object at 0x...>
+    >>> person.__roles__
     (<class '__main__.Biker'>, <class '__main__.Carpenter'>)
     
     Note that a new class is assigned, with the roles applied (roles first):
 
-    >>> biking_carpenter.__class__
+    >>> person.__class__
     <class '__main__.Person+Carpenter+Biker'>
-    >>> biking_carpenter.__class__.__bases__
+    >>> person.__class__.__bases__
     (<class '__main__.Biker'>, <class '__main__.Carpenter'>, <class '__main__.Person'>)
 
     Roles can be revoked:
 
-    >>> biker = Carpenter.revoke(biking_carpenter)
-    >>> biker.__roles__
+    >>> Carpenter.revoke(person)   # doctest: +ELLIPSIS
+    <__main__.Person+Biker object at 0x...>
+    >>> person.__roles__
     (<class '__main__.Biker'>,)
-    >>> biker.__class__.__bases__
+    >>> person.__class__.__bases__
     (<class '__main__.Biker'>, <class '__main__.Person'>)
 
     Caching
@@ -94,6 +138,7 @@ class RoleType(type):
     One more thing: role classes are cached. This means that if I want to
     apply a role to a different instance, the same role class is applied:
 
+    >>> person = Person('Joe')
     >>> someone = Person('Jane')
     >>> Biker(someone).__class__ is Biker(person).__class__
     True
@@ -101,184 +146,232 @@ class RoleType(type):
     Instant application of roles
     ----------------------------
 
-    If you do not want "stub" objects for each role applied (this will make
-    roles be applied in a context), you can override the ``dup()`` method and
-    for example change the original object instance class to get the role
-    applied:
+    If you do not want roles to be applied to the object directly,
+    but create shalow copies of an object with roles applied, you can use the
+    shalowclone function.
+
+    The ``dup()`` method can be overridden to provide this new behaviour:
 
     >>> def nodup(role, rolecls, subj):
-    ...     subj.__class__ = rolecls
-    ...     return subj
+    ...     newsubj = shalowclone(subj)
+    ...     newsubj.__class__ = rolecls
+    ...     return newsubj
     >>> orig_dup = RoleType.dup
     >>> RoleType.dup = nodup
 
-    Now no new class instance is created, but the roles are applied directly to
-    the subject instance:
+    Now no new class instance is created, but the roles are no longer applied to
+    the subject instance directly.
 
+    >>> person = Person('Joe')
     >>> person.__class__
     <class '__main__.Person'>
-    >>> Biker(person)   # doctest: +ELLIPSIS
+    >>> biker = Biker(person)
+    >>> biker # doctest: +ELLIPSIS
     <__main__.Person+Biker object at 0x...>
     >>> person.__class__
-    <class '__main__.Person+Biker'>
-    >>> person.bike()
+    <class '__main__.Person'>
+    >>> biker.bike()
     Joe bikes
 
     (revert to original behaviour:)
     >>> RoleType.dup = orig_dup
     """
 
-    _role_cache = {}
-
 
     def dup(role, rolecls, subj):
-        """
-        Do some duplication for the role.
-        """
-        from copy import copy
-        newsubj = copy(subj)
-        newsubj.__dict__ = subj.__dict__
-        newsubj.__class__ = rolecls
-        return newsubj
+        subj.__class__ = rolecls
+        return subj
 
 
-    def newclass(role, cls, rolebases):
+    @cached
+    def newclass(self, cls, rolebases):
         """
-        Create a new role class and cache it
+        Create a new role class.
         """
-        role_cache = RoleType._role_cache
-        try:
-            rolecls = role_cache[rolebases]
-        except KeyError:
-            # Role class not yet defined, define a new class
-            namegetter = attrgetter('__name__')
-            names = map(namegetter, rolebases)
-            names.reverse()
-            rolename = "+".join(names)
-            #rolename = cls.__name__ + "+" + role.__name__
-            rolecls = type(rolename, rolebases, {})
-            role_cache[rolebases] = rolecls
+        # Role class not yet defined, define a new class
+        namegetter = attrgetter('__name__')
+        names = map(namegetter, rolebases)
+        names.reverse()
+        rolename = "+".join(names)
+        rolecls = type(rolename, rolebases, {
+                '__module__': cls.__module__,
+                '__doc__': cls.__doc__ })
         return rolecls
 
 
-    def apply(role, subj):
+    def apply(self, subj):
         """
         Call is invoked when new instances of a class (role) are requested.
         """
         cls = type(subj)
         try:
-            if role in cls.__roles__:
+            if self in cls.__roles__:
                 return subj
         except AttributeError:
             # __roles__ is not defined, provide dummy (no roles)
-            rolebases = (role, cls)
+            rolebases = (self, cls)
         else:
             # Create a sibling class
-            rolebases = (role,) + cls.__bases__
+            rolebases = (self,) + cls.__bases__
 
-        rolecls = role.newclass(cls, rolebases)
+        rolecls = self.newclass(cls, rolebases)
         try:
-            roles = (role,) + cls.__roles__
+            roles = (self,) + cls.__roles__
         except AttributeError:
-            roles = (role,)
+            roles = (self,)
         rolecls.__roles__ = roles
 
-        return role.dup(rolecls, subj)
+        return self.dup(rolecls, subj)
 
 
-    def revoke(role, subj):
+    def revoke(self, subj):
         """
         Retract the role from subj. Returning a new subject (or the same one,
         if ``dup()`` has been overwritten).
         """
         cls = type(subj)
-        if role not in cls.__roles__:
+        if self not in cls.__roles__:
             return subj
-        rolebases = tuple(b for b in cls.__bases__ if b is not role)
+        rolebases = tuple(b for b in cls.__bases__ if b is not self)
 
-        rolecls = role.newclass(cls, rolebases)
-        roles = tuple(r for r in cls.__roles__ if r is not role)
+        rolecls = self.newclass(cls, rolebases)
+        roles = tuple(r for r in cls.__roles__ if r is not self)
         rolecls.__roles__ = roles
-        return role.dup(rolecls, subj)
+        return self.dup(rolecls, subj)
 
 
-    def __call__(role, subj):
-        return role.apply(subj)
+    __call__ = apply
+
+
+class RoleFactoryType(RoleType):
+    """
+    RoleFactoryType is a special kind of RoleType: with the ``@role_for`` class
+    decorator this class is applied to any RoleType instance.
+
+    Now subroles are able to be automatically applied to specific instances.
+    Thus, the Role class is acting as a factory for it's own types.
+
+    Note that this metaclass is automatically applied the first time
+    ``@role_for`` is used to decorate a role class.
+    """
+
+
+    def register(self, cls, rolecls):
+        """
+        Register a new roleclass for a specific class.
+        """
+        try:
+            self._factory[cls] = rolecls
+        except AttributeError:
+            self._factory = {}
+            self.register(cls, rolecls)
+            self.lookup.clear()
+
+
+    @cached
+    def lookup(self, subj):
+        """
+        Find a specific Role type for a subject. The returned role class
+        is a subclass of the factory role.
+        """
+        get = self._factory.get
+        for t in type(subj).__mro__:
+            rolecls = get(t)
+            if rolecls: return rolecls
+        else:
+            return self
+
+
+    def __call__(self, subj):
+        return self.lookup(subj).apply(subj)
+
+
+class role_for(object):
+    """
+    Class decorator for RoleTypes.
+
+    If a role type is defined as metaclass, this class is used to tell the
+    factory which concrete role to use for a certain subject instance.
+
+    Given a class:
+
+    >>> class A(object): pass
+    
+    And a role:
+
+    >>> class MyRole(object):
+    ...     __metaclass__ = RoleType
+
+    You can provide implementations for several roles like this:
+
+    >>> @role_for(A)
+    ... class MySubRole(MyRole): pass 
+
+    Note that the metaclass has changed to RoleFactoryType:
+
+    >>> MyRole.__class__
+    <class '__main__.RoleFactoryType'>
+
+    >>> MyRole(A())            # doctest: +ELLIPSIS
+    <__main__.A+MySubRole object at 0x...>
+
+    This also works for subclasses of A:
+
+    >>> class B(A): pass
+    >>> class C(B): pass
+    >>> MyRole(C())           # doctest: +ELLIPSIS
+    <__main__.C+MySubRole object at 0x...>
+
+    You can also apply the decorator to the root role directly:
+
+    >>> @role_for(object)
+    ... class AnyRole(object):
+    ...     __metaclass__ = RoleType
+
+    >>> AnyRole(A())  # doctest: +ELLIPSIS
+    <__main__.A+AnyRole object at 0x...>
+    """
+
+    def __init__(self, cls):
+        self.cls = cls
+
+
+    def toprole(self, rolecls):
+        """
+        Find topmost RoleType class. This is where the role should be
+        registered.
+        """
+        toprolecls = None
+        for r in rolecls.__mro__:
+            if isinstance(r, RoleType):
+                toprolecls = r
+            else:
+                break
+
+        if not toprolecls:
+            raise NotARoleException('could not apply @role_for() to class %s: not a role' % (rolecls,))
+        return toprolecls
+
+
+    def __call__(self, rolecls):
+        toprolecls = self.toprole(rolecls)
+
+        if not isinstance(toprolecls, RoleFactoryType):
+            # Replace class type by extended factory type
+            toprolecls.__class__ = RoleFactoryType
+
+        # Register factory class
+        toprolecls.register(self.cls, rolecls)
+
+        return rolecls
+
+
+class NotARoleException(Exception):
+    pass
 
 
 if __name__ == '__main__':
-
     import doctest
-    print 'Running doctests...'
     doctest.testmod()
 
-    print
-
-    class MoneySource(object):
-        __metaclass__ = RoleType
-
-        def transfer_to(self, ctx, amount):
-            if self.balance >= amount:
-                self.withdraw(amount)
-                ctx.sink.receive(ctx, amount)
-
-
-    class MoneySink(object):
-        __metaclass__ = RoleType
-
-        def receive(self, ctx, amount):
-            self.deposit(amount)
-
-
-    class Account(object):
-
-        def __init__(self, amount):
-            print "Creating a new account with balance of " + str(amount)
-            self.balance = amount
-            super(Account, self).__init__()
-
-        def withdraw(self, amount):
-            print "Withdraw " + str(amount) + " from " + str(self)
-            self.balance -= amount
-
-        def deposit(self, amount):
-            print "Deposit " + str(amount) + " in " + str(self)
-            self.balance += amount
-
-
-    class Context(object):
-        """Holds Context state."""
-        pass
-
-
-    class TransferMoney(object):
-        def __init__(self, source, sink):
-            self.context = Context()
-            print 'creating source'
-            self.context.source = MoneySource(source)
-            print 'creating sink'
-            self.context.sink = MoneySink(MoneySource(sink))
-
-        def __call__(self, amount):
-            self.context.source.transfer_to(self.context, amount)
-
-
-    src = Account(1000)
-    dst = Account(0)
-
-    t = TransferMoney(src, dst)
-    t(100)
-
-    print src, src.balance
-    assert src.balance == 900
-    print dst, dst.balance
-    assert dst.balance == 100
-    
-    print "We can still access the original attributes", t.context.sink.balance
-    assert t.context.sink.balance == 100
-    print "Is it still an Account?", isinstance(t.context.sink, Account)
-    assert isinstance(t.context.sink, Account)
-    print "Object equality?", dst == t.context.sink
-
-
-# vim: sw=4:et:ai
+# vim:sw=4:et:ai
