@@ -150,14 +150,18 @@ class RoleType(type):
     but create shalow copies of an object with roles applied, you can use the
     shalowclone function.
 
-    The ``dup()`` method can be overridden to provide this new behaviour:
+    This can be done by creating a custom role type like this, overriding the
+    ``roll()`` method:
 
-    >>> def nodup(role, rolecls, subj):
-    ...     newsubj = shalowclone(subj)
-    ...     newsubj.__class__ = rolecls
-    ...     return newsubj
-    >>> orig_dup = RoleType.dup
-    >>> RoleType.dup = nodup
+    >>> class CustomRoleType(RoleType):
+    ...     def roll(role, rolecls, subj):
+    ...         newsubj = shalowclone(subj)
+    ...         newsubj.__class__ = rolecls
+    ...         return newsubj
+
+    >>> class Biker(object):
+    ...     __metaclass__ = CustomRoleType
+    ...     def bike(self): print self.name, 'bikes'
 
     Now no new class instance is created, but the roles are no longer applied to
     the subject instance directly.
@@ -172,13 +176,14 @@ class RoleType(type):
     <class '__main__.Person'>
     >>> biker.bike()
     Joe bikes
-
-    (revert to original behaviour:)
-    >>> RoleType.dup = orig_dup
     """
 
 
-    def dup(role, rolecls, subj):
+    def roll(role, rolecls, subj):
+        """
+        Apply the role class to the subject.
+        Returns the subject
+        """
         subj.__class__ = rolecls
         return subj
 
@@ -221,13 +226,13 @@ class RoleType(type):
             roles = (self,)
         rolecls.__roles__ = roles
 
-        return self.dup(rolecls, subj)
+        return self.roll(rolecls, subj)
 
 
     def revoke(self, subj):
         """
         Retract the role from subj. Returning a new subject (or the same one,
-        if ``dup()`` has been overwritten).
+        if ``roll()`` has been overwritten).
         """
         cls = type(subj)
         if self not in cls.__roles__:
@@ -237,7 +242,7 @@ class RoleType(type):
         rolecls = self.newclass(cls, rolebases)
         roles = tuple(r for r in cls.__roles__ if r is not self)
         rolecls.__roles__ = roles
-        return self.dup(rolecls, subj)
+        return self.roll(rolecls, subj)
 
 
     __call__ = apply
