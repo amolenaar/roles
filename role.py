@@ -82,17 +82,11 @@ class RoleType(type):
     Now, by default an object has no roles (in this case our person).
 
     >>> person = Person('Joe')
-    >>> person.__roles__    # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'Person' object has no attribute '__roles__'
 
-    Roles can be added by calling the ``apply()`` method:
+    Roles can be added by calling the ``assign()`` method:
 
-    >>> Carpenter.apply(person)    # doctest: +ELLIPSIS
+    >>> Carpenter.assign(person)    # doctest: +ELLIPSIS
     <__main__.Person+Carpenter object at 0x...>
-    >>> person.__roles__
-    (<class '__main__.Carpenter'>,)
 
     Or by calling the role on the subject:
 
@@ -111,10 +105,10 @@ class RoleType(type):
 
     Objects can contain multiple roles:
 
-    >>> Biker.apply(person)   # doctest: +ELLIPSIS
+    >>> Biker.assign(person)   # doctest: +ELLIPSIS
     <__main__.Person+Carpenter+Biker object at 0x...>
-    >>> person.__roles__
-    (<class '__main__.Biker'>, <class '__main__.Carpenter'>)
+    >>> person.__class__.__bases__
+    (<class '__main__.Biker'>, <class '__main__.Carpenter'>, <class '__main__.Person'>)
     
     Note that a new class is assigned, with the roles applied (roles first):
 
@@ -127,8 +121,6 @@ class RoleType(type):
 
     >>> Carpenter.revoke(person)   # doctest: +ELLIPSIS
     <__main__.Person+Biker object at 0x...>
-    >>> person.__roles__
-    (<class '__main__.Biker'>,)
     >>> person.__class__.__bases__
     (<class '__main__.Biker'>, <class '__main__.Person'>)
 
@@ -136,7 +128,7 @@ class RoleType(type):
     -------
 
     One more thing: role classes are cached. This means that if I want to
-    apply a role to a different instance, the same role class is applied:
+    assign a role to a different instance, the same role class is applied:
 
     >>> person = Person('Joe')
     >>> someone = Person('Jane')
@@ -204,27 +196,23 @@ class RoleType(type):
         return rolecls
 
 
-    def apply(self, subj):
+    def assign(self, subj):
         """
-        Call is invoked when new instances of a class (role) are requested.
+        Call is invoked when a role should be assigned to an object.
         """
         cls = type(subj)
-        try:
-            if self in cls.__roles__:
-                return subj
-        except AttributeError:
-            # __roles__ is not defined, provide dummy (no roles)
-            rolebases = (self, cls)
-        else:
+
+        if issubclass(cls, self):
+            return subj
+
+        if isinstance(cls, RoleType):
             # Create a sibling class
             rolebases = (self,) + cls.__bases__
+        else:
+            # First role class
+            rolebases = (self, cls)
 
         rolecls = self.newclass(cls, rolebases)
-        try:
-            roles = (self,) + cls.__roles__
-        except AttributeError:
-            roles = (self,)
-        rolecls.__roles__ = roles
 
         return self.roll(rolecls, subj)
 
@@ -234,18 +222,16 @@ class RoleType(type):
         Retract the role from subj. Returning a new subject (or the same one,
         if ``roll()`` has been overwritten).
         """
-        cls = type(subj)
-        if self not in cls.__roles__:
+        if not isinstance(subj, self):
             return subj
-        rolebases = tuple(b for b in cls.__bases__ if b is not self)
 
+        cls = type(subj)
+        rolebases = tuple(b for b in cls.__bases__ if b is not self)
         rolecls = self.newclass(cls, rolebases)
-        roles = tuple(r for r in cls.__roles__ if r is not self)
-        rolecls.__roles__ = roles
         return self.roll(rolecls, subj)
 
 
-    __call__ = apply
+    __call__ = assign
 
 
 class RoleFactoryType(RoleType):
@@ -288,7 +274,7 @@ class RoleFactoryType(RoleType):
 
 
     def __call__(self, subj):
-        return self.lookup(subj).apply(subj)
+        return self.lookup(subj).assign(subj)
 
 
 class role_for(object):
