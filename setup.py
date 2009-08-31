@@ -10,7 +10,6 @@ Revocation can happen in any particular order.
 
 As a basic example, consider some domain class:
 
->>> from roles import RoleType
 >>> class DomainClass(object):
 ...     def __init__(self, a=3):
 ...         self.a = a
@@ -19,6 +18,7 @@ As a basic example, consider some domain class:
 The instance should participate in a collaboration in which it fulfills a
 particular role:
 
+>>> from roles import RoleType
 >>> class MyRole(object):
 ...     __metaclass__ = RoleType
 ...     def rolefunc(self):
@@ -44,7 +44,7 @@ VERSION = '0.1.0'
 setup(
     name='roles',
     version=VERSION,
-    description='Small implementation of Roles',
+    description='Role based development',
     long_description=__doc__,
     author='Arjan Molenaar',
     author_email='gaphor@gmail.com',
