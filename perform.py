@@ -1,12 +1,12 @@
 """
-Test performance between role and role2 implementations
+Test performance between roles and zope3 implementations
 """
 
 from timeit import timeit
 
 setup_role = \
 """
-from role import RoleType
+from roles import RoleType
 
 class A(object):
     pass
@@ -20,7 +20,7 @@ a = A()
 
 setup_rolefactory = \
 """
-from role import RoleType, assignto
+from roles import RoleType, assignto
 
 class A(object):
     pass
