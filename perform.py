@@ -18,6 +18,24 @@ class Role(object):
 a = A()
 """
 
+setup_rolefactory = \
+"""
+from role import RoleType, assignto
+
+class A(object):
+    pass
+
+class Role(object):
+    __metaclass__ = RoleType
+    def func(self): pass
+
+@assignto(A)
+class Subrole(Role):
+    pass
+
+a = A()
+"""
+
 setup_role2 = \
 """
 from role2 import Trait, addrole
@@ -51,9 +69,10 @@ component.provideAdapter(Adapter)
 
 #print 'Construction of object		', timeit('a=A()', setup=setup_role)
 #print 'Construction of trait object	', timeit('t=T()', setup=setup_role2)
-print 'Construction of roles		', timeit('a=A();Role(a).func()', setup=setup_role)
-print 'Construction of traits		', timeit('t=T();addrole(Role, t);t.func()', setup=setup_role2)
-print 'Construction of zope adapters	', timeit('a=A();b=Iface(a);b.func()', setup=setup_zope)
+print 'Construction of roles			', timeit('a=A();Role(a).func()', setup=setup_role)
+print 'Construction of roles from factory	', timeit('a=A();Role(a).func()', setup=setup_rolefactory)
+#print 'Construction of traits		', timeit('t=T();addrole(Role, t);t.func()', setup=setup_role2)
+print 'Construction of zope adapters		', timeit('a=A();b=Iface(a);b.func()', setup=setup_zope)
 
 ## TODO: compare performance to zope.interface and zope.component
 

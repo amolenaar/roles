@@ -236,14 +236,14 @@ class RoleType(type):
 
 class RoleFactoryType(RoleType):
     """
-    RoleFactoryType is a special kind of RoleType: with the ``@role_for`` class
+    RoleFactoryType is a special kind of RoleType: with the ``@assignto`` class
     decorator this class is applied to any RoleType instance.
 
     Now subroles are able to be automatically applied to specific instances.
     Thus, the Role class is acting as a factory for it's own types.
 
     Note that this metaclass is automatically applied the first time
-    ``@role_for`` is used to decorate a role class.
+    ``@assignto`` is used to decorate a role class.
     """
 
 
@@ -260,13 +260,13 @@ class RoleFactoryType(RoleType):
 
 
     @cached
-    def lookup(self, subj):
+    def lookup(self, cls):
         """
         Find a specific Role type for a subject. The returned role class
         is a subclass of the factory role.
         """
         get = self._factory.get
-        for t in type(subj).__mro__:
+        for t in cls.__mro__:
             rolecls = get(t)
             if rolecls: return rolecls
         else:
@@ -274,10 +274,10 @@ class RoleFactoryType(RoleType):
 
 
     def __call__(self, subj):
-        return self.lookup(subj).assign(subj)
+        return self.lookup(type(subj)).assign(subj)
 
 
-class role_for(object):
+class assignto(object):
     """
     Class decorator for RoleTypes.
 
@@ -295,7 +295,7 @@ class role_for(object):
 
     You can provide implementations for several roles like this:
 
-    >>> @role_for(A)
+    >>> @assignto(A)
     ... class MySubRole(MyRole): pass 
 
     Note that the metaclass has changed to RoleFactoryType:
@@ -315,12 +315,18 @@ class role_for(object):
 
     You can also apply the decorator to the root role directly:
 
-    >>> @role_for(object)
+    >>> @assignto(object)
     ... class AnyRole(object):
     ...     __metaclass__ = RoleType
 
     >>> AnyRole(A())  # doctest: +ELLIPSIS
     <__main__.A+AnyRole object at 0x...>
+
+    And this still works:
+
+    >>> MyRole(A())            # doctest: +ELLIPSIS
+    <__main__.A+MySubRole object at 0x...>
+
     """
 
     def __init__(self, cls):
@@ -340,7 +346,7 @@ class role_for(object):
                 break
 
         if not toprolecls:
-            raise NotARoleException('could not apply @role_for() to class %s: not a role' % (rolecls,))
+            raise NotARoleException('could not apply @assignto() to class %s: not a role' % (rolecls,))
         return toprolecls
 
 
