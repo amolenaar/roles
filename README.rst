@@ -6,5 +6,10 @@ Python metaclasses.
 
 See ``roles.py`` for a full example and doctests.
 
+Releases can be found on:
+
+  http://pypi.python.org/pypi/roles
+
+
 TODO:
 - Context
