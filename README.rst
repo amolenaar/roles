@@ -6,3 +6,5 @@ Python metaclasses.
 
 See ``roles.py`` for a full example and doctests.
 
+TODO:
+- Context
