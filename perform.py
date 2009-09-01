@@ -4,6 +4,9 @@ Test performance between roles and zope3 implementations
 
 from timeit import timeit
 
+import roles
+
+
 setup_role = \
 """
 from roles import RoleType
@@ -36,18 +39,6 @@ class Subrole(Role):
 a = A()
 """
 
-setup_role2 = \
-"""
-from role2 import Trait, addrole
-
-class Role(object):
-    def func(self): pass
-
-class T(Trait):
-    pass
-
-t = T()
-"""
 
 setup_zope = \
 """
@@ -67,31 +58,40 @@ class Adapter(object):
 component.provideAdapter(Adapter)
 """
 
-#print 'Construction of object		', timeit('a=A()', setup=setup_role)
-#print 'Construction of trait object	', timeit('t=T()', setup=setup_role2)
-print 'Construction of roles			', timeit('a=A();Role(a).func()', setup=setup_role)
-print 'Construction of roles from factory	', timeit('a=A();Role(a).func()', setup=setup_rolefactory)
-#print 'Construction of traits		', timeit('t=T();addrole(Role, t);t.func()', setup=setup_role2)
-print 'Construction of zope adapters		', timeit('a=A();b=Iface(a);b.func()', setup=setup_zope)
+print 'Construction of object				%.3fs' % timeit('a=A()', setup=setup_role)
+print 'Construction of roles				%.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
 
-## TODO: compare performance to zope.interface and zope.component
+reload(roles)
+roles.psyco_optimize()
+print 'Construction of roles (psyco)			%.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
 
-import cProfile
-import pstats
+reload(roles)
+print 'Construction of roles from factory		%.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
 
-from role import RoleType
+reload(roles)
+roles.psyco_optimize()
+print 'Construction of roles from factory (psyco)	%.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
 
-class A(object):
-    def func(self): pass
+print 'Construction of zope adapters			%.3fs' % timeit('a=A();b=Iface(a);b.func()', setup=setup_zope)
 
-class Role(object):
-    __metaclass__ = RoleType
-    def func(self): pass
 
-a = A()
+def profile():
+    import cProfile
+    import pstats
 
-#cProfile.run('timeit("Role(a)", setup=setup)', 'profile.prof')
-cProfile.run('for x in xrange(10000): Role(a)', 'profile.prof')
-p = pstats.Stats('profile.prof')
-p.strip_dirs().sort_stats('time').print_stats(40)
+    from roles import RoleType
+
+    class A(object):
+        def func(self): pass
+
+    class Role(object):
+        __metaclass__ = RoleType
+        def func(self): pass
+
+    a = A()
+
+    #cProfile.run('timeit("Role(a)", setup=setup)', 'profile.prof')
+    cProfile.run('for x in xrange(10000): Role(a)', 'profile.prof')
+    p = pstats.Stats('profile.prof')
+    p.strip_dirs().sort_stats('time').print_stats(40)
 

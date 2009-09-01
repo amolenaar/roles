@@ -103,6 +103,7 @@ def cached(func):
     def clear():
         func._cache.clear()
     wrapper.clear = clear
+    wrapper.wrapped_func = func
     return wrapper
 
 
@@ -306,7 +307,7 @@ class RoleFactoryType(RoleType):
         except AttributeError:
             self._factory = {}
             self.register(cls, rolecls)
-            self.lookup.clear()
+    #        self.lookup.clear()
 
 
     @cached
@@ -416,6 +417,28 @@ class assignto(object):
 class NotARoleException(Exception):
     pass
 
+
+def psyco_optimize():
+    """
+    Optimize roles module with Psyco
+    """
+    try:
+        import psyco
+    except ImportError:
+        pass
+    else:
+        # Bind some methods to psyco
+        psyco.bind(RoleType.assign)
+        psyco.bind(RoleType.revoke)
+        # decorated: provide original function for optimization
+        psyco.bind(RoleType.newclass.wrapped_func)
+
+        psyco.bind(RoleFactoryType.__call__)
+        # decorated: provide original function for optimization
+        psyco.bind(RoleFactoryType.lookup.wrapped_func)
+
+        #psyco.bind(cached)
+        #psyco.bind(assignto)
 
 
 if __name__ == '__main__':
