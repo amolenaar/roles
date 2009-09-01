@@ -1,5 +1,12 @@
+"""
+Roles example.
 
-from role import RoleType
+Based on the DCI PoC of David Byers and Serge Beaumont
+(see: http://groups.google.com/group/object-composition/files)
+"""
+
+from roles import RoleType
+
 
 class MoneySource(object):
     __metaclass__ = RoleType

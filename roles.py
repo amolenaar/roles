@@ -35,11 +35,12 @@ it was the DomainClass' one:
 >>> inrole.rolefunc()
 3
 
+  NOTE: Test with nose (nosetests from the command line)
+
 Author: Arjan Molenaar
 
-Based on the DCI PoC of David Byers and Serge Beaumont
+Inspired by the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
-Money transfer example by David Byers and Serge Beaumont.
 """
 
 from operator import attrgetter
@@ -301,6 +302,8 @@ class RoleFactoryType(RoleType):
     def register(self, cls, rolecls, strict):
         """
         Register a new roleclass for a specific class.
+
+        Note: ``strict`` is set if the topmost role has ``assignto()`` applied.
         """
         try:
             self._factory[cls] = rolecls
@@ -322,11 +325,8 @@ class RoleFactoryType(RoleType):
             rolecls = get(t)
             if rolecls: return rolecls
         else:
-            try:
-                if self._strict:
-                    raise NoRoleException('No role found for %s' % cls)
-            except AttributeError:
-                pass
+            if self._strict:
+                raise NoRoleException('No role found for %s' % cls)
             return self
 
 
@@ -436,25 +436,25 @@ class NoRoleException(Exception):
 
 def psyco_optimize():
     """
-    Optimize roles module with Psyco
+    Optimize roles module with Psyco. ImportError is raised if Psyco
+    is not available.
+
+    >>> psyco_optimize()
     """
-    try:
-        import psyco
-    except ImportError:
-        pass
-    else:
-        # Bind some methods to psyco
-        psyco.bind(RoleType.assign)
-        psyco.bind(RoleType.revoke)
-        # decorated: provide original function for optimization
-        psyco.bind(RoleType.newclass.wrapped_func)
+    import psyco
 
-        psyco.bind(RoleFactoryType.__call__)
-        # decorated: provide original function for optimization
-        psyco.bind(RoleFactoryType.lookup.wrapped_func)
+    # Bind some methods to psyco
+    psyco.bind(RoleType.assign)
+    psyco.bind(RoleType.revoke)
+    # decorated: provide original function for optimization
+    psyco.bind(RoleType.newclass.wrapped_func)
 
-        #psyco.bind(cached)
-        #psyco.bind(assignto)
+    psyco.bind(RoleFactoryType.__call__)
+    # decorated: provide original function for optimization
+    psyco.bind(RoleFactoryType.lookup.wrapped_func)
+
+    #psyco.bind(cached)
+    #psyco.bind(assignto)
 
 
 # vim:sw=4:et:ai
