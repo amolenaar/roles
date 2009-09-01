@@ -1,51 +1,22 @@
 """
-Pythonic implementation of the DCI (Data Context Interaction) pattern
-(http://www.artima.com/articles/dci_vision.html).
-
-The difference with mixins is that this role is applied only to the subject
-instance, not to the subject class (alas, a new class is constructed).
-
-Roles can be applied and revoked. Multiple roles can be applied to an instance.
-Revocation can happen in any particular order.
-
-As a basic example, consider some domain class:
-
->>> class DomainClass(object):
-...     def __init__(self, a=3):
-...         self.a = a
->>> instance = DomainClass()
-
-The instance should participate in a collaboration in which it fulfills a
-particular role:
-
->>> from roles import RoleType
->>> class MyRole(object):
-...     __metaclass__ = RoleType
-...     def rolefunc(self):
-...          return self.a
-
->>> inrole = MyRole(instance)
->>> inrole       # doctest: +ELLIPSIS
-<__main__.DomainClass+MyRole object at 0x...>
->>> isinstance(inrole, DomainClass)
-True
-
-Now the inrole instance can be invoked with the rolefunc() method as if
-it was the DomainClass' one:
-
->>> inrole.rolefunc()
-3
+Setup script for roles module.
 """
 
 from distutils.core import setup
+from contextlib import closing
 
-VERSION = '0.1.0'
+
+VERSION = '0.2.0'
+
+with closing(open('README.rst')) as f:
+    doc = f.read()
+
 
 setup(
     name='roles',
     version=VERSION,
     description='Role based development',
-    long_description=__doc__,
+    long_description=doc,
     author='Arjan Molenaar',
     author_email='gaphor@gmail.com',
     url='http://github.org/amolenaar/roles',
@@ -61,6 +32,6 @@ setup(
                  'Programming Language :: Python',
                  'Topic :: Software Development :: Libraries',
                  'Topic :: Utilities'],
-    zip_safe=False)
+    )
 
 #vim:sw=4:et:ai

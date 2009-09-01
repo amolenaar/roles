@@ -25,7 +25,7 @@ particular role:
 
 >>> inrole = MyRole(instance)
 >>> inrole       # doctest: +ELLIPSIS
-<__main__.DomainClass+MyRole object at 0x...>
+<roles.DomainClass+MyRole object at 0x...>
 >>> isinstance(inrole, DomainClass)
 True
 
@@ -137,12 +137,12 @@ class RoleType(type):
     Roles can be added by calling the ``assign()`` method:
 
     >>> Carpenter.assign(person)    # doctest: +ELLIPSIS
-    <__main__.Person+Carpenter object at 0x...>
+    <roles.Person+Carpenter object at 0x...>
 
     Or by calling the role on the subject:
 
     >>> Carpenter(person)  # doctest: +ELLIPSIS
-    <__main__.Person+Carpenter object at 0x...>
+    <roles.Person+Carpenter object at 0x...>
 
     The persons methods can be invoked:
 
@@ -157,23 +157,23 @@ class RoleType(type):
     Objects can contain multiple roles:
 
     >>> Biker.assign(person)   # doctest: +ELLIPSIS
-    <__main__.Person+Carpenter+Biker object at 0x...>
+    <roles.Person+Carpenter+Biker object at 0x...>
     >>> person.__class__.__bases__
-    (<class '__main__.Biker'>, <class '__main__.Carpenter'>, <class '__main__.Person'>)
+    (<class 'roles.Biker'>, <class 'roles.Carpenter'>, <class 'roles.Person'>)
     
     Note that a new class is assigned, with the roles applied (roles first):
 
     >>> person.__class__
-    <class '__main__.Person+Carpenter+Biker'>
+    <class 'roles.Person+Carpenter+Biker'>
     >>> person.__class__.__bases__
-    (<class '__main__.Biker'>, <class '__main__.Carpenter'>, <class '__main__.Person'>)
+    (<class 'roles.Biker'>, <class 'roles.Carpenter'>, <class 'roles.Person'>)
 
     Roles can be revoked:
 
     >>> Carpenter.revoke(person)   # doctest: +ELLIPSIS
-    <__main__.Person+Biker object at 0x...>
+    <roles.Person+Biker object at 0x...>
     >>> person.__class__.__bases__
-    (<class '__main__.Biker'>, <class '__main__.Person'>)
+    (<class 'roles.Biker'>, <class 'roles.Person'>)
 
     Caching
     -------
@@ -211,12 +211,12 @@ class RoleType(type):
 
     >>> person = Person('Joe')
     >>> person.__class__
-    <class '__main__.Person'>
+    <class 'roles.Person'>
     >>> biker = Biker(person)
     >>> biker # doctest: +ELLIPSIS
-    <__main__.Person+Biker object at 0x...>
+    <roles.Person+Biker object at 0x...>
     >>> person.__class__
-    <class '__main__.Person'>
+    <class 'roles.Person'>
     >>> biker.bike()
     Joe bikes
     """
@@ -298,7 +298,7 @@ class RoleFactoryType(RoleType):
     """
 
 
-    def register(self, cls, rolecls):
+    def register(self, cls, rolecls, strict):
         """
         Register a new roleclass for a specific class.
         """
@@ -306,8 +306,9 @@ class RoleFactoryType(RoleType):
             self._factory[cls] = rolecls
         except AttributeError:
             self._factory = {}
-            self.register(cls, rolecls)
-    #        self.lookup.clear()
+            self._factory[cls] = rolecls
+            self._strict = strict
+            self.lookup.clear()
 
 
     @cached
@@ -321,6 +322,11 @@ class RoleFactoryType(RoleType):
             rolecls = get(t)
             if rolecls: return rolecls
         else:
+            try:
+                if self._strict:
+                    raise NoRoleException('No role found for %s' % cls)
+            except AttributeError:
+                pass
             return self
 
 
@@ -352,32 +358,39 @@ class assignto(object):
     Note that the metaclass has changed to RoleFactoryType:
 
     >>> MyRole.__class__
-    <class '__main__.RoleFactoryType'>
+    <class 'roles.RoleFactoryType'>
 
     >>> MyRole(A())            # doctest: +ELLIPSIS
-    <__main__.A+MySubRole object at 0x...>
+    <roles.A+MySubRole object at 0x...>
 
     This also works for subclasses of A:
 
     >>> class B(A): pass
     >>> class C(B): pass
     >>> MyRole(C())           # doctest: +ELLIPSIS
-    <__main__.C+MySubRole object at 0x...>
+    <roles.C+MySubRole object at 0x...>
 
     You can also apply the decorator to the root role directly:
 
-    >>> @assignto(object)
+    >>> @assignto(A)
     ... class AnyRole(object):
     ...     __metaclass__ = RoleType
 
-    >>> AnyRole(A())  # doctest: +ELLIPSIS
-    <__main__.A+AnyRole object at 0x...>
+    >>> AnyRole(A())          # doctest: +ELLIPSIS
+    <roles.A+AnyRole object at 0x...>
+
+    Now some other class should not be assigned this role:
+
+    >>> class X(object): pass
+    >>> AnyRole(X())          # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+      ...
+    NoRoleException: No role found for <class 'roles.X'>
 
     And this still works:
 
     >>> MyRole(A())            # doctest: +ELLIPSIS
-    <__main__.A+MySubRole object at 0x...>
-
+    <roles.A+MySubRole object at 0x...>
     """
 
     def __init__(self, cls):
@@ -408,13 +421,16 @@ class assignto(object):
             # Replace class type by extended factory type
             toprolecls.__class__ = RoleFactoryType
 
-        # Register factory class
-        toprolecls.register(self.cls, rolecls)
+        toprolecls.register(self.cls, rolecls, rolecls is toprolecls)
 
         return rolecls
 
 
 class NotARoleException(Exception):
+    pass
+
+
+class NoRoleException(Exception):
     pass
 
 
@@ -440,9 +456,5 @@ def psyco_optimize():
         #psyco.bind(cached)
         #psyco.bind(assignto)
 
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
 
 # vim:sw=4:et:ai
