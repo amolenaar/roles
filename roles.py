@@ -46,7 +46,7 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 from operator import attrgetter
 
 
-def shalowclone(obj):
+def shallowclone(obj):
     """
     Duplicate the instance, but share the state (__dict__) with the original
     instance.
@@ -177,7 +177,6 @@ class RoleType(type):
     (<class 'roles.Biker'>, <class 'roles.Person'>)
 
     Caching
-    -------
 
     One more thing: role classes are cached. This means that if I want to
     assign a role to a different instance, the same role class is applied:
@@ -188,18 +187,17 @@ class RoleType(type):
     True
 
     Instant application of roles
-    ----------------------------
 
     If you do not want roles to be applied to the object directly,
-    but create shalow copies of an object with roles applied, you can use the
-    shalowclone function.
+    but create shallow copies of an object with roles applied, you can use the
+    shallowclone function.
 
     This can be done by creating a custom role type like this, overriding the
     ``roll()`` method:
 
     >>> class CustomRoleType(RoleType):
     ...     def roll(role, rolecls, subj):
-    ...         newsubj = shalowclone(subj)
+    ...         newsubj = shallowclone(subj)
     ...         newsubj.__class__ = rolecls
     ...         return newsubj
 
@@ -223,7 +221,7 @@ class RoleType(type):
     """
 
 
-    def roll(role, rolecls, subj):
+    def roll(self, rolecls, subj):
         """
         Apply the role class to the subject.
         Returns the subject
@@ -239,7 +237,7 @@ class RoleType(type):
         """
         # Role class not yet defined, define a new class
         namegetter = attrgetter('__name__')
-        names = map(namegetter, rolebases)
+        names = list(map(namegetter, rolebases))
         names.reverse()
         rolename = "+".join(names)
         rolecls = type(rolename, rolebases, {
