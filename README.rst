@@ -90,7 +90,7 @@ Change Log
 
 - Module works for Python 2.6 as well as Python 3.x. Doctests still run under 2.6.
 
-Note that conversion is trivial with::
+Note that conversion of doctests is trivial with::
 
   $ 2to3 -d -w roles.py
 
