@@ -237,7 +237,9 @@ class RoleType(type):
         """
         # Role class not yet defined, define a new class
         namegetter = attrgetter('__name__')
-        rolename = "+".join(reversed(list(map(namegetter, rolebases))))
+        names = list(map(namegetter, rolebases))
+        names.reverse()
+        rolename = "+".join(names)
         rolecls = type(rolename, rolebases, {
                 '__module__': cls.__module__,
                 '__doc__': cls.__doc__ })
@@ -435,7 +437,10 @@ def psyco_optimize():
     Optimize roles module with Psyco. ImportError is raised if Psyco
     is not available.
 
-    >>> psyco_optimize()
+    >>> try:
+    ...     psyco_optimize()
+    ... except ImportError:
+    ...     pass # No psyco
     """
     import psyco
 
