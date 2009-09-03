@@ -6,7 +6,7 @@ from distutils.core import setup
 from contextlib import closing
 
 
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 
 with closing(open('README.rst')) as f:
     doc = f.read()

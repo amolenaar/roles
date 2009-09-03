@@ -85,6 +85,15 @@ Releases can be found on:
 Change Log
 ----------
 
+0.3.0
+-----
+
+- Module works for Python 2.6 as well as Python 3.x. Doctests still run under 2.6.
+
+Note that conversion is trivial with::
+
+  $ 2to3 -d -w roles.py
+
 0.2.0
 -----
 
