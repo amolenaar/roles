@@ -237,7 +237,7 @@ class RoleType(type):
         """
         # Role class not yet defined, define a new class
         namegetter = attrgetter('__name__')
-        rolename = "+".join(reversed(map(namegetter, rolebases)))
+        rolename = "+".join(reversed(list(map(namegetter, rolebases))))
         rolecls = type(rolename, rolebases, {
                 '__module__': cls.__module__,
                 '__doc__': cls.__doc__ })
