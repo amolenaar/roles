@@ -62,15 +62,23 @@ print 'Construction of object				%.3fs' % timeit('a=A()', setup=setup_role)
 print 'Construction of roles				%.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
 
 reload(roles)
-roles.psyco_optimize()
-print 'Construction of roles (psyco)			%.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
+try:
+    roles.psyco_optimize()
+except ImportError:
+    pass
+else:
+    print 'Construction of roles (psyco)			%.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
 
 reload(roles)
 print 'Construction of roles from factory		%.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
 
 reload(roles)
-roles.psyco_optimize()
-print 'Construction of roles from factory (psyco)	%.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
+try:
+    roles.psyco_optimize()
+except ImportError:
+    pass
+else:
+    print 'Construction of roles from factory (psyco)	%.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
 
 print 'Construction of zope adapters			%.3fs' % timeit('a=A();b=Iface(a);b.func()', setup=setup_zope)
 
