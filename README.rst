@@ -6,11 +6,19 @@ Library for Role based development.
 Pythonic implementation of the DCI (Data Context Interaction) pattern
 (http://www.artima.com/articles/dci_vision.html).
 
-The difference with mixins is that this role is applied only to the subject
+The big difference with mixins is that this role is applied only to the subject
 instance, not to the subject class (alas, a new class is constructed).
 
 Roles can be assigned and revoked. Multiple roles can be applied to an
 instance. Revocation can happen in any particular order.
+
+Homepage: http://amolenaar.github.org/roles
+
+Releases: http://pypi.python.org/pypi/roles
+
+
+Using Roles
+-----------
 
 As a basic example, consider a domain class:
 
@@ -48,7 +56,7 @@ True
 See ``roles.py`` for more examples.
 
 Factories
-=========
+---------
 
 In most cases instances will require specific implementations of a certain role.
 This can be done by decorating the specific role implementations with the
@@ -73,34 +81,4 @@ Traceback (most recent call last):
   ...
 NoRoleException: No role found for <class 'Cat'>
 
-
-Releases
-========
-
-Releases can be found on:
-
-  http://pypi.python.org/pypi/roles
-
-
-Change Log
-----------
-
-0.3.0
------
-
-- Module works for Python 2.6 as well as Python 3.x. Doctests still run under 2.6.
-
-Note that conversion of doctests is trivial with::
-
-  $ 2to3 -d -w roles.py
-
-0.2.0
------
-
-- Added psyco_optimize() for optimizing code with psyco.
-
-0.1.0
------
-
-- Initial release: roles.py
 
