@@ -2,41 +2,6 @@
 Pythonic implementation of the DCI (Data Context Interaction) pattern
 (http://www.artima.com/articles/dci_vision.html).
 
-The difference with mixins is that this role is applied only to the subject
-instance, not to the subject class (alas, a new class is constructed).
-
-Roles can be applied and revoked. Multiple roles can be applied to an instance.
-Revocation can happen in any particular order.
-
-As a basic example, consider some domain class:
-
->>> class DomainClass(object):
-...     def __init__(self, a=3):
-...         self.a = a
->>> instance = DomainClass()
-
-The instance should participate in a collaboration in which it fulfills a
-particular role:
-
->>> class MyRole(object):
-...     __metaclass__ = RoleType
-...     def rolefunc(self):
-...          return self.a
-
->>> inrole = MyRole(instance)
->>> inrole       # doctest: +ELLIPSIS
-<roles.DomainClass+MyRole object at 0x...>
->>> isinstance(inrole, DomainClass)
-True
-
-Now the inrole instance can be invoked with the rolefunc() method as if
-it was the DomainClass' one:
-
->>> inrole.rolefunc()
-3
-
-  NOTE: Test with nose (nosetests from the command line)
-
 Author: Arjan Molenaar
 
 Inspired by the DCI PoC of David Byers and Serge Beaumont
@@ -286,14 +251,16 @@ class RoleType(type):
 
 class RoleFactoryType(RoleType):
     """
-    RoleFactoryType is a special kind of RoleType: with the ``@assignto`` class
-    decorator this class is applied to any RoleType instance.
+    ``RoleFactoryType`` is a special kind of RoleType: with the ``@assignto``
+    class decorator this class is applied to any RoleType instance.
 
     Now subroles are able to be automatically applied to specific instances.
     Thus, the Role class is acting as a factory for it's own types.
 
     Note that this metaclass is automatically applied the first time
-    ``@assignto`` is used to decorate a role class.
+    ``@assignto`` is used to decorate a role class. There is no need
+    to assign ``RoleFactoryType`` explicitly.
+
     """
 
 
@@ -327,9 +294,11 @@ class RoleFactoryType(RoleType):
                 raise NoRoleException('No role found for %s' % cls)
             return self
 
+    def assign(self, subj, method=instance):
+        rolecls = self.lookup(type(subj))
+        return RoleType.assign(rolecls, subj, method)
 
-    def __call__(self, subj, method=instance):
-        return self.lookup(type(subj)).assign(subj, method)
+    __call__ = assign
 
 
 def assignto(cls):
