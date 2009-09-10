@@ -2,7 +2,11 @@
 Setup script for roles module.
 """
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
 from contextlib import closing
 
 
