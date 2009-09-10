@@ -12,7 +12,7 @@ instance, not to the subject class (alas, a new class is constructed).
 Roles can be assigned and revoked. Multiple roles can be applied to an
 instance. Revocation can happen in any particular order.
 
-Homepage: http://amolenaar.github.org/roles
+Homepage: http://amolenaar.github.com/roles
 
 Releases: http://pypi.python.org/pypi/roles
 
