@@ -46,20 +46,10 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 from operator import attrgetter
 
 
-def shallowclone(obj):
-    """
-    Duplicate the instance, but share the state (__dict__) with the original
-    instance.
-    """
-    from copy import copy
-    newobj = copy(obj)
-    newobj.__dict__ = obj.__dict__
-    return newobj
-
-
 def instance(rolecls, subj):
     """
-    Apply the role class to the subject.
+    Apply the role class to the subject. This is the default role assignment
+    method.
     """
     subj.__class__ = rolecls
     return subj
@@ -67,7 +57,8 @@ def instance(rolecls, subj):
 
 def clone(rolecls, subj):
     """
-    Returns a new subject instance with role applied.
+    Returns a new subject instance with role applied. Both instances refer to
+    the same instance dict.
     """
     newsubj = rolecls.__new__(rolecls)
     newsubj.__dict__ = subj.__dict__
@@ -341,7 +332,7 @@ class RoleFactoryType(RoleType):
         return self.lookup(type(subj)).assign(subj, method)
 
 
-class assignto(object):
+def assignto(cls):
     """
     Class decorator for RoleTypes.
 
@@ -400,11 +391,7 @@ class assignto(object):
     <roles.A+MySubRole object at 0x...>
     """
 
-    def __init__(self, cls):
-        self.cls = cls
-
-
-    def toprole(self, rolecls):
+    def toprole(rolecls):
         """
         Find topmost RoleType class. This is where the role should be
         registered.
@@ -421,17 +408,18 @@ class assignto(object):
         return toprolecls
 
 
-    def __call__(self, rolecls):
-        toprolecls = self.toprole(rolecls)
+    def wrapper(rolecls):
+        toprolecls = toprole(rolecls)
 
         if not isinstance(toprolecls, RoleFactoryType):
             # Replace class type by extended factory type
             toprolecls.__class__ = RoleFactoryType
 
-        toprolecls.register(self.cls, rolecls, rolecls is toprolecls)
+        toprolecls.register(cls, rolecls, rolecls is toprolecls)
 
         return rolecls
 
+    return wrapper
 
 class NotARoleException(Exception):
     pass
