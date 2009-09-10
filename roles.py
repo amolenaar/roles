@@ -57,6 +57,23 @@ def shallowclone(obj):
     return newobj
 
 
+def instance(rolecls, subj):
+    """
+    Apply the role class to the subject.
+    """
+    subj.__class__ = rolecls
+    return subj
+
+
+def clone(rolecls, subj):
+    """
+    Returns a new subject instance with role applied.
+    """
+    newsubj = rolecls.__new__(rolecls)
+    newsubj.__dict__ = subj.__dict__
+    return newsubj
+
+
 
 def cached(func):
     """
@@ -137,7 +154,7 @@ class RoleType(type):
 
     Roles can be added by calling the ``assign()`` method:
 
-    >>> Carpenter.assign(person)    # doctest: +ELLIPSIS
+    >>> Carpenter.assign(person)   # doctest: +ELLIPSIS
     <roles.Person+Carpenter object at 0x...>
 
     Or by calling the role on the subject:
@@ -155,25 +172,41 @@ class RoleType(type):
     >>> person.chop()
     Joe chops
 
+    The default behaviour is to apply the role directly to the instance.
+
+    >>> person            # doctest: +ELLIPSIS
+    <roles.Person+Carpenter object at 0x...>
+
+    The module contains a function ``clone()`` that can be provided to the
+    ``asign()`` method to create proxy instances (the default function is
+    called ``instance()`` and can also be found in this module):
+
+    >>> biker = Biker.assign(person, method=clone)
+    >>> biker                             # doctest: +ELLIPSIS
+    <roles.Person+Carpenter+Biker object at 0x...>
+    >>> biker is person
+    False
+
     Objects can contain multiple roles:
 
-    >>> Biker.assign(person)   # doctest: +ELLIPSIS
+    >>> biker = Biker.assign(person)
+    >>> biker                             # doctest: +ELLIPSIS
     <roles.Person+Carpenter+Biker object at 0x...>
-    >>> person.__class__.__bases__
+    >>> biker.__class__.__bases__
     (<class 'roles.Biker'>, <class 'roles.Carpenter'>, <class 'roles.Person'>)
     
     Note that a new class is assigned, with the roles applied (roles first):
 
-    >>> person.__class__
+    >>> biker.__class__
     <class 'roles.Person+Carpenter+Biker'>
-    >>> person.__class__.__bases__
+    >>> biker.__class__.__bases__
     (<class 'roles.Biker'>, <class 'roles.Carpenter'>, <class 'roles.Person'>)
 
     Roles can be revoked:
 
-    >>> Carpenter.revoke(person)   # doctest: +ELLIPSIS
+    >>> Carpenter.revoke(biker)          # doctest: +ELLIPSIS
     <roles.Person+Biker object at 0x...>
-    >>> person.__class__.__bases__
+    >>> biker.__class__.__bases__
     (<class 'roles.Biker'>, <class 'roles.Person'>)
 
     Caching
@@ -188,30 +221,14 @@ class RoleType(type):
 
     Instant application of roles
 
-    If you do not want roles to be applied to the object directly,
+    The default behaviour you do not want roles to be applied to the object directly,
     but create shallow copies of an object with roles applied, you can use the
-    shallowclone function.
-
-    This can be done by creating a custom role type like this, overriding the
-    ``roll()`` method:
-
-    >>> class CustomRoleType(RoleType):
-    ...     def roll(role, rolecls, subj):
-    ...         newsubj = shallowclone(subj)
-    ...         newsubj.__class__ = rolecls
-    ...         return newsubj
-
-    >>> class Biker(object):
-    ...     __metaclass__ = CustomRoleType
-    ...     def bike(self): print self.name, 'bikes'
-
-    Now no new class instance is created, but the roles are no longer applied to
-    the subject instance directly.
+    clone function.
 
     >>> person = Person('Joe')
     >>> person.__class__
     <class 'roles.Person'>
-    >>> biker = Biker(person)
+    >>> biker = Biker(person, method=clone)
     >>> biker # doctest: +ELLIPSIS
     <roles.Person+Biker object at 0x...>
     >>> person.__class__
@@ -220,14 +237,6 @@ class RoleType(type):
     Joe bikes
     """
 
-
-    def roll(self, rolecls, subj):
-        """
-        Apply the role class to the subject.
-        Returns the subject
-        """
-        subj.__class__ = rolecls
-        return subj
 
 
     @cached
@@ -246,7 +255,7 @@ class RoleType(type):
         return rolecls
 
 
-    def assign(self, subj):
+    def assign(self, subj, method=instance):
         """
         Call is invoked when a role should be assigned to an object.
         """
@@ -264,10 +273,10 @@ class RoleType(type):
 
         rolecls = self.newclass(cls, rolebases)
 
-        return self.roll(rolecls, subj)
+        return method(rolecls, subj)
 
 
-    def revoke(self, subj):
+    def revoke(self, subj, method=instance):
         """
         Retract the role from subj. Returning a new subject (or the same one,
         if ``roll()`` has been overwritten).
@@ -278,7 +287,7 @@ class RoleType(type):
         cls = type(subj)
         rolebases = tuple(b for b in cls.__bases__ if b is not self)
         rolecls = self.newclass(cls, rolebases)
-        return self.roll(rolecls, subj)
+        return method(rolecls, subj)
 
 
     __call__ = assign
@@ -328,8 +337,8 @@ class RoleFactoryType(RoleType):
             return self
 
 
-    def __call__(self, subj):
-        return self.lookup(type(subj)).assign(subj)
+    def __call__(self, subj, method=instance):
+        return self.lookup(type(subj)).assign(subj, method)
 
 
 class assignto(object):
