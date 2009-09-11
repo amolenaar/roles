@@ -30,6 +30,37 @@ def clone(rolecls, subj):
     return newsubj
 
 
+class context(object):
+    """
+    Role assignment method for contexts (``with`` statement).
+
+    >>> class A(object): pass
+    >>> class MyRole(object):
+    ...     __metaclass__ = RoleType
+    >>> a = A()
+    >>> a                          # doctest: +ELLIPSIS
+    <roles.A object at 0x...>
+    >>> with MyRole(a, method=context):
+    ...    a                       # doctest: +ELLIPSIS
+    <roles.A+MyRole object at 0x...>
+    >>> a                          # doctest: +ELLIPSIS
+    <roles.A object at 0x...>
+
+    TODO: needs to ensure that only the assigned role is retracted.
+    """
+    def __init__(self, rolecls, subj):
+        self.rolecls = rolecls
+        self.subj = subj
+        self.oldcls = type(subj)
+
+    def __enter__(self):
+        return instance(self.rolecls, self.subj)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        instance(self.oldcls, self.subj)
+        #assert isinstance(self.subj, self.rolecls)
+        #self.rolecls.revoke(self.subj)
+
 
 def cached(func):
     """
@@ -294,9 +325,16 @@ class RoleFactoryType(RoleType):
                 raise NoRoleException('No role found for %s' % cls)
             return self
 
+
     def assign(self, subj, method=instance):
         rolecls = self.lookup(type(subj))
         return RoleType.assign(rolecls, subj, method)
+
+
+    def revoke(self, subj, method=instance):
+        rolecls = self.lookup(type(subj))
+        return RoleType.revoke(rolecls, subj, method)
+
 
     __call__ = assign
 
@@ -334,8 +372,12 @@ def assignto(cls):
 
     >>> class B(A): pass
     >>> class C(B): pass
-    >>> MyRole(C())           # doctest: +ELLIPSIS
+    >>> c = C()
+    >>> MyRole(c)             # doctest: +ELLIPSIS
     <roles.C+MySubRole object at 0x...>
+
+    >>> MyRole.revoke(c)     # doctest: +ELLIPSIS
+    <roles.C object at 0x...>
 
     You can also apply the decorator to the root role directly:
 
@@ -343,8 +385,12 @@ def assignto(cls):
     ... class AnyRole(object):
     ...     __metaclass__ = RoleType
 
-    >>> AnyRole(A())          # doctest: +ELLIPSIS
+    >>> a = A()
+    >>> AnyRole(a)            # doctest: +ELLIPSIS
     <roles.A+AnyRole object at 0x...>
+
+    >>> AnyRole.revoke(a)     # doctest: +ELLIPSIS
+    <roles.A object at 0x...>
 
     Now some other class should not be assigned this role:
 
