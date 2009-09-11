@@ -45,21 +45,20 @@ class context(object):
     <roles.A+MyRole object at 0x...>
     >>> a                          # doctest: +ELLIPSIS
     <roles.A object at 0x...>
-
-    TODO: needs to ensure that only the assigned role is retracted.
     """
     def __init__(self, rolecls, subj):
         self.rolecls = rolecls
         self.subj = subj
-        self.oldcls = type(subj)
+        # Role last added is the role to revoke
+        self.role = rolecls.__bases__[0]
 
     def __enter__(self):
         return instance(self.rolecls, self.subj)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        instance(self.oldcls, self.subj)
+        #instance(self.oldcls, self.subj)
         #assert isinstance(self.subj, self.rolecls)
-        #self.rolecls.revoke(self.subj)
+        self.role.revoke(self.subj)
 
 
 def cached(func):
