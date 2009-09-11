@@ -5,7 +5,7 @@ Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-from roles import RoleType
+from roles import RoleType, clone
 
 
 class MoneySource(object):
@@ -49,9 +49,9 @@ class TransferMoney(object):
     def __init__(self, source, sink):
         self.context = Context()
         print 'creating source'
-        self.context.source = MoneySource(source)
+        self.context.source = MoneySource(source, method=clone)
         print 'creating sink'
-        self.context.sink = MoneySink(MoneySource(sink))
+        self.context.sink = MoneySink(MoneySource(sink, method=clone))
 
     def __call__(self, amount):
         self.context.source.transfer_to(self.context, amount)
