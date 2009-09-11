@@ -51,12 +51,23 @@ class context(object):
     >>> class FooRole(object):
     ...     __metaclass__ = RoleType
 
+    >>> MyRole(a, method=context)   # doctest: +ELLIPSIS
+    <roles.context object at 0x...>
     >>> with MyRole(a, method=context):
     ...    FooRole(a)
     ...    a                       # doctest: +ELLIPSIS
     <roles.A+MyRole+FooRole object at 0x...>
     >>> a                          # doctest: +ELLIPSIS
     <roles.A+FooRole object at 0x...>
+
+    This will fail if the role has already been applied.
+
+    >>> with FooRole(a, context):
+    ...     pass                          # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'A+FooRole' object has no attribute '__exit__'
+
     """
     def __init__(self, rolecls, subj):
         self.rolecls = rolecls
@@ -453,6 +464,30 @@ class NotARoleException(Exception):
 
 class NoRoleException(Exception):
     pass
+
+
+def rolecontext(*pairs):
+    """
+    Create a role in context for each pair of (role, subject).
+    
+    This function also prepares a savety net in case a role has already been
+    applied to the subject.
+
+    >>> class A(object): pass
+    >>> class MyRole(object):
+    ...     __metaclass__ = RoleType
+    >>> a = A()
+    >>> MyRole(a)
+    ... a                                   # doctest: +ELLIPSIS
+    <roles.A+MyRole object at 0x...>
+    >>> with rolecontext((MyRole, a)):
+    ...     a                               # doctest: +ELLIPSIS
+    <roles.A+MyRole object at 0x...>
+    ... a                                   # doctest: +ELLIPSIS
+    <roles.A+MyRole object at 0x...>
+    """
+    from contextlib import nested
+    return nested(*(r(s, method=context) for r, s in pairs))
 
 
 def psyco_optimize():
