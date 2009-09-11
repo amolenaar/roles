@@ -45,6 +45,18 @@ class context(object):
     <roles.A+MyRole object at 0x...>
     >>> a                          # doctest: +ELLIPSIS
     <roles.A object at 0x...>
+
+    Roles added inside the with statement stay active
+
+    >>> class FooRole(object):
+    ...     __metaclass__ = RoleType
+
+    >>> with MyRole(a, method=context):
+    ...    FooRole(a)
+    ...    a                       # doctest: +ELLIPSIS
+    <roles.A+MyRole+FooRole object at 0x...>
+    >>> a                          # doctest: +ELLIPSIS
+    <roles.A+FooRole object at 0x...>
     """
     def __init__(self, rolecls, subj):
         self.rolecls = rolecls
