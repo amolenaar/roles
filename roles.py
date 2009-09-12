@@ -120,9 +120,10 @@ def cached(func):
         try:
             return cache[args]
         except KeyError:
-            result = func(*args)
-            cache[args] = result
-            return result
+            pass # not in cache
+        result = func(*args)
+        cache[args] = result
+        return result
 
     def cache():
         return func._cache
