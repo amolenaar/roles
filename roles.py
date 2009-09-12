@@ -218,6 +218,11 @@ class RoleType(type):
     >>> biker.__class__.__bases__
     (<class 'roles.Biker'>, <class 'roles.Person'>)
 
+    Revoking a non-existant role has no effect:
+
+    >>> Carpenter.revoke(biker)          # doctest: +ELLIPSIS
+    <roles.Person+Biker object at 0x...>
+
     Caching
 
     One more thing: role classes are cached. This means that if I want to
@@ -458,15 +463,24 @@ def assignto(cls):
 
     return wrapper
 
+
 class NotARoleException(Exception):
+    """
+    Exception thrown by role factory if the assigned type is not a role
+    (hence, the metaclass is not ``RoleType``).
+    """
     pass
 
 
 class NoRoleException(Exception):
+    """
+    Exception thrown by role factory if no role could be applied to an
+    instance.
+    """
     pass
 
 
-def rolecontext(*pairs):
+def roles(*pairs):
     """
     Create a role in context for each pair of (role, subject).
     
@@ -477,17 +491,31 @@ def rolecontext(*pairs):
     >>> class MyRole(object):
     ...     __metaclass__ = RoleType
     >>> a = A()
-    >>> MyRole(a)
-    ... a                                   # doctest: +ELLIPSIS
-    <roles.A+MyRole object at 0x...>
-    >>> with rolecontext((MyRole, a)):
+    >>> with roles((MyRole, a)):
     ...     a                               # doctest: +ELLIPSIS
     <roles.A+MyRole object at 0x...>
-    ... a                                   # doctest: +ELLIPSIS
+    >>> a                                   # doctest: +ELLIPSIS
+    <roles.A object at 0x...>
+
+    Already assigned roles are not touched:
+
+    >>> MyRole(a)                           # doctest: +ELLIPSIS
+    <roles.A+MyRole object at 0x...>
+    >>> with roles((MyRole, a)):
+    ...     a                               # doctest: +ELLIPSIS
+    <roles.A+MyRole object at 0x...>
+    >>> a                                   # doctest: +ELLIPSIS
     <roles.A+MyRole object at 0x...>
     """
     from contextlib import nested
-    return nested(*(r(s, method=context) for r, s in pairs))
+    ctxs = []
+    for role, subj in pairs:
+        # Only propagate contexts
+        ctx = role(subj, method=context)
+        if type(ctx) is context:
+            ctxs.append(ctx)
+    #ctxs = [ctx for ctx in (r(s, method=context) for r, s in pairs) if type(ctx) is context]
+    return nested(*ctxs)
 
 
 def psyco_optimize():
@@ -508,7 +536,8 @@ def psyco_optimize():
     # decorated: provide original function for optimization
     psyco.bind(RoleType.newclass.wrapped_func)
 
-    psyco.bind(RoleFactoryType.__call__)
+    psyco.bind(RoleFactoryType.assign)
+    psyco.bind(RoleFactoryType.revoke)
     # decorated: provide original function for optimization
     psyco.bind(RoleFactoryType.lookup.wrapped_func)
 

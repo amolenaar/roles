@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+0.5.0
+-----
+
+- Support for contexts (`with` statement).
+- revoke on factories now works as expected.
+
 0.4.0
 -----
 

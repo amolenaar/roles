@@ -5,7 +5,7 @@ Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-from roles import RoleType, clone, rolecontext
+from roles import RoleType, clone, roles
 
 
 class MoneySource(object):
@@ -44,8 +44,8 @@ def transfer_money(source, sink, amount):
     """
     The interaction.
     """
-    with rolecontext((MoneySource, source),
-                     (MoneySink, sink)):
+    with roles((MoneySource, source),
+               (MoneySink, sink)):
         source.transfer_to(sink, amount)
 
 src = Account(1000)
