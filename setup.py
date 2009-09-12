@@ -10,7 +10,7 @@ except ImportError:
 from contextlib import closing
 
 
-VERSION = '0.4.0'
+VERSION = '0.5.0'
 
 with closing(open('README.rst')) as f:
     doc = f.read()
