@@ -23,7 +23,7 @@ setup(
     long_description=doc,
     author='Arjan Molenaar',
     author_email='gaphor@gmail.com',
-    url='http://github.org/amolenaar/roles',
+    url='http://github.com/amolenaar/roles',
     license="BSD License",
     py_modules = ['roles'],
     keywords="role DCI",
