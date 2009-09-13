@@ -26,7 +26,7 @@ setup(
     url='http://github.com/amolenaar/roles',
     license="BSD License",
     py_modules = ['roles'],
-    keywords="role DCI",
+    keywords="role DCI data context interaction",
     platforms=["All"],
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
