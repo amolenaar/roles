@@ -9,7 +9,7 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 """
 
 from operator import attrgetter
-
+from contextlib import contextmanager
 
 def instance(rolecls, subj):
     """
@@ -481,6 +481,7 @@ class NoRoleException(Exception):
     pass
 
 
+@contextmanager
 def roles(*pairs):
     """
     Create a role in context for each pair of (role, subject).
@@ -508,15 +509,20 @@ def roles(*pairs):
     >>> a                                   # doctest: +ELLIPSIS
     <roles.A+MyRole object at 0x...>
     """
-    from contextlib import nested
-    ctxs = []
-    for role, subj in pairs:
-        # Only propagate contexts
-        ctx = role(subj, method=context)
-        if type(ctx) is context:
-            ctxs.append(ctx)
-    #ctxs = [ctx for ctx in (r(s, method=context) for r, s in pairs) if type(ctx) is context]
-    return nested(*ctxs)
+    vars = []
+    exits = []
+    try:
+        for role, subj in pairs:
+            ctx = role(subj, method=context)
+            # Be lenient with subjects that already have the role applied
+            if type(ctx) is context:
+                ctx.__enter__()
+                exits.append(ctx.__exit__)
+            vars.append(subj)
+        yield vars
+    finally:
+        for e in exits:
+            e(None, None, None)
 
 
 def psyco_optimize():
@@ -544,6 +550,9 @@ def psyco_optimize():
 
     #psyco.bind(cached)
     #psyco.bind(assignto)
+
+
+__test__ = { 'roles': roles }
 
 
 # vim:sw=4:et:ai
