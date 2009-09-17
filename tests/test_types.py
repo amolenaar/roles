@@ -70,21 +70,21 @@ class TypesTest(unittest.TestCase):
         Point = namedtuple('Point', 'x y')
         p = Point(1,2)
 
-        class Vector:
+        class Vector(object):
             __metaclass__ = RoleType
-            def m(self):
-                "Manhattan style distance calculation"
-                return p.x + p.y
-            def distance(self):
-                return math.sqrt(p.x * p.x + p.y * p.y)
+            #def m(self):
+            #    "Manhattan style distance calculation"
+            #    return p.x + p.y
+            #def distance(self):
+            #    return math.sqrt(p.x * p.x + p.y * p.y)
 
-        try:
-            Vector(p)
-        except TypeError, e:
-            self.assertEquals("__class__ assignment: 'Point' object layout differs from 'Point+Vector'", str(e))
-        else:
-            assert False, "should not be reached"
-        #assert p.manhattan() == 3
+#        try:
+        Vector(p)
+        #except TypeError, e:
+        #    self.assertEquals("__class__ assignment: 'Point' object layout differs from 'Point+Vector'", str(e))
+        #else:
+        #    assert False, "should not be reached"
+        assert p.manhattan() == 3
 
 
 if __name__ == '__main__':
