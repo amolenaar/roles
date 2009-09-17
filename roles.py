@@ -113,24 +113,17 @@ def cached(func):
       ...
     TypeError: wrapper() got an unexpected keyword argument 's'
     """
-    func._cache = {}
+    cache = {}
 
     def wrapper(*args):
-        cache = func._cache
         try:
             return cache[args]
         except KeyError:
             pass # not in cache
-        result = func(*args)
-        cache[args] = result
+        cache[args] = result = func(*args)
         return result
 
-    def cache():
-        return func._cache
     wrapper.cache = cache
-    def clear():
-        func._cache.clear()
-    wrapper.clear = clear
     wrapper.wrapped_func = func
     return wrapper
 
@@ -335,7 +328,7 @@ class RoleFactoryType(RoleType):
             self._factory = {}
             self._factory[cls] = rolecls
             self._strict = strict
-            self.lookup.clear()
+            self.lookup.cache.clear()
 
 
     @cached
