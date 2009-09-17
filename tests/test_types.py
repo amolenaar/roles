@@ -22,7 +22,7 @@ class TypesTest(unittest.TestCase):
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
         else:
-            assert false, "should not be reached"
+            assert False, "should not be reached"
 
     def test_list(self):
         d = ['a', 'b']
@@ -31,7 +31,7 @@ class TypesTest(unittest.TestCase):
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
         else:
-            assert false, "should not be reached"
+            assert False, "should not be reached"
 
 
     def test_tuple(self):
@@ -41,11 +41,15 @@ class TypesTest(unittest.TestCase):
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
         else:
-            assert false, "should not be reached"
+            assert False, "should not be reached"
 
 
 
     def test_userdict(self):
+        import sys
+        if sys.version_info >= (3,0,0):
+            return
+
         from UserDict import UserDict
         d = UserDict()
         try:
@@ -53,7 +57,7 @@ class TypesTest(unittest.TestCase):
         except TypeError, e:
             self.assertEquals("type 'instance' is not an acceptable base type", str(e))
         else:
-            assert false, "should not be reached"
+            assert False, "should not be reached"
 
 
     def test_namedtuple(self):
@@ -79,7 +83,7 @@ class TypesTest(unittest.TestCase):
         except TypeError, e:
             self.assertEquals("__class__ assignment: 'Point' object layout differs from 'Point+Vector'", str(e))
         else:
-            assert false, "should not be reached"
+            assert False, "should not be reached"
         #assert p.manhattan() == 3
 
 
