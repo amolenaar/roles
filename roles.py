@@ -24,6 +24,24 @@ def clone(rolecls, subj):
     """
     Returns a new subject instance with role applied. Both instances refer to
     the same instance dict.
+
+    >>> class Person(object):
+    ...     def __init__(self, name): self.name = name
+    ...     def am(self): print self.name, 'is'
+    >>> class Biker(object):
+    ...     __metaclass__ = RoleType
+    ...     def bike(self): print self.name, 'bikes'
+
+    >>> person = Person('Joe')
+    >>> person.__class__
+    <class 'roles.Person'>
+    >>> biker = Biker(person, method=clone)
+    >>> biker # doctest: +ELLIPSIS
+    <roles.Person+Biker object at 0x...>
+    >>> person.__class__
+    <class 'roles.Person'>
+    >>> biker.bike()
+    Joe bikes
     """
     newsubj = rolecls.__new__(rolecls)
     newsubj.__dict__ = subj.__dict__
@@ -97,13 +115,13 @@ def cached(func):
 
     Show cache contents:
 
-    >>> cap.cache()
+    >>> cap.cache
     {('a',): 'A', ('b',): 'B'}
 
     Clear the cache:
     
-    >>> cap.clear()
-    >>> cap.cache()
+    >>> cap.cache.clear()
+    >>> cap.cache
     {}
 
     Due to the caching, we can not take key-value arguments:
@@ -227,11 +245,12 @@ class RoleType(type):
     >>> Biker(someone).__class__ is Biker(person).__class__
     True
 
-    Instant application of roles
+    Changing role application
 
-    The default behaviour you do not want roles to be applied to the object directly,
-    but create shallow copies of an object with roles applied, you can use the
-    clone function.
+    If for some reason the role should not be directly applied to the instance,
+    another application method can be assigned.
+
+    Here is an example that uses the ``clone`` method:
 
     >>> person = Person('Joe')
     >>> person.__class__
