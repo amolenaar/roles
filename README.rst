@@ -79,6 +79,6 @@ Assigning to a different class instance doesn't work:
 >>> Biker(Cat())				# doctest: +ELLIPSIS
 Traceback (most recent call last):
   ...
-NoRoleException: No role found for <class 'Cat'>
+NoRoleError: No role found for <class 'Cat'>
 
 

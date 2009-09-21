@@ -362,7 +362,7 @@ class RoleFactoryType(RoleType):
             if rolecls: return rolecls
         else:
             if self._strict:
-                raise NoRoleException('No role found for %s' % cls)
+                raise NoRoleError('No role found for %s' % cls)
             return self
 
 
@@ -438,7 +438,7 @@ def assignto(cls):
     >>> AnyRole(X())          # doctest: +ELLIPSIS
     Traceback (most recent call last):
       ...
-    NoRoleException: No role found for <class 'roles.X'>
+    NoRoleError: No role found for <class 'roles.X'>
 
     And this still works:
 
@@ -459,7 +459,7 @@ def assignto(cls):
                 break
 
         if not toprolecls:
-            raise NotARoleException('could not apply @assignto() to class %s: not a role' % (rolecls,))
+            raise NotARoleError('could not apply @assignto() to class %s: not a role' % (rolecls,))
         return toprolecls
 
 
@@ -477,7 +477,7 @@ def assignto(cls):
     return wrapper
 
 
-class NotARoleException(Exception):
+class NotARoleError(TypeError):
     """
     Exception thrown by role factory if the assigned type is not a role
     (hence, the metaclass is not ``RoleType``).
@@ -485,7 +485,7 @@ class NotARoleException(Exception):
     pass
 
 
-class NoRoleException(Exception):
+class NoRoleError(TypeError):
     """
     Exception thrown by role factory if no role could be applied to an
     instance.
