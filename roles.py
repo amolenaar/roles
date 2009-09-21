@@ -493,8 +493,11 @@ class NoRoleError(TypeError):
     pass
 
 
-@contextmanager
-def roles(*pairs):
+def _fastinstance(rolecls, subj):
+    subj.__class__ = rolecls
+    return None
+
+class roles(object):
     """
     Create a role in context for each pair of (role, subject).
     
@@ -521,19 +524,25 @@ def roles(*pairs):
     >>> a                                   # doctest: +ELLIPSIS
     <roles.A+MyRole object at 0x...>
     """
-    vars = []
-    exits = []
-    try:
-        for role, subj in pairs:
+
+    def __init__(self, *pairs):
+        self.pairs = pairs
+
+    def __enter__(self):
+        vars = []
+        exits = []
+        for role, subj in self.pairs:
             ctx = role(subj, method=context)
             # Be lenient with subjects that already have the role applied
             if type(ctx) is context:
                 ctx.__enter__()
                 exits.append(ctx.__exit__)
             vars.append(subj)
-        yield vars
-    finally:
-        for e in exits:
+        self.exits = exits
+        return vars
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        for e in self.exits:
             e(None, None, None)
 
 
