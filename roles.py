@@ -320,6 +320,24 @@ class RoleType(type):
     __call__ = assign
 
 
+    def played_by(self, subj):
+        """
+        Shorthand for using roles in with statements
+
+        >>> class Biker(object):
+        ...     __metaclass__ = RoleType
+        ...     def bike(self): return 'bike, bike'
+        >>> class Person(object):
+        ...     pass
+        >>> john = Person()
+        >>> with Biker.played_by(john):
+        ...     john.bike()
+        'bike, bike'
+
+        See the ``context`` docs for details.
+        """
+        return self.assign(subj, method=context)
+
 class RoleFactoryType(RoleType):
     """
     ``RoleFactoryType`` is a special kind of RoleType: with the ``@assignto``
