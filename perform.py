@@ -9,7 +9,7 @@ import roles
 
 setup_role = \
 """
-from roles import RoleType, roles
+from roles import RoleType
 
 class A(object):
     pass
@@ -23,7 +23,7 @@ a = A()
 
 setup_rolefactory = \
 """
-from roles import RoleType, assignto, roles
+from roles import RoleType, assignto
 
 class A(object):
     pass
@@ -60,28 +60,10 @@ component.provideAdapter(Adapter)
 
 print 'Construction of object				%2.3fs' % timeit('a=A()', setup=setup_role)
 print 'Construction of roles				%2.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
-print 'Construction of roles in context		%2.3fs' % timeit('a=A()\nwith roles((Role, a)): a.func()', setup=setup_role)
+print 'Construction of roles in context		%2.3fs' % timeit('a=A()\nwith Role.played_by(a): a.func()', setup=setup_role)
 
-reload(roles)
-try:
-    roles.psyco_optimize()
-except ImportError:
-    pass
-else:
-    print 'Construction of roles (psyco)			%2.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
-
-reload(roles)
 print 'Construction of roles from factory		%2.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
-print 'Construction of roles from factory in context	%.3fs' % timeit('a=A()\nwith roles((Role, a)): a.func()', setup=setup_rolefactory)
 print 'Construction of roles from factory in context	%.3fs' % timeit('a=A()\nwith Role.played_by(a): a.func()', setup=setup_rolefactory)
-
-reload(roles)
-try:
-    roles.psyco_optimize()
-except ImportError:
-    pass
-else:
-    print 'Construction of roles from factory (psyco)	%.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
 
 print 'Construction of zope adapters			%.3fs' % timeit('a=A();b=Iface(a);b.func()', setup=setup_zope)
 
