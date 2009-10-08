@@ -8,8 +8,16 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
+# TODO: decorator that "lifts" objects automatically when entering a method.
+# The easy way to go would be in Python3.0, where you can assign annotations
+# to an object. E.g.
+#    def m(a: SomeRole): pass
+# Now a should coerce to the SomeRole type. Eventually a decorator could be
+# applied.
+
 from operator import attrgetter
 from contextlib import contextmanager
+
 
 def instance(rolecls, subj):
     """
@@ -134,11 +142,12 @@ def cached(func):
     cache = {}
 
     def wrapper(*args):
+        key = args
         try:
-            return cache[args]
+            return cache[key]
         except KeyError:
             pass # not in cache
-        cache[args] = result = func(*args)
+        cache[key] = result = func(*args)
         return result
 
     wrapper.cache = cache
@@ -279,6 +288,7 @@ class RoleType(type):
         rolecls = type(rolename, rolebases, {
                 '__module__': cls.__module__,
                 '__doc__': cls.__doc__ })
+        print 'Created class', rolecls
         return rolecls
 
 
@@ -313,13 +323,18 @@ class RoleType(type):
 
         cls = type(subj)
         rolebases = tuple(b for b in cls.__bases__ if b is not self)
-        rolecls = self.newclass(cls, rolebases)
+        # Fall back to original class as soon as no roles are attached anymore
+        if len(rolebases) > 1:
+            rolecls = self.newclass(cls, rolebases)
+        else:
+            rolecls = rolebases[0]
         return method(rolecls, subj)
 
 
     __call__ = assign
 
 
+    @contextmanager
     def played_by(self, subj):
         """
         Shorthand for using roles in with statements
@@ -333,10 +348,16 @@ class RoleType(type):
         >>> with Biker.played_by(john):
         ...     john.bike()
         'bike, bike'
-
-        See the ``context`` docs for details.
         """
-        return self.assign(subj, method=context)
+        if isinstance(subj, self):
+            yield subj
+        else:
+            self.assign(subj)
+            try:
+                yield subj
+            finally:
+                self.revoke(subj)
+
 
 class RoleFactoryType(RoleType):
     """
@@ -510,10 +531,6 @@ class NoRoleError(TypeError):
     """
     pass
 
-
-def _fastinstance(rolecls, subj):
-    subj.__class__ = rolecls
-    return None
 
 class roles(object):
     """

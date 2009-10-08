@@ -73,6 +73,7 @@ else:
 reload(roles)
 print 'Construction of roles from factory		%2.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
 print 'Construction of roles from factory in context	%.3fs' % timeit('a=A()\nwith roles((Role, a)): a.func()', setup=setup_rolefactory)
+print 'Construction of roles from factory in context	%.3fs' % timeit('a=A()\nwith Role.played_by(a): a.func()', setup=setup_rolefactory)
 
 reload(roles)
 try:
