@@ -288,7 +288,6 @@ class RoleType(type):
         rolecls = type(rolename, rolebases, {
                 '__module__': cls.__module__,
                 '__doc__': cls.__doc__ })
-        print 'Created class', rolecls
         return rolecls
 
 
