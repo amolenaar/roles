@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+0.6.0
+-----
+
+- RoleType.played_by for easy use with `with` statement
+- removed roles function and psyco optimizations.
+- bug fixes and performance updates
+
 0.5.0
 -----
 
