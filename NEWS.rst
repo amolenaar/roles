@@ -1,10 +1,16 @@
 Change Log
 ==========
 
+0.7.0
+-----
+
+- Added `@rolecontext` decorator to ensure roles are applied on function
+  invocation.
+
 0.6.0
 -----
 
-- RoleType.played_by for easy use with `with` statement
+- RoleType.played_by for easy use with `with` statement.
 - removed roles function and psyco optimizations.
 - bug fixes and performance updates
 
