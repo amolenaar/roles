@@ -260,8 +260,8 @@ class RoleType(type):
 
     def revoke(self, subj, method=instance):
         """
-        Retract the role from subj. Returning a new subject (or the same one,
-        if ``roll()`` has been overwritten).
+        Retract the role from subj. By default the ``instance`` strategy is
+        used.
         """
         if not isinstance(subj, self):
             return subj
