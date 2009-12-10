@@ -15,6 +15,23 @@ class TypesTest(unittest.TestCase):
     Test application of roles on types.
     """
 
+    def test_class(self):
+        class Cls(object):
+            pass
+
+        c = Cls()
+        SimpleRole(c)
+        c.inrole()
+
+    def test_class_with_args(self):
+        class Cls(object):
+            def __init__(self, a, b): pass
+
+        c = Cls(1, 2)
+        SimpleRole(c)
+        c.inrole()
+
+
     def test_dict(self):
         d = dict()
         try:
