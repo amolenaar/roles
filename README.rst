@@ -38,7 +38,7 @@ particular role:
 
 Assign the role to the person:
 
->>> Carpenter(person)    # doctest: +ELLIPSIS
+>>> Carpenter(person)				# doctest: +ELLIPSIS
 <Person+Carpenter object at 0x...>
 >>> person					# doctest: +ELLIPSIS
 <Person+Carpenter object at 0x...>
