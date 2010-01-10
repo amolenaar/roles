@@ -1,11 +1,11 @@
 """
-Roles example.
+Roles example, using the rolecontext decorator.
 
 Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-from roles import RoleType, clone
+from roles import RoleType, rolecontext
 
 
 class MoneySource(object):
@@ -40,13 +40,12 @@ class Account(object):
         self.balance += amount
 
 
+@rolecontext(MoneySource, MoneySink)
 def transfer_money(source, sink, amount):
     """
     The interaction.
     """
-    with MoneySource.played_by(source):
-        with MoneySink.played_by(sink):
-            source.transfer_to(sink, amount)
+    source.transfer_to(sink, amount)
 
 src = Account(1000)
 dst = Account(0)
@@ -58,3 +57,11 @@ assert src.balance == 900
 print dst, dst.balance
 assert dst.balance == 100
 
+@rolecontext(MoneySource, MoneySink)
+def symantics(source, sink):
+    print "We can still access the original attributes", sink.balance
+    print "Is it still an Account?", isinstance(sink, Account)
+    print "Object equality?", dst == sink
+
+symantics(src, dst)
+# vim:sw=4:et:ai

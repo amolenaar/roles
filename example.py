@@ -1,5 +1,5 @@
 """
-Roles example.
+Classic roles example, using proxy instances.
 
 Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
@@ -74,3 +74,4 @@ print "Is it still an Account?", isinstance(t.context.sink, Account)
 assert isinstance(t.context.sink, Account)
 print "Object equality?", dst == t.context.sink
 
+# vim:sw=4:et:ai
