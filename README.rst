@@ -53,7 +53,7 @@ True
 >>> person.chop()
 'chop, chop'
 
-See ``roles.py <http://github.com/amolenaar/roles/blob/master/roles.py>`` for more examples.
+See `roles.py <http://github.com/amolenaar/roles/blob/master/roles.py>` for more examples.
 
 Context
 -------
@@ -63,7 +63,7 @@ money transfer example. Here two accounts are used and an amount of money is
 transfered from one account to the other. So, one account playes the role of
 source account and the other plays the role of target account.
 
-An example can be found in ``example.py <http://github.com/amolenaar/roles/blob/master/example.py>`` and ``example2.py <http://github.com/amolenaar/roles/blob/master/example2.py>``.
+An example can be found in `example.py <http://github.com/amolenaar/roles/blob/master/example.py>` and `example2.py <http://github.com/amolenaar/roles/blob/master/example2.py>`.
 
 Factories
 ---------
