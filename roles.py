@@ -403,6 +403,13 @@ def assignto(cls):
     >>> MyRole.revoke(c)     # doctest: +ELLIPSIS
     <roles.C object at 0x...>
 
+    All other class fall back to the default role:
+
+    >>> class D(object): pass
+    >>> d = D()
+    >>> MyRole(d)             # doctest: +ELLIPSIS
+    <roles.D+MyRole object at 0x...>
+
     You can also apply the decorator to the root role directly:
 
     >>> @assignto(A)
@@ -428,6 +435,16 @@ def assignto(cls):
 
     >>> MyRole(A())            # doctest: +ELLIPSIS
     <roles.A+MySubRole object at 0x...>
+
+    The usage of ``@assignto()`` is resticted to role types:
+
+    >>> @assignto(A)
+    ... class NotARole(object):
+    ...     pass
+    Traceback (most recent call last):
+      ...
+    NotARoleError: Could not apply @assignto() to class <class 'roles.NotARole'>: not a role
+
     """
 
     def toprole(rolecls):
@@ -443,7 +460,7 @@ def assignto(cls):
                 break
 
         if not toprolecls:
-            raise NotARoleError('could not apply @assignto() to class %s: not a role' % (rolecls,))
+            raise NotARoleError('Could not apply @assignto() to class %s: not a role' % (rolecls,))
         return toprolecls
 
 
@@ -499,6 +516,15 @@ def rolecontext(*types):
     ...    return b.bike()
     >>> bikerFunc(person)
     'bike, bike'
+
+    If the person already has the biker role, the context is left as is:
+
+    >>> Biker(person)            # doctest: +ELLIPSIS
+    <roles.Person+Biker object at 0x...>
+    >>> bikerFunc(person)
+    'bike, bike'
+    >>> isinstance(person, Biker)
+    True
     """
     def funcwrapper(func):
         def contextwrapper(*args, **kwargs):
