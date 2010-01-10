@@ -53,14 +53,25 @@ True
 >>> person.chop()
 'chop, chop'
 
-See ``roles.py`` for more examples.
+See ``roles.py <http://github.com/amolenaar/roles/blob/master/roles.py>`` for more examples.
+
+Context
+-------
+
+Roles make a lot of sense when used in a context. A classic example is the
+money transfer example. Here two accounts are used and an amount of money is
+transfered from one account to the other. So, one account playes the role of
+source account and the other plays the role of target account.
+
+An example can be found in ``example.py <http://github.com/amolenaar/roles/blob/master/example.py>`` and ``example2.py <http://github.com/amolenaar/roles/blob/master/example2.py>``.
 
 Factories
 ---------
 
-In most cases instances will require specific implementations of a certain role.
-This can be done by decorating the specific role implementations with the
-``assignto()`` decorator.
+There are cases where roles can not be implemented in a generic fashion (e.g.
+when dealing with legacy code).
+To overcome this specific role implementations can be made and assigned to
+specific types (classes) using the ``assignto()`` decorator.
 
 >>> from roles import assignto
 >>> @assignto(Person)
