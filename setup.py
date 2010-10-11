@@ -12,7 +12,7 @@ from contextlib import closing
 
 VERSION = '0.7.1'
 
-with closing(open('README.rst')) as f:
+with closing(open('README.txt')) as f:
     doc = f.read()
 
 
