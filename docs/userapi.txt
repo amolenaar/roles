@@ -1,0 +1,49 @@
+########
+User API
+########
+
+.. module:: roles
+
+RoleType metaclass
+------------------
+
+.. autoclass:: RoleType
+   :members:
+
+Ways to apply roles
+-------------------
+
+There are basically 2 ways to apply a role to an instance. The first one is
+to manipulate the instance's class (this is the default) and the second is
+to proxy the object.
+
+.. autofunction:: instance
+
+.. autofunction:: clone
+
+Using roles in a context
+------------------------
+
+Roles are played in a context. The ``roles.context`` module provides a
+means to access the context from within your roles. Use this to make your
+role's code simpler and more readable.
+
+.. module:: roles.context
+
+.. autofunction:: context
+
+.. autofunction:: in_context
+
+
+Generic roles
+-------------
+
+As an (non-DCI) extension it is possible to create role implementations tailored
+for specific objects.
+
+Although this may clutter the clear and readable ways provided by DCI, for
+specific tasks it may help. Use it wisely.
+
+.. module:: roles.factory
+
+.. autofunction:: assignto

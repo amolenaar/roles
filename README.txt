@@ -65,35 +65,3 @@ source account and the other plays the role of target account.
 
 An example can be found in `example.py <http://github.com/amolenaar/roles/blob/master/example.py>`_ and `example2.py <http://github.com/amolenaar/roles/blob/master/example2.py>`_.
 
-Factories
----------
-
- Note: Although the package provides role dispatching, it is not recommended to use
- those when programming according to the DCI paradigm: "magic" dispatchers make code
- less readable and less easy to reason about.
-
-There are cases where roles can not be implemented in a generic fashion (e.g.
-when dealing with legacy code).
-To overcome this specific role implementations can be made and assigned to
-specific types (classes) using the ``assignto()`` decorator.
-
->>> from roles.factory import assignto
->>> @assignto(Person)
-... class Biker(object):
-...     __metaclass__ = RoleType
-...     def bike(self):
-...         return 'cycle, cycle'
-
->>> Biker(person)				# doctest: +ELLIPSIS
-<Person+Carpenter+Biker object at 0x...>
-
-Assigning to a different class instance doesn't work:
-
->>> class Cat(object):
-...     pass
->>> Biker(Cat())				# doctest: +ELLIPSIS
-Traceback (most recent call last):
-  ...
-NoRoleError: No role found for <class 'Cat'>
-
-
