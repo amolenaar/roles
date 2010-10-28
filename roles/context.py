@@ -1,60 +1,52 @@
 
+from functools import wraps, partial
 
-def rolecontext(*types):
+
+class ctxman(object):
+
+    def __init__(self, stack, ctx):
+        self.stack = stack
+        self.ctx = ctx
+
+    def __enter__(self):
+        self.stack.append(self.ctx)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        ctx = self.stack.pop()
+        assert ctx is self.ctx
+
+
+class CurrentContextManager(object):
+
+    def __init__(self):
+        self.__dict__['_stack'] = []
+        
+    def __call__(self, newctx):
+        return ctxman(self._stack, newctx)
+
+    @property
+    def current_context(self):
+        return self.__dict__['_stack'][-1]
+
+    def __getattr__(self, key):
+        return getattr(self.current_context, key)
+
+    def __setattr__(self, key, val):
+        return setattr(self.current_context, key, val)
+
+
+context = CurrentContextManager()
+
+
+def in_context(func):
     """
-    Define a function as a context for a (set of) role(s).
-    
-    When the function is called all objects will have the specified role
-    applied for certain.
-
-    >>> from roles import RoleType
-    >>> class Person(object): pass
-    >>> class Biker(object):
-    ...     __metaclass__ = RoleType
-    ...     def bike(self): return 'bike, bike'
-
-    >>> person = Person()
-
-    Now, by applying the ``@rolecontext`` decorator to the function, the
-    role is automatically applied for this function invocation.
-
-    >>> @rolecontext(Biker)
-    ... def bikerFunc(b):
-    ...    return b.bike()
-    >>> bikerFunc(person)
-    'bike, bike'
-
-    If the person already has the biker role, the context is left as is:
-
-    >>> Biker(person)            # doctest: +ELLIPSIS
-    <roles.context.Person+Biker object at 0x...>
-    >>> bikerFunc(person)
-    'bike, bike'
-    >>> isinstance(person, Biker)
-    True
+    Decorator for running methods in context. The context is the object (self).
     """
-    def funcwrapper(func):
-        def contextwrapper(*args, **kwargs):
-            flags = []
-            for a, t in zip(args, types):
-                if isinstance(a, t):
-                    flags.append(False)
-                else:
-                    t(a)
-                    flags.append(True)
-            try:
-                return func(*args, **kwargs)
-            finally:
-                for a, t, f in zip(args, types, flags):
-                    if f:
-                        t.revoke(a)
+    @wraps(func)
+    def in_context_wrapper(self, *args, **kwargs):
+        with context(self):
+            return func(self, *args, **kwargs)
+    return in_context_wrapper
 
-        contextwrapper.__name__ = func.__name__
-        contextwrapper.__doc__ = func.__doc__
-        contextwrapper.__dict__ = func.__dict__.copy()
-        contextwrapper.__module__ = func.__module__
-
-        return contextwrapper
-    return funcwrapper
 
 # vim:sw=4:et:ai
