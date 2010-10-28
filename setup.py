@@ -10,7 +10,7 @@ except ImportError:
 from contextlib import closing
 
 
-VERSION = '0.7.1'
+VERSION = '0.8.0'
 
 with closing(open('README.txt')) as f:
     doc = f.read()
@@ -25,7 +25,7 @@ setup(
     author_email='gaphor@gmail.com',
     url='http://github.com/amolenaar/roles',
     license="BSD License",
-    py_modules = ['roles'],
+    packages = [ 'roles' ],
     keywords="role DCI data context interaction",
     platforms=["All"],
     classifiers=['Development Status :: 4 - Beta',
