@@ -2,6 +2,9 @@
 
 OUTDIR=../freshtml
 
+ln -s ../README.txt
+ln -s ../NEWS.txt
+
 rm -rf $OUTDIR
 
 sphinx-build -a . $OUTDIR
