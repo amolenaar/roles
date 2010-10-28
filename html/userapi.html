@@ -1,0 +1,425 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User API &mdash; Roles v0.8 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Roles v0.8 documentation" href="index.html" />
+    <link rel="next" title="Private API" href="privapi.html" />
+    <link rel="prev" title="Roles" href="README.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="privapi.html" title="Private API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="README.html" title="Roles"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-roles">
+<span id="user-api"></span><h1>User API<a class="headerlink" href="#module-roles" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="roletype-metaclass">
+<h2>RoleType metaclass<a class="headerlink" href="#roletype-metaclass" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roles.RoleType">
+<em class="property">class </em><tt class="descclassname">roles.</tt><tt class="descname">RoleType</tt><a class="headerlink" href="#roles.RoleType" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">RoleType</span></tt> is a metaclass that provides role support to classes. The
+initialization process has been altered to provide addition and removal of
+roles.</p>
+<p>It starts with a normal class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">am</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;is&#39;</span>
+</pre></div>
+</div>
+<p>Apart from that a few roles can be defined. Simple objects with a default
+<tt class="docutils literal"><span class="pre">__init__()</span></tt> (no arguments) and the <tt class="docutils literal"><span class="pre">RoleType</span></tt> as metaclass:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Carpenter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">chop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;chops&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Biker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">bike</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;bikes&#39;</span>
+</pre></div>
+</div>
+<p>Now, by default an object has no roles (in this case our person).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&#39;Joe&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Roles can be added by calling the <tt class="docutils literal"><span class="pre">assign()</span></tt> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Carpenter</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>   
+<span class="go">&lt;roles.role.Person+Carpenter object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>Or by calling the role on the subject:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Carpenter</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>  
+<span class="go">&lt;roles.role.Person+Carpenter object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>The persons methods can be invoked:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">am</span><span class="p">()</span>
+<span class="go">Joe is</span>
+</pre></div>
+</div>
+<p>As well as the role&#8217;s methods:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">chop</span><span class="p">()</span>
+<span class="go">Joe chops</span>
+</pre></div>
+</div>
+<p>The default behaviour is to apply the role directly to the instance.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span>            
+<span class="go">&lt;roles.role.Person+Carpenter object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>The module contains a function <tt class="docutils literal"><span class="pre">clone()</span></tt> that can be provided to the
+<tt class="docutils literal"><span class="pre">asign()</span></tt> method to create proxy instances (the default function is
+called <tt class="docutils literal"><span class="pre">instance()</span></tt> and can also be found in this module):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span> <span class="o">=</span> <span class="n">Biker</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">clone</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span>                             
+<span class="go">&lt;roles.role.Person+Carpenter+Biker object at 0x...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span> <span class="ow">is</span> <span class="n">person</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Objects can contain multiple roles:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span> <span class="o">=</span> <span class="n">Biker</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span>                             
+<span class="go">&lt;roles.role.Person+Carpenter+Biker object at 0x...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__bases__</span>
+<span class="go">(&lt;class &#39;roles.role.Biker&#39;&gt;, &lt;class &#39;roles.role.Carpenter&#39;&gt;, &lt;class &#39;roles.role.Person&#39;&gt;)</span>
+</pre></div>
+</div>
+<p>Note that a new class is assigned, with the roles applied (roles first):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span><span class="o">.</span><span class="n">__class__</span>
+<span class="go">&lt;class &#39;roles.role.Person+Carpenter+Biker&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__bases__</span>
+<span class="go">(&lt;class &#39;roles.role.Biker&#39;&gt;, &lt;class &#39;roles.role.Carpenter&#39;&gt;, &lt;class &#39;roles.role.Person&#39;&gt;)</span>
+</pre></div>
+</div>
+<p>Roles can be revoked:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Carpenter</span><span class="o">.</span><span class="n">revoke</span><span class="p">(</span><span class="n">biker</span><span class="p">)</span>          
+<span class="go">&lt;roles.role.Person+Biker object at 0x...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__bases__</span>
+<span class="go">(&lt;class &#39;roles.role.Biker&#39;&gt;, &lt;class &#39;roles.role.Person&#39;&gt;)</span>
+</pre></div>
+</div>
+<p>Revoking a non-existant role has no effect:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Carpenter</span><span class="o">.</span><span class="n">revoke</span><span class="p">(</span><span class="n">biker</span><span class="p">)</span>          
+<span class="go">&lt;roles.role.Person+Biker object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>Caching</p>
+<p>One more thing: role classes are cached. This means that if I want to
+assign a role to a different instance, the same role class is applied:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&#39;Joe&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">someone</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&#39;Jane&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Biker</span><span class="p">(</span><span class="n">someone</span><span class="p">)</span><span class="o">.</span><span class="n">__class__</span> <span class="ow">is</span> <span class="n">Biker</span><span class="p">(</span><span class="n">person</span><span class="p">)</span><span class="o">.</span><span class="n">__class__</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Changing role application</p>
+<p>If for some reason the role should not be directly applied to the instance,
+another application method can be assigned.</p>
+<p>Here is an example that uses the <tt class="docutils literal"><span class="pre">clone</span></tt> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&#39;Joe&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">__class__</span>
+<span class="go">&lt;class &#39;roles.role.Person&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span> <span class="o">=</span> <span class="n">Biker</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">clone</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span> 
+<span class="go">&lt;roles.role.Person+Biker object at 0x...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">__class__</span>
+<span class="go">&lt;class &#39;roles.role.Person&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span><span class="o">.</span><span class="n">bike</span><span class="p">()</span>
+<span class="go">Joe bikes</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="roles.RoleType.assign">
+<tt class="descname">assign</tt><big>(</big><em>subj</em>, <em>method=&lt;function instance at 0x1026068c0&gt;</em><big>)</big><a class="headerlink" href="#roles.RoleType.assign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call is invoked when a role should be assigned to an object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roles.RoleType.played_by">
+<tt class="descname">played_by</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#roles.RoleType.played_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shorthand for using roles in with statements</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Biker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">bike</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s">&#39;bike, bike&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">john</span> <span class="o">=</span> <span class="n">Person</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Biker</span><span class="o">.</span><span class="n">played_by</span><span class="p">(</span><span class="n">john</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">john</span><span class="o">.</span><span class="n">bike</span><span class="p">()</span>
+<span class="go">&#39;bike, bike&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="roles.RoleType.revoke">
+<tt class="descname">revoke</tt><big>(</big><em>subj</em>, <em>method=&lt;function instance at 0x1026068c0&gt;</em><big>)</big><a class="headerlink" href="#roles.RoleType.revoke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retract the role from subj. By default the <tt class="docutils literal"><span class="pre">instance</span></tt> strategy is
+used.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="ways-to-apply-roles">
+<h2>Ways to apply roles<a class="headerlink" href="#ways-to-apply-roles" title="Permalink to this headline">¶</a></h2>
+<p>There are basically 2 ways to apply a role to an instance. The first one is
+to manipulate the instance&#8217;s class (this is the default) and the second is
+to proxy the object.</p>
+<dl class="function">
+<dt id="roles.instance">
+<tt class="descclassname">roles.</tt><tt class="descname">instance</tt><big>(</big><em>rolecls</em>, <em>subj</em><big>)</big><a class="headerlink" href="#roles.instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the role class to the subject. This is the default role assignment
+method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="roles.clone">
+<tt class="descclassname">roles.</tt><tt class="descname">clone</tt><big>(</big><em>rolecls</em>, <em>subj</em><big>)</big><a class="headerlink" href="#roles.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new subject instance with role applied. Both instances refer to
+the same instance dict.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">am</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;is&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Biker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">bike</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;bikes&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&#39;Joe&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">__class__</span>
+<span class="go">&lt;class &#39;roles.role.Person&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span> <span class="o">=</span> <span class="n">Biker</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">clone</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span> 
+<span class="go">&lt;roles.role.Person+Biker object at 0x...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">__class__</span>
+<span class="go">&lt;class &#39;roles.role.Person&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">biker</span><span class="o">.</span><span class="n">bike</span><span class="p">()</span>
+<span class="go">Joe bikes</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="using-roles-in-a-context">
+<h2>Using roles in a context<a class="headerlink" href="#using-roles-in-a-context" title="Permalink to this headline">¶</a></h2>
+<p>Roles are played in a context. The <tt class="docutils literal"><span class="pre">roles.context</span></tt> module provides a
+means to access the context from within your roles. Use this to make your
+role&#8217;s code simpler and more readable.</p>
+<span class="target" id="module-roles.context"></span><dl class="function">
+<dt id="roles.context.context">
+<tt class="descclassname">roles.context.</tt><tt class="descname">context</tt><big>(</big><big>)</big><a class="headerlink" href="#roles.context.context" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="roles.context.in_context">
+<tt class="descclassname">roles.context.</tt><tt class="descname">in_context</tt><big>(</big><em>func</em><big>)</big><a class="headerlink" href="#roles.context.in_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for running methods in context. The context is the object (self).</p>
+</dd></dl>
+
+</div>
+<div class="section" id="generic-roles">
+<h2>Generic roles<a class="headerlink" href="#generic-roles" title="Permalink to this headline">¶</a></h2>
+<p>As an (non-DCI) extension it is possible to create role implementations tailored
+for specific objects.</p>
+<p>Although this may clutter the clear and readable ways provided by DCI, for
+specific tasks it may help. Use it wisely.</p>
+<span class="target" id="module-roles.factory"></span><dl class="function">
+<dt id="roles.factory.assignto">
+<tt class="descclassname">roles.factory.</tt><tt class="descname">assignto</tt><big>(</big><em>cls</em><big>)</big><a class="headerlink" href="#roles.factory.assignto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class decorator for RoleTypes.</p>
+<p>If a role type is defined as metaclass, this class is used to tell the
+factory which concrete role to use for a certain subject instance.</p>
+<p>Given a class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<p>And a role:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyRole</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+</pre></div>
+</div>
+<p>You can provide implementations for several roles like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nd">@assignto</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">class</span> <span class="nc">MySubRole</span><span class="p">(</span><span class="n">MyRole</span><span class="p">):</span> <span class="k">pass</span> 
+</pre></div>
+</div>
+<p>Note that the metaclass has changed to RoleFactoryType:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">MyRole</span><span class="o">.</span><span class="n">__class__</span>
+<span class="go">&lt;class &#39;roles.factory.RoleFactoryType&#39;&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">MyRole</span><span class="p">(</span><span class="n">A</span><span class="p">())</span>            
+<span class="go">&lt;roles.factory.A+MySubRole object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>This also works for subclasses of A:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">B</span><span class="p">(</span><span class="n">A</span><span class="p">):</span> <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">B</span><span class="p">):</span> <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">C</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MyRole</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>             
+<span class="go">&lt;roles.factory.C+MySubRole object at 0x...&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">MyRole</span><span class="o">.</span><span class="n">revoke</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>     
+<span class="go">&lt;roles.factory.C object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>All other class fall back to the default role:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">D</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MyRole</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>             
+<span class="go">&lt;roles.factory.D+MyRole object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>You can also apply the decorator to the root role directly:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nd">@assignto</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">class</span> <span class="nc">AnyRole</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">AnyRole</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>            
+<span class="go">&lt;roles.factory.A+AnyRole object at 0x...&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">AnyRole</span><span class="o">.</span><span class="n">revoke</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>     
+<span class="go">&lt;roles.factory.A object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>Now some other class should not be assigned this role:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">X</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">AnyRole</span><span class="p">(</span><span class="n">X</span><span class="p">())</span>          
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="nc">NoRoleError</span>: <span class="n-Identifier">No role found for &lt;class &#39;roles.factory.X&#39;&gt;</span>
+</pre></div>
+</div>
+<p>And this still works:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">MyRole</span><span class="p">(</span><span class="n">A</span><span class="p">())</span>            
+<span class="go">&lt;roles.factory.A+MySubRole object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>The usage of <tt class="docutils literal"><span class="pre">&#64;assignto()</span></tt> is resticted to role types:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nd">@assignto</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">class</span> <span class="nc">NotARole</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="nc">NotARoleError: Could not apply @assignto() to class &lt;class &#39;roles.factory.NotARole&#39;&gt;</span>: <span class="n-Identifier">not a role</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User API</a><ul>
+<li><a class="reference internal" href="#roletype-metaclass">RoleType metaclass</a></li>
+<li><a class="reference internal" href="#ways-to-apply-roles">Ways to apply roles</a></li>
+<li><a class="reference internal" href="#using-roles-in-a-context">Using roles in a context</a></li>
+<li><a class="reference internal" href="#generic-roles">Generic roles</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="README.html"
+                        title="previous chapter">Roles</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="privapi.html"
+                        title="next chapter">Private API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/userapi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="privapi.html" title="Private API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="README.html" title="Roles"
+             >previous</a> |</li>
+        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Arjan Molenaar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

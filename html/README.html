@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Roles &mdash; Roles v0.8 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Roles v0.8 documentation" href="index.html" />
+    <link rel="next" title="User API" href="userapi.html" />
+    <link rel="prev" title="Welcome to Roles’ documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="userapi.html" title="User API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Roles’ documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="roles">
+<h1>Roles<a class="headerlink" href="#roles" title="Permalink to this headline">¶</a></h1>
+<p>Library for Role based development.</p>
+<p>Pythonic implementation of the DCI (Data Context Interaction) pattern
+(<a class="reference external" href="http://www.artima.com/articles/dci_vision.html">http://www.artima.com/articles/dci_vision.html</a>).</p>
+<p>The big difference with mixins is that this role is applied only to the subject
+instance, not to the subject class (alas, a new class is constructed).</p>
+<p>Roles can be assigned and revoked. Multiple roles can be applied to an
+instance. Revocation can happen in any particular order.</p>
+<p>Homepage: <a class="reference external" href="http://amolenaar.github.com/roles">http://amolenaar.github.com/roles</a></p>
+<p>Releases: <a class="reference external" href="http://pypi.python.org/pypi/roles">http://pypi.python.org/pypi/roles</a></p>
+<div class="section" id="using-roles">
+<h2>Using Roles<a class="headerlink" href="#using-roles" title="Permalink to this headline">¶</a></h2>
+<p>As a basic example, consider a domain class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&quot;John&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The instance should participate in a collaboration in which it fulfills a
+particular role:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">roles</span> <span class="kn">import</span> <span class="n">RoleType</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Carpenter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">chop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>         <span class="k">return</span> <span class="s">&quot;chop, chop&quot;</span>
+</pre></div>
+</div>
+<p>Assign the role to the person:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Carpenter</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>                           
+<span class="go">&lt;Person+Carpenter object at 0x...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span>                                      
+<span class="go">&lt;Person+Carpenter object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>The person is still a Person:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">Person</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>... and can do carpenter things:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">chop</span><span class="p">()</span>
+<span class="go">&#39;chop, chop&#39;</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://github.com/amolenaar/roles/blob/master/roles.py">roles.py</a> for more examples.</p>
+</div>
+<div class="section" id="context">
+<h2>Context<a class="headerlink" href="#context" title="Permalink to this headline">¶</a></h2>
+<p>Roles make a lot of sense when used in a context. A classic example is the
+money transfer example. Here two accounts are used and an amount of money is
+transfered from one account to the other. So, one account playes the role of
+source account and the other plays the role of target account.</p>
+<p>An example can be found in <a class="reference external" href="http://github.com/amolenaar/roles/blob/master/example.py">example.py</a> and <a class="reference external" href="http://github.com/amolenaar/roles/blob/master/example2.py">example2.py</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Roles</a><ul>
+<li><a class="reference internal" href="#using-roles">Using Roles</a></li>
+<li><a class="reference internal" href="#context">Context</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Roles&#8217; documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="userapi.html"
+                        title="next chapter">User API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/README.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="userapi.html" title="User API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Roles’ documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Arjan Molenaar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+###########
+Private API
+###########
+
+For those interested in (non-public) API.
+
+
+Generic role factory
+--------------------
+
+.. module:: roles.factory
+
+.. autoclass:: RoleFactoryType
+   :members:
+
+Utility classes
+---------------
+
+.. module:: roles.role
+
+.. autoclass:: cached
+   :members:
+

@@ -1,0 +1,182 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Private API &mdash; Roles v0.8 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Roles v0.8 documentation" href="index.html" />
+    <link rel="next" title="Change Log" href="NEWS.html" />
+    <link rel="prev" title="User API" href="userapi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="NEWS.html" title="Change Log"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="userapi.html" title="User API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="private-api">
+<h1>Private API<a class="headerlink" href="#private-api" title="Permalink to this headline">¶</a></h1>
+<p>For those interested in (non-public) API.</p>
+<div class="section" id="module-roles.factory">
+<span id="generic-role-factory"></span><h2>Generic role factory<a class="headerlink" href="#module-roles.factory" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roles.factory.RoleFactoryType">
+<em class="property">class </em><tt class="descclassname">roles.factory.</tt><tt class="descname">RoleFactoryType</tt><a class="headerlink" href="#roles.factory.RoleFactoryType" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">RoleFactoryType</span></tt> is a special kind of RoleType: with the <tt class="docutils literal"><span class="pre">&#64;assignto</span></tt>
+class decorator this class is applied to any RoleType instance.</p>
+<p>Now subroles are able to be automatically applied to specific instances.
+Thus, the Role class is acting as a factory for it&#8217;s own types.</p>
+<p>Note that this metaclass is automatically applied the first time
+<tt class="docutils literal"><span class="pre">&#64;assignto</span></tt> is used to decorate a role class. There is no need
+to assign <tt class="docutils literal"><span class="pre">RoleFactoryType</span></tt> explicitly.</p>
+<dl class="method">
+<dt id="roles.factory.RoleFactoryType.register">
+<tt class="descname">register</tt><big>(</big><em>cls</em>, <em>rolecls</em>, <em>strict</em><big>)</big><a class="headerlink" href="#roles.factory.RoleFactoryType.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a new roleclass for a specific class.</p>
+<p>Note: <tt class="docutils literal"><span class="pre">strict</span></tt> is set if the topmost role has <tt class="docutils literal"><span class="pre">assignto()</span></tt> applied.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roles.role">
+<span id="utility-classes"></span><h2>Utility classes<a class="headerlink" href="#module-roles.role" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roles.role.cached">
+<em class="property">class </em><tt class="descclassname">roles.role.</tt><tt class="descname">cached</tt><a class="headerlink" href="#roles.role.cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cache the output of the function invocation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nd">@cached</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">cap</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cap</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="go">&#39;A&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cap</span><span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">)</span>
+<span class="go">&#39;B&#39;</span>
+</pre></div>
+</div>
+<p>Show cache contents:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cap</span><span class="o">.</span><span class="n">cache</span>
+<span class="go">{(&#39;a&#39;,): &#39;A&#39;, (&#39;b&#39;,): &#39;B&#39;}</span>
+</pre></div>
+</div>
+<p>Clear the cache:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cap</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cap</span><span class="o">.</span><span class="n">cache</span>
+<span class="go">{}</span>
+</pre></div>
+</div>
+<p>Due to the caching, we can not take key-value arguments:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">cap</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s">&#39;a&#39;</span><span class="p">)</span>     
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="nc">TypeError</span>: <span class="n-Identifier">wrapper() got an unexpected keyword argument &#39;s&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Private API</a><ul>
+<li><a class="reference internal" href="#module-roles.factory">Generic role factory</a></li>
+<li><a class="reference internal" href="#module-roles.role">Utility classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="userapi.html"
+                        title="previous chapter">User API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="NEWS.html"
+                        title="next chapter">Change Log</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/privapi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="NEWS.html" title="Change Log"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="userapi.html" title="User API"
+             >previous</a> |</li>
+        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Arjan Molenaar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>
