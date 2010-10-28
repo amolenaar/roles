@@ -5,16 +5,17 @@ Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-from roles import RoleType, rolecontext
-
+from roles import RoleType
+from roles.context import context
+from contextlib import nested
 
 class MoneySource(object):
     __metaclass__ = RoleType
 
-    def transfer_to(self, sink, amount):
+    def transfer(self, amount):
         if self.balance >= amount:
             self.withdraw(amount)
-            sink.receive(amount)
+            context.sink.receive(amount)
 
 
 class MoneySink(object):
@@ -40,28 +41,36 @@ class Account(object):
         self.balance += amount
 
 
-@rolecontext(MoneySource, MoneySink)
-def transfer_money(source, sink, amount):
-    """
-    The interaction.
-    """
-    source.transfer_to(sink, amount)
+class TransferMoney(object):
+
+    def __init__(self, source, sink):
+        self.source = source
+        self.sink = sink
+
+    def transfer_money(self, amount):
+        """
+        The interaction.
+        """
+        with nested(context(self),
+                    MoneySource.played_by(self.source),
+                    MoneySink.played_by(self.sink)):
+            self.source.transfer(amount)
+            print "We can still access the original attributes", self.sink.balance
+            print "Is it still an Account?", isinstance(self.sink, Account)
+            print "Object equality?", dst == self.sink
+
 
 src = Account(1000)
 dst = Account(0)
 
-transfer_money(src, dst, amount=100)
+ctx = TransferMoney(src, dst)
+
+ctx.transfer_money(amount=100)
 
 print src, src.balance
 assert src.balance == 900
 print dst, dst.balance
 assert dst.balance == 100
 
-@rolecontext(MoneySource, MoneySink)
-def symantics(source, sink):
-    print "We can still access the original attributes", sink.balance
-    print "Is it still an Account?", isinstance(sink, Account)
-    print "Object equality?", dst == sink
 
-symantics(src, dst)
 # vim:sw=4:et:ai
