@@ -1,1 +1,1 @@
-from role import *
+from role import RoleType, clone, instance
