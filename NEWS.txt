@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+0.8
+---
+
+- Removed `@rolecontext`. Seems not such a good idea.
+- separated code in multiple modules
+- Added DCI `context` management classes.
+- Added warnings for using the factory functionality in a DCI context
+
 0.7.0
 -----
 
