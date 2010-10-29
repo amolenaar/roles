@@ -2,8 +2,8 @@
 
 OUTDIR=../freshtml
 
-ln -s ../README.txt
-ln -s ../NEWS.txt
+test -r README.txt || ln -s ../README.txt
+test -r NEWS.txt || ln -s ../NEWS.txt
 
 rm -rf $OUTDIR
 

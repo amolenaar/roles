@@ -8,9 +8,9 @@ except ImportError:
     from distutils.core import setup
 
 from contextlib import closing
+import glob
 
-
-VERSION = '0.8.0'
+VERSION = '0.8'
 
 with closing(open('README.txt')) as f:
     doc = f.read()
