@@ -15,6 +15,8 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 # Now a should coerce to the SomeRole type. Eventually a decorator could be
 # applied.
 
+from __future__ import absolute_import
+
 from operator import attrgetter
 from contextlib import contextmanager
 
@@ -99,6 +101,10 @@ def cached(func):
     wrapper.cache = cache
     wrapper.wrapped_func = func
     return wrapper
+
+
+EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__metaclass__'])
+
 
 
 
@@ -219,6 +225,28 @@ class RoleType(type):
     Joe bikes
     """
 
+    def overrides(self, subj):
+        """
+        Return a set of attributes (methods alike) found in both the role and
+        subject instance.
+        """
+        def fields(cls):
+            mro = cls.__mro__[:-1] # all except object
+            attrs = set()
+            for c in mro:
+                attrs.update(c.__dict__.keys())
+            return attrs
+
+        try:
+            instance_fields = subj.__dict__.keys()
+        except AttributeError:
+            instance_fields = ()
+
+        #print 'instance_fields', instance_fields
+        #print fields(self).union(instance_fields)
+        return fields(self)\
+                .intersection(fields(subj.__class__).union(instance_fields))\
+                .difference(EXCLUDED)
 
 
     @cached
@@ -245,6 +273,11 @@ class RoleType(type):
 
         if issubclass(cls, self):
             return subj
+
+        # Trait check should go here; provide @override for explicit overrides.
+        o = self.overrides(subj)
+        if o:
+            raise TypeError('Can not apply role when overriding methods: %s' % ', '.join(o))
 
         if isinstance(cls, RoleType):
             # Create a sibling class
