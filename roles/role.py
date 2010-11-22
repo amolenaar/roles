@@ -15,6 +15,8 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 # Now a should coerce to the SomeRole type. Eventually a decorator could be
 # applied.
 
+from __future__ import absolute_import
+
 from operator import attrgetter
 from contextlib import contextmanager
 
@@ -100,6 +102,19 @@ def cached(func):
     wrapper.wrapped_func = func
     return wrapper
 
+
+EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__metaclass__'])
+
+
+def class_fields(cls):
+    """
+    Get all fields declared in a class, including superclasses.
+    """
+    mro = cls.__mro__[:-1] # all except object
+    attrs = set()
+    for c in mro:
+        attrs.update(c.__dict__.keys())
+    return attrs
 
 
 class RoleType(type):
@@ -219,6 +234,26 @@ class RoleType(type):
     Joe bikes
     """
 
+    def overrides(self, subj):
+        """
+        Return a set of attributes (methods alike) found in both the role and
+        subject instance.
+        """
+        try:
+            instance_fields = subj.__dict__.keys()
+        except AttributeError:
+            instance_fields = ()
+
+        return class_fields(self)\
+                .intersection(class_fields(subj.__class__).union(instance_fields))\
+                .difference(EXCLUDED)
+
+
+    def newclassname(self, bases):
+        namegetter = attrgetter('__name__')
+        names = list(map(namegetter, bases))
+        names.reverse()
+        return "+".join(names)
 
 
     @cached
@@ -227,11 +262,7 @@ class RoleType(type):
         Create a new role class.
         """
         # Role class not yet defined, define a new class
-        namegetter = attrgetter('__name__')
-        names = list(map(namegetter, rolebases))
-        names.reverse()
-        rolename = "+".join(names)
-        rolecls = type(rolename, rolebases, {
+        rolecls = type(self.newclassname(rolebases), rolebases, {
                 '__module__': cls.__module__,
                 '__doc__': cls.__doc__ })
         return rolecls
@@ -245,6 +276,11 @@ class RoleType(type):
 
         if issubclass(cls, self):
             return subj
+
+        # Trait check should go here; provide @override for explicit overrides.
+        o = self.overrides(subj)
+        if o:
+            raise TypeError('Can not apply role when overriding methods: %s' % ', '.join(o))
 
         if isinstance(cls, RoleType):
             # Create a sibling class

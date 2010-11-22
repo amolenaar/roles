@@ -38,6 +38,8 @@ class TypesTest(unittest.TestCase):
             SimpleRole(d)
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
+#        except AttributeError, e:
+#            self.assertEquals("'dict' object has no attribute '__dict__'", str(e))
         else:
             assert False, "should not be reached"
 
@@ -47,6 +49,8 @@ class TypesTest(unittest.TestCase):
             SimpleRole(d)
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
+#        except AttributeError, e:
+#            self.assertEquals("'list' object has no attribute '__dict__'", str(e))
         else:
             assert False, "should not be reached"
 
@@ -57,6 +61,8 @@ class TypesTest(unittest.TestCase):
             SimpleRole(d)
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
+#        except AttributeError, e:
+#            self.assertEquals("'tuple' object has no attribute '__dict__'", str(e))
         else:
             assert False, "should not be reached"
 
@@ -71,8 +77,10 @@ class TypesTest(unittest.TestCase):
         d = UserDict()
         try:
             SimpleRole(d)
-        except TypeError, e:
-            self.assertEquals("type 'instance' is not an acceptable base type", str(e))
+#        except TypeError, e:
+#            self.assertEquals("type 'instance' is not an acceptable base type", str(e))
+        except AttributeError, e:
+            self.assertEquals("class UserDict has no attribute '__mro__'", str(e))
         else:
             assert False, "should not be reached"
 
@@ -99,6 +107,8 @@ class TypesTest(unittest.TestCase):
             Vector(p)
         except TypeError, e:
             self.assertEquals("__class__ assignment: 'Point' object layout differs from 'Point+Vector'", str(e))
+#        except AttributeError, e:
+#            self.assertEquals("'Point' object has no attribute '__dict__'", str(e))
         else:
             assert False, "should not be reached"
         #assert p.manhattan() == 3
