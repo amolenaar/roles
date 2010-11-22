@@ -38,10 +38,18 @@ class TypesTest(unittest.TestCase):
             SimpleRole(d)
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
-#        except AttributeError, e:
-#            self.assertEquals("'dict' object has no attribute '__dict__'", str(e))
         else:
             assert False, "should not be reached"
+
+    def test_dict_subclass(self):
+        class Dict(dict): pass
+        d = Dict()
+        d['a'] = 3
+        SimpleRole(d)
+        self.assertEquals('Dict+SimpleRole', d.__class__.__name__)
+        self.assertEquals(3, d['a'])
+        d.inrole()
+
 
     def test_list(self):
         d = ['a', 'b']
@@ -49,10 +57,17 @@ class TypesTest(unittest.TestCase):
             SimpleRole(d)
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
-#        except AttributeError, e:
-#            self.assertEquals("'list' object has no attribute '__dict__'", str(e))
         else:
             assert False, "should not be reached"
+
+
+    def test_list_subclass(self):
+        class List(list): pass
+        d = List(['a', 'b'])
+        SimpleRole(d)
+        self.assertEquals('List+SimpleRole', d.__class__.__name__)
+        self.assertEquals('a', d[0])
+        d.inrole()
 
 
     def test_tuple(self):
@@ -61,11 +76,17 @@ class TypesTest(unittest.TestCase):
             SimpleRole(d)
         except TypeError, e:
             self.assertEquals("__class__ assignment: only for heap types", str(e))
-#        except AttributeError, e:
-#            self.assertEquals("'tuple' object has no attribute '__dict__'", str(e))
         else:
             assert False, "should not be reached"
 
+
+    def test_tuple_subclass(self):
+        class Tuple(tuple): pass
+        d = Tuple(['a', 'b'])
+        SimpleRole(d)
+        self.assertEquals('Tuple+SimpleRole', d.__class__.__name__)
+        self.assertEquals('a', d[0])
+        d.inrole()
 
 
     def test_userdict(self):
@@ -77,8 +98,6 @@ class TypesTest(unittest.TestCase):
         d = UserDict()
         try:
             SimpleRole(d)
-#        except TypeError, e:
-#            self.assertEquals("type 'instance' is not an acceptable base type", str(e))
         except AttributeError, e:
             self.assertEquals("class UserDict has no attribute '__mro__'", str(e))
         else:
