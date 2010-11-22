@@ -50,7 +50,15 @@
   <div class="section" id="change-log">
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>0.8<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>0.9<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>It is no longer allowed to let roles override methods.</li>
+<li>Added module roles.django</li>
+<li>Added Django application example (django_dci module)</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>0.8<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Removed <cite>&#64;rolecontext</cite>. Seems not such a good idea.</li>
 <li>separated code in multiple modules</li>
@@ -58,38 +66,38 @@
 <li>Added warnings for using the factory functionality in a DCI context</li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>0.7.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>0.7.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Added <cite>&#64;rolecontext</cite> decorator to ensure roles are applied on function
 invocation.</li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>0.6.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>0.6.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>RoleType.played_by for easy use with <cite>with</cite> statement.</li>
 <li>removed roles function and psyco optimizations.</li>
 <li>bug fixes and performance updates</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>0.5.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>0.5.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Support for contexts (<cite>with</cite> statement).</li>
 <li>revoke on factories now works as expected.</li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h2>0.4.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>0.4.0<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Make the way a role is applied to an object pluggable. This means you can
 either apply the role to the original instance or create a clone, using the
 original instance dict.</li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>0.3.0<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>0.3.0<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Module works for Python 2.6 as well as Python 3.x. Doctests still run under 2.6.</li>
 </ul>
@@ -97,14 +105,14 @@ original instance dict.</li>
 <div class="highlight-python"><pre>$ 2to3 -d -w roles.py</pre>
 </div>
 </div>
-<div class="section" id="id7">
-<h2>0.2.0<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>0.2.0<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Added psyco_optimize() for optimizing code with psyco.</li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h2>0.1.0<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>0.1.0<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Initial release: roles.py</li>
 </ul>
@@ -120,14 +128,15 @@ original instance dict.</li>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Change Log</a><ul>
-<li><a class="reference internal" href="#id1">0.8</a></li>
-<li><a class="reference internal" href="#id2">0.7.0</a></li>
-<li><a class="reference internal" href="#id3">0.6.0</a></li>
-<li><a class="reference internal" href="#id4">0.5.0</a></li>
-<li><a class="reference internal" href="#id5">0.4.0</a></li>
-<li><a class="reference internal" href="#id6">0.3.0</a></li>
-<li><a class="reference internal" href="#id7">0.2.0</a></li>
-<li><a class="reference internal" href="#id8">0.1.0</a></li>
+<li><a class="reference internal" href="#id1">0.9</a></li>
+<li><a class="reference internal" href="#id2">0.8</a></li>
+<li><a class="reference internal" href="#id3">0.7.0</a></li>
+<li><a class="reference internal" href="#id4">0.6.0</a></li>
+<li><a class="reference internal" href="#id5">0.5.0</a></li>
+<li><a class="reference internal" href="#id6">0.4.0</a></li>
+<li><a class="reference internal" href="#id7">0.3.0</a></li>
+<li><a class="reference internal" href="#id8">0.2.0</a></li>
+<li><a class="reference internal" href="#id9">0.1.0</a></li>
 </ul>
 </li>
 </ul>

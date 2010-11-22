@@ -67,6 +67,13 @@ Thus, the Role class is acting as a factory for it&#8217;s own types.</p>
 <tt class="docutils literal"><span class="pre">&#64;assignto</span></tt> is used to decorate a role class. There is no need
 to assign <tt class="docutils literal"><span class="pre">RoleFactoryType</span></tt> explicitly.</p>
 <dl class="method">
+<dt id="roles.factory.RoleFactoryType.lookup">
+<tt class="descname">lookup</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#roles.factory.RoleFactoryType.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a specific Role type for a subject. The returned role class
+is a subclass of the factory role.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="roles.factory.RoleFactoryType.register">
 <tt class="descname">register</tt><big>(</big><em>cls</em>, <em>rolecls</em>, <em>strict</em><big>)</big><a class="headerlink" href="#roles.factory.RoleFactoryType.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a new roleclass for a specific class.</p>

@@ -8,7 +8,8 @@ RoleType metaclass
 ------------------
 
 .. autoclass:: RoleType
-   :members:
+   :members: assign, revoke, played_by
+
 
 Ways to apply roles
 -------------------

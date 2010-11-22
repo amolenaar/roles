@@ -143,6 +143,16 @@ called <tt class="docutils literal"><span class="pre">instance()</span></tt> and
 <span class="go">&lt;roles.role.Person+Biker object at 0x...&gt;</span>
 </pre></div>
 </div>
+<p>Roles do not allow for overriding classes.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Incognito</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">am</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="s">&#39;under cover&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Incognito</span><span class="p">(</span><span class="n">Person</span><span class="p">)</span>                
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="nc">TypeError: Can not apply role when overriding methods</span>: <span class="n-Identifier">am</span>
+</pre></div>
+</div>
 <p>Caching</p>
 <p>One more thing: role classes are cached. This means that if I want to
 assign a role to a different instance, the same role class is applied:</p>
@@ -170,8 +180,15 @@ another application method can be assigned.</p>
 </div>
 <dl class="method">
 <dt id="roles.RoleType.assign">
-<tt class="descname">assign</tt><big>(</big><em>subj</em>, <em>method=&lt;function instance at 0x1029245f0&gt;</em><big>)</big><a class="headerlink" href="#roles.RoleType.assign" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">assign</tt><big>(</big><em>subj</em>, <em>method=&lt;function instance at 0x102673de8&gt;</em><big>)</big><a class="headerlink" href="#roles.RoleType.assign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call is invoked when a role should be assigned to an object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roles.RoleType.revoke">
+<tt class="descname">revoke</tt><big>(</big><em>subj</em>, <em>method=&lt;function instance at 0x102673de8&gt;</em><big>)</big><a class="headerlink" href="#roles.RoleType.revoke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retract the role from subj. By default the <tt class="docutils literal"><span class="pre">instance</span></tt> strategy is
+used.</p>
 </dd></dl>
 
 <dl class="method">
@@ -189,13 +206,6 @@ another application method can be assigned.</p>
 <span class="go">&#39;bike, bike&#39;</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="method">
-<dt id="roles.RoleType.revoke">
-<tt class="descname">revoke</tt><big>(</big><em>subj</em>, <em>method=&lt;function instance at 0x1029245f0&gt;</em><big>)</big><a class="headerlink" href="#roles.RoleType.revoke" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retract the role from subj. By default the <tt class="docutils literal"><span class="pre">instance</span></tt> strategy is
-used.</p>
 </dd></dl>
 
 </dd></dl>
@@ -249,7 +259,18 @@ role&#8217;s code simpler and more readable.</p>
 <span class="target" id="module-roles.context"></span><dl class="function">
 <dt id="roles.context.context">
 <tt class="descclassname">roles.context.</tt><tt class="descname">context</tt><big>(</big><big>)</big><a class="headerlink" href="#roles.context.context" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The default application wide context stack.</p>
+<p>Put a new context class on the context stack. This functionality should be called
+with the context class as first argument.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">SomeContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span> <span class="c"># define some methods, define some roles</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">with</span> <span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="k">pass</span> <span class="c"># do something</span>
+</pre></div>
+</div>
+<p>Roles can be fetched from the context by calling <tt class="docutils literal"><span class="pre">context.name</span></tt>. Just like that.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="roles.context.in_context">
