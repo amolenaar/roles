@@ -8,18 +8,13 @@ Replace these with more appropriate tests for your application.
 from django.test import TestCase
 from models import Account
 
-from roles import RoleType
+from roles.django import ModelRoleType
 from roles.context import context
 from contextlib import nested
 
-from django.db.models.base import ModelBase
-
-class DjangoRoleType(RoleType, ModelBase):
-    pass
-
 
 class MoneySource(object):
-    __metaclass__ = DjangoRoleType
+    __metaclass__ = ModelRoleType
 
     def transfer(self, amount):
         if self.balance >= amount:
@@ -28,7 +23,7 @@ class MoneySource(object):
 
 
 class MoneySink(object):
-    __metaclass__ = DjangoRoleType
+    __metaclass__ = ModelRoleType
 
     def receive(self, amount):
         self.deposit(amount)
