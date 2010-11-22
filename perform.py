@@ -23,7 +23,8 @@ a = A()
 
 setup_rolefactory = \
 """
-from roles import RoleType, assignto
+from roles import RoleType
+from roles.factory import assignto
 
 class A(object):
     pass
@@ -87,4 +88,4 @@ def profile():
     cProfile.run('for x in xrange(10000): Role(a)', 'profile.prof')
     p = pstats.Stats('profile.prof')
     p.strip_dirs().sort_stats('time').print_stats(40)
-
+ 
