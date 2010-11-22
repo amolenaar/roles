@@ -249,17 +249,20 @@ class RoleType(type):
                 .difference(EXCLUDED)
 
 
+    def newclassname(self, bases):
+        namegetter = attrgetter('__name__')
+        names = list(map(namegetter, bases))
+        names.reverse()
+        return "+".join(names)
+
+
     @cached
     def newclass(self, cls, rolebases):
         """
         Create a new role class.
         """
         # Role class not yet defined, define a new class
-        namegetter = attrgetter('__name__')
-        names = list(map(namegetter, rolebases))
-        names.reverse()
-        rolename = "+".join(names)
-        rolecls = type(rolename, rolebases, {
+        rolecls = type(self.newclassname(rolebases), rolebases, {
                 '__module__': cls.__module__,
                 '__doc__': cls.__doc__ })
         return rolecls
