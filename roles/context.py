@@ -36,7 +36,20 @@ class CurrentContextManager(object):
 
 
 context = CurrentContextManager()
+context.__dict__['__doc__'] = """
+The default application wide context stack.
 
+Put a new context class on the context stack. This functionality should be called
+with the context class as first argument.
+
+>>> class SomeContext(object):
+...     pass # define some methods, define some roles
+...     def execute(self):
+...         with context(self):
+...             pass # do something
+
+Roles can be fetched from the context by calling ``context.name``. Just like that.
+"""
 
 def in_context(func):
     """

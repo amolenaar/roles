@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+0.9
+---
+
+- It is no longer allowed to let roles override methods.
+- Added module roles.django
+- Added Django application example (django_dci module)
+
 0.8
 ---
 

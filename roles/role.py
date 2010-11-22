@@ -100,6 +100,7 @@ def cached(func):
 
     wrapper.cache = cache
     wrapper.wrapped_func = func
+    wrapper.__doc__ = func.__doc__
     return wrapper
 
 
@@ -209,6 +210,17 @@ class RoleType(type):
     >>> Carpenter.revoke(biker)          # doctest: +ELLIPSIS
     <roles.role.Person+Biker object at 0x...>
 
+
+    Roles do not allow for overriding classes.
+
+    >>> class Incognito(object):
+    ...     __metaclass__ = RoleType
+    ...     def am(self): return 'under cover'
+    >>> Incognito(Person)                # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+      ...
+    TypeError: Can not apply role when overriding methods: am
+
     Caching
 
     One more thing: role classes are cached. This means that if I want to
@@ -253,6 +265,10 @@ class RoleType(type):
 
 
     def newclassname(self, bases):
+        """
+        Generate a new name bases on the base classes. The last field is the data
+        class.
+        """
         namegetter = attrgetter('__name__')
         names = list(map(namegetter, bases))
         names.reverse()
