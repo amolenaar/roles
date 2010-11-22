@@ -106,15 +106,19 @@ def cached(func):
 EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__metaclass__'])
 
 
-def class_fields(cls):
+@cached
+def class_fields(cls, exclude=EXCLUDED):
     """
     Get all fields declared in a class, including superclasses.
+
+    Don't forget to clear the cache if fields are added to a class or role!
     """
-    mro = cls.__mro__[:-1] # all except object
     attrs = set()
-    for c in mro:
+    for c in cls.__mro__:
+        if c in (type, object):
+            break
         attrs.update(c.__dict__.keys())
-    return attrs
+    return attrs.difference(exclude)
 
 
 class RoleType(type):
@@ -245,8 +249,7 @@ class RoleType(type):
             instance_fields = ()
 
         return class_fields(self)\
-                .intersection(class_fields(subj.__class__).union(instance_fields))\
-                .difference(EXCLUDED)
+                .intersection(class_fields(subj.__class__).union(instance_fields))
 
 
     def newclassname(self, bases):
