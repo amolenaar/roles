@@ -106,6 +106,15 @@ def cached(func):
 EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__metaclass__'])
 
 
+def class_fields(cls):
+    """
+    Get all fields declared in a class, including superclasses.
+    """
+    mro = cls.__mro__[:-1] # all except object
+    attrs = set()
+    for c in mro:
+        attrs.update(c.__dict__.keys())
+    return attrs
 
 
 class RoleType(type):
@@ -230,22 +239,13 @@ class RoleType(type):
         Return a set of attributes (methods alike) found in both the role and
         subject instance.
         """
-        def fields(cls):
-            mro = cls.__mro__[:-1] # all except object
-            attrs = set()
-            for c in mro:
-                attrs.update(c.__dict__.keys())
-            return attrs
-
         try:
             instance_fields = subj.__dict__.keys()
         except AttributeError:
             instance_fields = ()
 
-        #print 'instance_fields', instance_fields
-        #print fields(self).union(instance_fields)
-        return fields(self)\
-                .intersection(fields(subj.__class__).union(instance_fields))\
+        return class_fields(self)\
+                .intersection(class_fields(subj.__class__).union(instance_fields))\
                 .difference(EXCLUDED)
 
 
