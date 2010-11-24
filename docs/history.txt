@@ -1,49 +1,42 @@
-Change Log
-==========
+Change History
+==============
 
-0.9
----
+*0.9*
 
 - It is no longer allowed to let roles override methods.
 - Added module roles.django
 - Added Django application example (django_dci module)
 
-0.8
----
+*0.8*
 
 - Removed `@rolecontext`. Seems not such a good idea.
 - separated code in multiple modules
 - Added DCI `context` management classes.
 - Added warnings for using the factory functionality in a DCI context
 
-0.7.0
------
+*0.7.0*
 
 - Added `@rolecontext` decorator to ensure roles are applied on function
   invocation.
 
-0.6.0
------
+*0.6.0*
 
 - RoleType.played_by for easy use with `with` statement.
 - removed roles function and psyco optimizations.
 - bug fixes and performance updates
 
-0.5.0
------
+*0.5.0*
 
 - Support for contexts (`with` statement).
 - revoke on factories now works as expected.
 
-0.4.0
------
+*0.4.0*
 
 - Make the way a role is applied to an object pluggable. This means you can
   either apply the role to the original instance or create a clone, using the
   original instance dict.
 
-0.3.0
------
+*0.3.0*
 
 - Module works for Python 2.6 as well as Python 3.x. Doctests still run under 2.6.
 
@@ -51,13 +44,12 @@ Note that conversion of doctests is trivial with::
 
   $ 2to3 -d -w roles.py
 
-0.2.0
------
+*0.2.0*
 
 - Added psyco_optimize() for optimizing code with psyco.
 
-0.1.0
------
+*0.1.0*
 
 - Initial release: roles.py
 
+.. vim:syntax=rst

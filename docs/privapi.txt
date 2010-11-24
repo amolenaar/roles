@@ -4,6 +4,15 @@ Private API
 
 For those interested in (non-public) API.
 
+Utility classes
+---------------
+
+.. module:: roles.role
+
+.. autoclass:: cached
+   :members:
+
+.. autofunction:: class_fields
 
 Generic role factory
 --------------------
@@ -13,11 +22,4 @@ Generic role factory
 .. autoclass:: RoleFactoryType
    :members:
 
-Utility classes
----------------
-
-.. module:: roles.role
-
-.. autoclass:: cached
-   :members:
-
+.. vim:syntax=rst

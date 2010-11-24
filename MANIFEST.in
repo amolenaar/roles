@@ -1,5 +1,5 @@
-include docs/index.txt
-include docs/userapi.txt
-include docs/conf.py
-include docs/build.sh
-include NEWS.txt
+include license.txt
+include example.py example2.py
+include django_dci/README.txt
+include django_dci/*.py
+include django_dci/account/*.py
