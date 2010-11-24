@@ -90,4 +90,46 @@ def test_context_set_values():
     Test().test()
 
 
+def test_context_manager_multi_threading():
+    import threading
+    class ContextClass(object):
+        def doit(self):
+            with context(self):
+                # Save stack to ensure it's different
+                context.stack = context.__dict__.get('__stack')
+
+    cc1 = ContextClass()
+    cc2 = ContextClass()
+    thread = threading.Thread(target=cc2.doit)
+    thread.start()
+    cc1.doit()
+    thread.join()
+    
+    # ensure both stacks are different objects
+    assert cc1.stack is not cc2.stack, '%d != %d' % (id(cc1.stack), id(cc2.stack))
+
+
+def test_context_manager_multi_threading_nesting():
+    import threading, time
+    class ContextClass(object):
+        def doit(self, level=100):
+            if level == 0:
+                context.depth = len(context.__dict__['__stack'])
+            else:
+                with context(self):
+                    print (context.__dict__['__stack']), level
+                    self.doit(level - 1)
+                    time.sleep(0.001)
+
+    cc1 = ContextClass()
+    cc2 = ContextClass()
+    thread = threading.Thread(target=cc2.doit)
+    thread.start()
+    cc1.doit()
+    thread.join()
+    
+    # ensure both stacks are different objects
+    assert cc1.depth == 100, cc1.depth
+    assert cc2.depth == 100, cc2.depth
+
 # vim:sw=4:et:ai

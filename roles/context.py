@@ -1,5 +1,9 @@
 
-from functools import wraps, partial
+from functools import wraps
+import threading
+
+
+__all__ = [ 'context', 'in_context' ]
 
 
 class ctxman(object):
@@ -16,17 +20,17 @@ class ctxman(object):
         assert ctx is self.ctx
 
 
-class CurrentContextManager(object):
+class CurrentContextManager(threading.local):
 
     def __init__(self):
-        self.__dict__['_stack'] = []
+        self.__dict__['__stack'] = []
         
     def __call__(self, newctx):
-        return ctxman(self._stack, newctx)
+        return ctxman(self.__dict__['__stack'], newctx)
 
     @property
     def current_context(self):
-        return self.__dict__['_stack'][-1]
+        return self.__dict__['__stack'][-1]
 
     def __getattr__(self, key):
         return getattr(self.current_context, key)
