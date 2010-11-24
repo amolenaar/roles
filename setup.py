@@ -34,9 +34,7 @@ setup(
                  'Natural Language :: English',
                  'Operating System :: OS Independent',
                  'Programming Language :: Python',
-                 'Topic :: Software Development :: Libraries',
-                 'Topic :: Utilities'],
-    zip_safe=False
+                 'Topic :: Software Development :: Libraries']
     )
 
 #vim:sw=4:et:ai
