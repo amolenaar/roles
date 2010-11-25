@@ -131,6 +131,7 @@ considered the context object:
 ...     def __init__(self, source, sink):
 ...         self.source = source
 ...         self.sink = sink
+... 
 ...     @in_context
 ...     def transfer_money(self, amount):
 ...         """

@@ -22,4 +22,15 @@ Generic role factory
 .. autoclass:: RoleFactoryType
    :members:
 
+.. module:: roles.context
+
+Context internals
+-----------------
+
+.. autoclass:: CurrentContextManager
+   :members:
+
+.. autoclass:: ctxman
+   :members:
+
 .. vim:syntax=rst
