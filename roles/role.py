@@ -8,13 +8,6 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-# TODO: decorator that "lifts" objects automatically when entering a method.
-# The easy way to go would be in Python3.0, where you can assign annotations
-# to an object. E.g.
-#    def m(a: SomeRole): pass
-# Now a should coerce to the SomeRole type. Eventually a decorator could be
-# applied.
-
 from __future__ import absolute_import
 
 from operator import attrgetter
