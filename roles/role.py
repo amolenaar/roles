@@ -25,6 +25,24 @@ def instance(rolecls, subj):
     """
     Apply the role class to the subject. This is the default role assignment
     method.
+
+    >>> class Person(object):
+    ...     def __init__(self, name): self.name = name
+    ...     def am(self): print self.name, 'is'
+    >>> class Biker(object):
+    ...     __metaclass__ = RoleType
+    ...     def bike(self): print self.name, 'bikes'
+    ...
+    >>> person = Person('Joe')
+    >>> biker = Biker(person, method=instance)
+    >>> biker # doctest: +ELLIPSIS
+    <roles.role.Person+Biker object at 0x...>
+    >>> person # doctest: +ELLIPSIS
+    <roles.role.Person+Biker object at 0x...>
+    >>> person is biker
+    True
+    >>> biker.bike()
+    Joe bikes
     """
     subj.__class__ = rolecls
     return subj
@@ -41,20 +59,69 @@ def clone(rolecls, subj):
     >>> class Biker(object):
     ...     __metaclass__ = RoleType
     ...     def bike(self): print self.name, 'bikes'
-
+    ...
     >>> person = Person('Joe')
-    >>> person.__class__
-    <class 'roles.role.Person'>
     >>> biker = Biker(person, method=clone)
     >>> biker # doctest: +ELLIPSIS
     <roles.role.Person+Biker object at 0x...>
-    >>> person.__class__
-    <class 'roles.role.Person'>
+    >>> person # doctest: +ELLIPSIS
+    <roles.role.Person object at 0x...>
+    >>> person is biker
+    False
+    >>> person.__dict__ is biker.__dict__
+    True
     >>> biker.bike()
     Joe bikes
+
+    Note that ``clone`` has a serious downside: since only the instance dict is
+    cloned, everything defined in the class (properties, methods) are not
+    accessible by the role.
     """
     newsubj = rolecls.__new__(rolecls)
     newsubj.__dict__ = subj.__dict__
+    return newsubj
+
+
+class AdapterMixin(object):
+    def __getattr__(self, key):
+        return getattr(self.role_subject, key)
+    def __setattr(self, key, val):
+        return setattr(self.role_subject, key, val)
+
+def adapter(rolecls, subj):
+    """
+    Create a wrapper object. The subject is defined as ``subject`` attribute.
+    This is a kind of last resort method. If you need to use this method a lot, then
+    maybe the roles are not the right tool for the job.
+
+    >>> class Person(object):
+    ...     def __init__(self, name): self.name = name
+    ...     def am(self): print self.name, 'is'
+    >>> class Biker(object):
+    ...     __metaclass__ = RoleType
+    ...     def bike(self): print self.name, 'bikes'
+    ...
+    >>> person = Person('Joe')
+    >>> biker = Biker(person, method=adapter)
+    >>> biker # doctest: +ELLIPSIS
+    <roles.role.Person+Biker+AdapterMixin object at 0x...>
+    >>> person # doctest: +ELLIPSIS
+    <roles.role.Person object at 0x...>
+    >>> biker.role_subject # doctest: +ELLIPSIS
+    <roles.role.Person object at 0x...>
+    >>> person is biker
+    False
+    >>> person.__dict__ is biker.__dict__
+    False
+    >>> biker.role_subject is person
+    True
+    >>> biker.bike()
+    Joe bikes
+    """
+
+    adaptercls = rolecls.newclass(rolecls, (rolecls, AdapterMixin))
+    newsubj = adaptercls.__new__(adaptercls)
+    newsubj.__dict__['role_subject'] = subj
     return newsubj
 
 
@@ -189,21 +256,16 @@ class RoleType(type):
     >>> biker                             # doctest: +ELLIPSIS
     <roles.role.Person+Carpenter+Biker object at 0x...>
     >>> biker.__class__.__bases__
-    (<class 'roles.role.Biker'>, <class 'roles.role.Carpenter'>, <class 'roles.role.Person'>)
+    (<class 'roles.role.Person'>, <class 'roles.role.Carpenter'>, <class 'roles.role.Biker'>)
     
-    Note that a new class is assigned, with the roles applied (roles first):
-
-    >>> biker.__class__
-    <class 'roles.role.Person+Carpenter+Biker'>
-    >>> biker.__class__.__bases__
-    (<class 'roles.role.Biker'>, <class 'roles.role.Carpenter'>, <class 'roles.role.Person'>)
+    Note that a new class is assigned, with the roles applied (roles first).
 
     Roles can be revoked:
 
     >>> Carpenter.revoke(biker)          # doctest: +ELLIPSIS
     <roles.role.Person+Biker object at 0x...>
     >>> biker.__class__.__bases__
-    (<class 'roles.role.Biker'>, <class 'roles.role.Person'>)
+    (<class 'roles.role.Person'>, <class 'roles.role.Biker'>)
 
     Revoking a non-existant role has no effect:
 
@@ -211,7 +273,7 @@ class RoleType(type):
     <roles.role.Person+Biker object at 0x...>
 
 
-    Roles do not allow for overriding classes.
+    Roles do not allow for overriding methods.
 
     >>> class Incognito(object):
     ...     __metaclass__ = RoleType
@@ -221,7 +283,7 @@ class RoleType(type):
       ...
     TypeError: Can not apply role when overriding methods: am
 
-    Caching
+    *Caching*
 
     One more thing: role classes are cached. This means that if I want to
     assign a role to a different instance, the same role class is applied:
@@ -231,7 +293,7 @@ class RoleType(type):
     >>> Biker(someone).__class__ is Biker(person).__class__
     True
 
-    Changing role application
+    *Changing role application*
 
     If for some reason the role should not be directly applied to the instance,
     another application method can be assigned.
@@ -271,7 +333,7 @@ class RoleType(type):
         """
         namegetter = attrgetter('__name__')
         names = list(map(namegetter, bases))
-        names.reverse()
+        #names.reverse()
         return "+".join(names)
 
 
@@ -303,10 +365,10 @@ class RoleType(type):
 
         if isinstance(cls, RoleType):
             # Create a sibling class
-            rolebases = (self,) + cls.__bases__
+            rolebases = cls.__bases__ + (self,) 
         else:
             # First role class
-            rolebases = (self, cls)
+            rolebases = (cls, self)
 
         rolecls = self.newclass(cls, rolebases)
 
