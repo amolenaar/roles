@@ -1,0 +1,144 @@
+Usage
+=====
+
+Using Roles
+-----------
+
+>>> from roles import RoleType
+
+As a basic example, consider a data class:
+
+>>> class Person(object):
+...     def __init__(self, name):
+...         self.name = name
+>>> person = Person("John")
+
+The instance should participate in a collaboration in which it fulfills a
+particular role:
+
+>>> class Carpenter(object):
+...     __metaclass__ = RoleType
+...     def chop(self):
+...          return "chop, chop"
+
+Assign the role to the person:
+
+>>> Carpenter(person)				# doctest: +ELLIPSIS
+<Person+Carpenter object at 0x...>
+>>> person					# doctest: +ELLIPSIS
+<Person+Carpenter object at 0x...>
+
+The person is still a Person:
+
+>>> isinstance(person, Person)
+True
+
+... and can do carpenter things:
+
+>>> person.chop()
+'chop, chop'
+
+To revoke a role from an instance do
+
+>>> Carpenter.revoke(person)			# doctest: +ELLIPSIS
+<Person object at 0x...>
+
+It is much more convenient, though, to apply roles only in a specific context:
+
+>>> with Carpenter.played_by(person):
+...     person.chop()
+'chop, chop'
+
+
+Using Context
+-------------
+
+Roles make a lot of sense when used in a context. A classic example is the
+money transfer example. Here two accounts are used and an amount of money is
+transfered from one account to the other. So, one account playes the role of
+source account and the other plays the role of target account.
+
+
+>>> from roles.context import context
+>>> from contextlib import nested
+
+Say we have this simple account class:
+
+>>> class Account(object):
+... 
+...     def __init__(self, amount):
+...         self.balance = amount
+...         super(Account, self).__init__()
+... 
+...     def withdraw(self, amount):
+...         self.balance -= amount
+... 
+...     def deposit(self, amount):
+...         self.balance += amount
+
+If you want to transfer money from one account to another, we're normally calling one the
+source account and the other the destination account. Let's make that clear in code:
+
+>>> class MoneySource(object):
+...     __metaclass__ = RoleType
+... 
+...     def transfer(self, amount):
+...         if self.balance >= amount:
+...             self.withdraw(amount)
+...             context.sink.receive(amount)
+... 
+>>> class MoneySink(object):
+...     __metaclass__ = RoleType
+... 
+...     def receive(self, amount):
+...         self.deposit(amount)
+
+During the act of a money transfer (what do you think about when money is
+transfered?), some amount is transfered from one account to the other. That is
+made explicit in a context.
+
+A context contains the objects that are required for some action and assign
+them the roles they will play during the enactment. Roles have no meaning
+outside a context, since the logic executed is specific to this use case.
+Advantage of using a context is that it is not required to pass role objects
+around. Also contexts can be used as intermediate data store (for the duration
+of the context): note how the money source is finding its destination through
+the context.
+
+>>> class TransferMoney(object):
+... 
+...     def __init__(self, source, sink):
+...         self.source = source
+...         self.sink = sink
+... 
+...     def transfer_money(self, amount):
+...         """
+...         The interaction.
+...         """
+...         with nested(context(self),
+...                     MoneySource.played_by(self.source),
+...                     MoneySink.played_by(self.sink)):
+...             self.source.transfer(amount)
+
+
+Another way is to make the method itself act as context (well, the first argument is
+considered the context object:
+
+>>> from roles.context import in_context
+
+>>> class TransferMoney(object):
+... 
+...     def __init__(self, source, sink):
+...         self.source = source
+...         self.sink = sink
+... 
+...     @in_context
+...     def transfer_money(self, amount):
+...         """
+...         The interaction.
+...         """
+...         with nested(MoneySource.played_by(self.source),
+...                     MoneySink.played_by(self.sink)):
+...             self.source.transfer(amount)
+
+.. vim:syntax=rst

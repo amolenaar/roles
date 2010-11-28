@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Usage &mdash; Roles v0.9 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="Roles v0.9 documentation" href="index.html" />
+    <link rel="next" title="User API" href="userapi.html" />
+    <link rel="prev" title="Python roles module" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="userapi.html" title="User API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Python roles module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Roles v0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="using-roles">
+<h2>Using Roles<a class="headerlink" href="#using-roles" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">roles</span> <span class="kn">import</span> <span class="n">RoleType</span>
+</pre></div>
+</div>
+<p>As a basic example, consider a data class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s">&quot;John&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The instance should participate in a collaboration in which it fulfills a
+particular role:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Carpenter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">chop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>         <span class="k">return</span> <span class="s">&quot;chop, chop&quot;</span>
+</pre></div>
+</div>
+<p>Assign the role to the person:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Carpenter</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>                           
+<span class="go">&lt;Person+Carpenter object at 0x...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">person</span>                                      
+<span class="go">&lt;Person+Carpenter object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>The person is still a Person:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">Person</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>... and can do carpenter things:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">person</span><span class="o">.</span><span class="n">chop</span><span class="p">()</span>
+<span class="go">&#39;chop, chop&#39;</span>
+</pre></div>
+</div>
+<p>To revoke a role from an instance do</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Carpenter</span><span class="o">.</span><span class="n">revoke</span><span class="p">(</span><span class="n">person</span><span class="p">)</span>                    
+<span class="go">&lt;Person object at 0x...&gt;</span>
+</pre></div>
+</div>
+<p>It is much more convenient, though, to apply roles only in a specific context:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Carpenter</span><span class="o">.</span><span class="n">played_by</span><span class="p">(</span><span class="n">person</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">person</span><span class="o">.</span><span class="n">chop</span><span class="p">()</span>
+<span class="go">&#39;chop, chop&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-context">
+<h2>Using Context<a class="headerlink" href="#using-context" title="Permalink to this headline">¶</a></h2>
+<p>Roles make a lot of sense when used in a context. A classic example is the
+money transfer example. Here two accounts are used and an amount of money is
+transfered from one account to the other. So, one account playes the role of
+source account and the other plays the role of target account.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">roles.context</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nested</span>
+</pre></div>
+</div>
+<p>Say we have this simple account class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">amount</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">withdraw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">-=</span> <span class="n">amount</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">deposit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">+=</span> <span class="n">amount</span>
+</pre></div>
+</div>
+<p>If you want to transfer money from one account to another, we&#8217;re normally calling one the
+source account and the other the destination account. Let&#8217;s make that clear in code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MoneySource</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">&gt;=</span> <span class="n">amount</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">withdraw</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="n">context</span><span class="o">.</span><span class="n">sink</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MoneySink</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">RoleType</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">deposit</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>During the act of a money transfer (what do you think about when money is
+transfered?), some amount is transfered from one account to the other. That is
+made explicit in a context.</p>
+<p>A context contains the objects that are required for some action and assign
+them the roles they will play during the enactment. Roles have no meaning
+outside a context, since the logic executed is specific to this use case.
+Advantage of using a context is that it is not required to pass role objects
+around. Also contexts can be used as intermediate data store (for the duration
+of the context): note how the money source is finding its destination through
+the context.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">TransferMoney</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">sink</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">sink</span> <span class="o">=</span> <span class="n">sink</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">transfer_money</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="sd">        The interaction.</span>
+<span class="gp">... </span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="k">with</span> <span class="n">nested</span><span class="p">(</span><span class="n">context</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="n">MoneySource</span><span class="o">.</span><span class="n">played_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="n">MoneySink</span><span class="o">.</span><span class="n">played_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sink</span><span class="p">)):</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another way is to make the method itself act as context (well, the first argument is
+considered the context object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">roles.context</span> <span class="kn">import</span> <span class="n">in_context</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">TransferMoney</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">sink</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">sink</span> <span class="o">=</span> <span class="n">sink</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="nd">@in_context</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">transfer_money</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="sd">        The interaction.</span>
+<span class="gp">... </span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="k">with</span> <span class="n">nested</span><span class="p">(</span><span class="n">MoneySource</span><span class="o">.</span><span class="n">played_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="n">MoneySink</span><span class="o">.</span><span class="n">played_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sink</span><span class="p">)):</span>
+<span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#using-roles">Using Roles</a></li>
+<li><a class="reference internal" href="#using-context">Using Context</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Python roles module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="userapi.html"
+                        title="next chapter">User API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="userapi.html" title="User API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Python roles module"
+             >previous</a> |</li>
+        <li><a href="index.html">Roles v0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Arjan Molenaar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

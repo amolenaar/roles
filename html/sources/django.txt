@@ -1,0 +1,48 @@
+##############
+Django support
+##############
+
+`Django <http://djangoproject.com>`_ is a popular web framework written in
+Python. Using DCI (or just roles) in Django is quite easy, but since Django is
+using some meta classes of its own, a few things have to be taken into account.
+
+First of all, roles that need to be applied to model classes (which is most
+obvious) should use ``roles.django.ModelRoleType`` as metaclass.
+
+>>> from roles.django import ModelRoleType               # doctest: +SKIP
+
+Then roles can be applied in the regular way.
+
+>>> class MoneySource(object):                           # doctest: +SKIP
+...    __metaclass__ = ModelRoleType
+...
+...    def transfer(self, amount):
+...        if self.balance >= amount:
+...            self.withdraw(amount)
+...            context.sink.receive(amount)
+
+
+Since the roles module changes the class names (it adds the roles that are applied at a certain time), those can not be used directly for storing. For now,
+saving objects should be done outside the role context.
+
+>>> class TransferMoney(object):                         # doctest: +SKIP
+...
+...     def __init__(self, source, sink):
+...         self.source = source
+...        self.sink = sink
+...
+...     def transfer_money(self, amount):
+...         """
+...         The interaction.
+...         """
+...         with nested(context(self),
+...                     MoneySource.played_by(self.source),
+...                     MoneySink.played_by(self.sink)):
+...             # Let roles interact, in context
+...             self.source.transfer(amount)
+...         # Do storage when roles are removed
+...         self.source.save()
+...         self.sink.save()
+
+
+.. vim:syntax=rst
