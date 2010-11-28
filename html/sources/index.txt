@@ -1,12 +1,18 @@
-.. Roles documentation master file, created by
-   sphinx-quickstart on Fri Sep  4 09:35:08 2009.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to Roles' documentation!
-================================
+Python roles module
+===================
 
-Library for Role based development.
+*Library for Role based development*
+
+``Roles`` provides a Pythonic implementation of the DCI (Data Context Interaction) paradigm
+(http://www.artima.com/articles/dci_vision.html).
+
+Roles allow you to assign and revoke behaviour on a per-instance basis. This defines the big difference with mixins, which are assigned at class level.
+
+A role has a special meaning in a context (imagine you want to do a money transfer: in this context you'll need 2 accounts, a source and a destination account). The roles module provides a simple implementation for defining contexts.
+
+Roles can be assigned and revoked. Multiple roles can be applied to an
+instance. Revocation can happen in any particular order.
 
 --------------
 
@@ -24,10 +30,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   README
+   usage
    userapi
+   django
    privapi
-   NEWS
+   history
 
 Indices and tables
 ==================
@@ -35,3 +42,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`search`
 
+.. vim:syntax=rst

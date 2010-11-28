@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Private API &mdash; Roles v0.8 documentation</title>
+    <title>Private API &mdash; Roles v0.9 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.8',
+        VERSION:     '0.9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,9 +22,9 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="Roles v0.8 documentation" href="index.html" />
-    <link rel="next" title="Change Log" href="NEWS.html" />
-    <link rel="prev" title="User API" href="userapi.html" /> 
+    <link rel="top" title="Roles v0.9 documentation" href="index.html" />
+    <link rel="next" title="Change History" href="history.html" />
+    <link rel="prev" title="Django support" href="django.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,12 +37,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="NEWS.html" title="Change Log"
+          <a href="history.html" title="Change History"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="userapi.html" title="User API"
+          <a href="django.html" title="Django support"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Roles v0.9 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -54,35 +54,6 @@
   <div class="section" id="private-api">
 <h1>Private API<a class="headerlink" href="#private-api" title="Permalink to this headline">¶</a></h1>
 <p>For those interested in (non-public) API.</p>
-<div class="section" id="module-roles.factory">
-<span id="generic-role-factory"></span><h2>Generic role factory<a class="headerlink" href="#module-roles.factory" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="roles.factory.RoleFactoryType">
-<em class="property">class </em><tt class="descclassname">roles.factory.</tt><tt class="descname">RoleFactoryType</tt><a class="headerlink" href="#roles.factory.RoleFactoryType" title="Permalink to this definition">¶</a></dt>
-<dd><p><tt class="docutils literal"><span class="pre">RoleFactoryType</span></tt> is a special kind of RoleType: with the <tt class="docutils literal"><span class="pre">&#64;assignto</span></tt>
-class decorator this class is applied to any RoleType instance.</p>
-<p>Now subroles are able to be automatically applied to specific instances.
-Thus, the Role class is acting as a factory for it&#8217;s own types.</p>
-<p>Note that this metaclass is automatically applied the first time
-<tt class="docutils literal"><span class="pre">&#64;assignto</span></tt> is used to decorate a role class. There is no need
-to assign <tt class="docutils literal"><span class="pre">RoleFactoryType</span></tt> explicitly.</p>
-<dl class="method">
-<dt id="roles.factory.RoleFactoryType.lookup">
-<tt class="descname">lookup</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#roles.factory.RoleFactoryType.lookup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find a specific Role type for a subject. The returned role class
-is a subclass of the factory role.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="roles.factory.RoleFactoryType.register">
-<tt class="descname">register</tt><big>(</big><em>cls</em>, <em>rolecls</em>, <em>strict</em><big>)</big><a class="headerlink" href="#roles.factory.RoleFactoryType.register" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a new roleclass for a specific class.</p>
-<p>Note: <tt class="docutils literal"><span class="pre">strict</span></tt> is set if the topmost role has <tt class="docutils literal"><span class="pre">assignto()</span></tt> applied.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-roles.role">
 <span id="utility-classes"></span><h2>Utility classes<a class="headerlink" href="#module-roles.role" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -117,6 +88,55 @@ is a subclass of the factory role.</p>
 </div>
 </dd></dl>
 
+<dl class="function">
+<dt id="roles.role.class_fields">
+<tt class="descclassname">roles.role.</tt><tt class="descname">class_fields</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#roles.role.class_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all fields declared in a class, including superclasses.</p>
+<p>Don&#8217;t forget to clear the cache if fields are added to a class or role!</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-roles.factory">
+<span id="generic-role-factory"></span><h2>Generic role factory<a class="headerlink" href="#module-roles.factory" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roles.factory.RoleFactoryType">
+<em class="property">class </em><tt class="descclassname">roles.factory.</tt><tt class="descname">RoleFactoryType</tt><a class="headerlink" href="#roles.factory.RoleFactoryType" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">RoleFactoryType</span></tt> is a special kind of RoleType: with the <tt class="docutils literal"><span class="pre">&#64;assignto</span></tt>
+class decorator this class is applied to any RoleType instance.</p>
+<p>Now subroles are able to be automatically applied to specific instances.
+Thus, the Role class is acting as a factory for it&#8217;s own types.</p>
+<p>Note that this metaclass is automatically applied the first time
+<tt class="docutils literal"><span class="pre">&#64;assignto</span></tt> is used to decorate a role class. There is no need
+to assign <tt class="docutils literal"><span class="pre">RoleFactoryType</span></tt> explicitly.</p>
+<dl class="method">
+<dt id="roles.factory.RoleFactoryType.lookup">
+<tt class="descname">lookup</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#roles.factory.RoleFactoryType.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a specific Role type for a subject. The returned role class
+is a subclass of the factory role.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roles.factory.RoleFactoryType.register">
+<tt class="descname">register</tt><big>(</big><em>cls</em>, <em>rolecls</em>, <em>strict</em><big>)</big><a class="headerlink" href="#roles.factory.RoleFactoryType.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a new roleclass for a specific class.</p>
+<p>Note: <tt class="docutils literal"><span class="pre">strict</span></tt> is set if the topmost role has <tt class="docutils literal"><span class="pre">assignto()</span></tt> applied.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-roles.context"></span></div>
+<div class="section" id="context-internals">
+<h2>Context internals<a class="headerlink" href="#context-internals" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roles.context.CurrentContextManager">
+<em class="property">class </em><tt class="descclassname">roles.context.</tt><tt class="descname">CurrentContextManager</tt><a class="headerlink" href="#roles.context.CurrentContextManager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="roles.context.ctxman">
+<em class="property">class </em><tt class="descclassname">roles.context.</tt><tt class="descname">ctxman</tt><big>(</big><em>stack</em>, <em>ctx</em><big>)</big><a class="headerlink" href="#roles.context.ctxman" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -129,18 +149,19 @@ is a subclass of the factory role.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Private API</a><ul>
-<li><a class="reference internal" href="#module-roles.factory">Generic role factory</a></li>
 <li><a class="reference internal" href="#module-roles.role">Utility classes</a></li>
+<li><a class="reference internal" href="#module-roles.factory">Generic role factory</a></li>
+<li><a class="reference internal" href="#context-internals">Context internals</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="userapi.html"
-                        title="previous chapter">User API</a></p>
+  <p class="topless"><a href="django.html"
+                        title="previous chapter">Django support</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="NEWS.html"
-                        title="next chapter">Change Log</a></p>
+  <p class="topless"><a href="history.html"
+                        title="next chapter">Change History</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="sources/privapi.txt"
@@ -173,12 +194,12 @@ is a subclass of the factory role.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="NEWS.html" title="Change Log"
+          <a href="history.html" title="Change History"
              >next</a> |</li>
         <li class="right" >
-          <a href="userapi.html" title="User API"
+          <a href="django.html" title="Django support"
              >previous</a> |</li>
-        <li><a href="index.html">Roles v0.8 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Roles v0.9 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

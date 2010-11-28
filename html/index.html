@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to Roles’ documentation! &mdash; Roles v0.8 documentation</title>
+    <title>Python roles module &mdash; Roles v0.9 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.8',
+        VERSION:     '0.9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,8 +22,8 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="Roles v0.8 documentation" href="#" />
-    <link rel="next" title="Roles" href="README.html" /> 
+    <link rel="top" title="Roles v0.9 documentation" href="#" />
+    <link rel="next" title="Usage" href="usage.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,9 +36,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="README.html" title="Roles"
+          <a href="usage.html" title="Usage"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Roles v0.8 documentation</a> &raquo;</li> 
+        <li><a href="#">Roles v0.9 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -47,9 +47,15 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome-to-roles-documentation">
-<h1>Welcome to Roles&#8217; documentation!<a class="headerlink" href="#welcome-to-roles-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Library for Role based development.</p>
+  <div class="section" id="python-roles-module">
+<h1>Python roles module<a class="headerlink" href="#python-roles-module" title="Permalink to this headline">¶</a></h1>
+<p><em>Library for Role based development</em></p>
+<p><tt class="docutils literal"><span class="pre">Roles</span></tt> provides a Pythonic implementation of the DCI (Data Context Interaction) paradigm
+(<a class="reference external" href="http://www.artima.com/articles/dci_vision.html">http://www.artima.com/articles/dci_vision.html</a>).</p>
+<p>Roles allow you to assign and revoke behaviour on a per-instance basis. This defines the big difference with mixins, which are assigned at class level.</p>
+<p>A role has a special meaning in a context (imagine you want to do a money transfer: in this context you&#8217;ll need 2 accounts, a source and a destination account). The roles module provides a simple implementation for defining contexts.</p>
+<p>Roles can be assigned and revoked. Multiple roles can be applied to an
+instance. Revocation can happen in any particular order.</p>
 <hr class="docutils" />
 <dl class="docutils">
 <dt>Homepage:</dt>
@@ -63,35 +69,26 @@
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">Roles</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="README.html#using-roles">Using Roles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="README.html#context">Context</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-roles">Using Roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-context">Using Context</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="userapi.html">User API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="userapi.html#roletype-metaclass">RoleType metaclass</a></li>
-<li class="toctree-l2"><a class="reference internal" href="userapi.html#ways-to-apply-roles">Ways to apply roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userapi.html#ways-to-assign-roles">Ways to assign roles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="userapi.html#using-roles-in-a-context">Using roles in a context</a></li>
 <li class="toctree-l2"><a class="reference internal" href="userapi.html#generic-roles">Generic roles</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="django.html">Django support</a></li>
 <li class="toctree-l1"><a class="reference internal" href="privapi.html">Private API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="privapi.html#module-roles.factory">Generic role factory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="privapi.html#module-roles.role">Utility classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="privapi.html#module-roles.factory">Generic role factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="privapi.html#context-internals">Context internals</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="NEWS.html">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id1">0.9</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id2">0.8</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id3">0.7.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id4">0.6.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id5">0.5.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id6">0.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id7">0.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id8">0.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="NEWS.html#id9">0.1.0</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">Change History</a></li>
 </ul>
 </div>
 </div>
@@ -111,15 +108,15 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to Roles&#8217; documentation!</a><ul>
+<li><a class="reference internal" href="#">Python roles module</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="README.html"
-                        title="next chapter">Roles</a></p>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">Usage</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="sources/index.txt"
@@ -152,9 +149,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="README.html" title="Roles"
+          <a href="usage.html" title="Usage"
              >next</a> |</li>
-        <li><a href="#">Roles v0.8 documentation</a> &raquo;</li> 
+        <li><a href="#">Roles v0.9 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

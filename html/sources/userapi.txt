@@ -11,16 +11,19 @@ RoleType metaclass
    :members: assign, revoke, played_by
 
 
-Ways to apply roles
--------------------
+Ways to assign roles
+--------------------
 
-There are basically 2 ways to apply a role to an instance. The first one is
+There are basically 2 ways to assign a role to an instance. The first one is
 to manipulate the instance's class (this is the default) and the second is
 to proxy the object.
 
 .. autofunction:: instance
 
 .. autofunction:: clone
+
+.. autofunction:: adapter
+
 
 Using roles in a context
 ------------------------
@@ -40,7 +43,7 @@ Generic roles
 -------------
 
 As an (non-DCI) extension it is possible to create role implementations tailored
-for specific objects.
+for specific classes.
 
 Although this may clutter the clear and readable ways provided by DCI, for
 specific tasks it may help. Use it wisely.
@@ -48,3 +51,6 @@ specific tasks it may help. Use it wisely.
 .. module:: roles.factory
 
 .. autofunction:: assignto
+
+
+.. vim:syntax=rst
