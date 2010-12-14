@@ -164,7 +164,7 @@ def cached(func):
     return wrapper
 
 
-EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__metaclass__'])
+EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__metaclass__', '__slots__'])
 
 
 @cached
@@ -336,9 +336,14 @@ class RoleType(type):
         Create a new role class.
         """
         # Role class not yet defined, define a new class
-        rolecls = type(self.newclassname(rolebases), rolebases, {
-                '__module__': cls.__module__,
-                '__doc__': cls.__doc__ })
+        d = { '__module__': cls.__module__,
+              '__doc__': cls.__doc__ }
+        try:
+            d['__slots__'] = cls.__slots__
+        except AttributeError:
+            pass
+
+        rolecls = type(self.newclassname(rolebases), rolebases, d)
         return rolecls
 
 

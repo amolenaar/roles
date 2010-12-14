@@ -6,6 +6,7 @@ from roles import RoleType, clone
 
 class SimpleRole(object):
     __metaclass__ = RoleType
+    __slots__ = ()
     def inrole(self):
         return "in role"
 
@@ -28,6 +29,16 @@ class TypesTest(unittest.TestCase):
             def __init__(self, a, b): pass
 
         c = Cls(1, 2)
+        SimpleRole(c)
+        c.inrole()
+
+
+    def test_class_with_slots(self):
+        class Cls(object):
+            __slots__ = ('a', 'b')
+            def __init__(self): pass
+
+        c = Cls()
         SimpleRole(c)
         c.inrole()
 
