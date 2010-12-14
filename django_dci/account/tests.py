@@ -46,8 +46,8 @@ class TransferMoney(object):
             print "We can still access the original attributes", self.sink.balance
             print "Is it still an Account?", isinstance(self.sink, Account)
             #print "Object equality?", dst == self.sink
-        self.source.save()
-        self.sink.save()
+            self.source.save()
+            self.sink.save()
 
 
 class MoneyTransferTest(TestCase):
