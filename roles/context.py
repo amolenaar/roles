@@ -3,7 +3,7 @@ from functools import wraps
 import threading
 
 
-__all__ = [ 'context', 'in_context' ]
+__all__ = ['context', 'in_context']
 
 
 class ctxman(object):
@@ -24,7 +24,7 @@ class CurrentContextManager(threading.local):
 
     def __init__(self):
         self.__dict__['__stack'] = []
-        
+
     def __call__(self, newctx):
         return ctxman(self.__dict__['__stack'], newctx)
 
@@ -43,8 +43,8 @@ context = CurrentContextManager()
 context.__dict__['__doc__'] = """
 The default application wide context stack.
 
-Put a new context class on the context stack. This functionality should be called
-with the context class as first argument.
+Put a new context class on the context stack. This functionality should
+be called with the context class as first argument.
 
 >>> class SomeContext(object):
 ...     pass # define some methods, define some roles
@@ -52,8 +52,10 @@ with the context class as first argument.
 ...         with context(self):
 ...             pass # do something
 
-Roles can be fetched from the context by calling ``context.name``. Just like that.
+Roles can be fetched from the context by calling ``context.name``.
+Just like that.
 """
+
 
 def in_context(func):
     """

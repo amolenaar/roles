@@ -1,8 +1,8 @@
 """
 This is a not-so-DCI extension that allows multiple role implementations to be
-dispatched. This means that it allows you to have role implementations specific for
-certain object types. Counterside is that the code becomes a lot more cryptic and not
-easier to reason about
+dispatched. This means that it allows you to have role implementations specific
+for certain object types. Counterside is that the code becomes a lot more
+cryptic and not easier to reason about.
 
 Author: Arjan Molenaar
 """
@@ -24,7 +24,6 @@ class RoleFactoryType(RoleType):
 
     """
 
-
     def register(self, cls, rolecls, strict):
         """
         Register a new roleclass for a specific class.
@@ -39,7 +38,6 @@ class RoleFactoryType(RoleType):
             self._strict = strict
             self.lookup.cache.clear()
 
-
     @cached
     def lookup(self, cls):
         """
@@ -49,22 +47,20 @@ class RoleFactoryType(RoleType):
         get = self._factory.get
         for t in cls.__mro__:
             rolecls = get(t)
-            if rolecls: return rolecls
+            if rolecls:
+                return rolecls
         else:
             if self._strict:
                 raise NoRoleError('No role found for %s' % cls)
             return self
 
-
     def assign(self, subj, method=instance):
         rolecls = self.lookup(type(subj))
         return RoleType.assign(rolecls, subj, method)
 
-
     def revoke(self, subj, method=instance):
         rolecls = self.lookup(type(subj))
         return RoleType.revoke(rolecls, subj, method)
-
 
     __call__ = assign
 
@@ -79,7 +75,7 @@ def assignto(cls):
     Given a class:
 
     >>> class A(object): pass
-    
+
     And a role:
 
     >>> class MyRole(object):
@@ -88,14 +84,14 @@ def assignto(cls):
     You can provide implementations for several roles like this:
 
     >>> @assignto(A)
-    ... class MySubRole(MyRole): pass 
+    ... class MySubRole(MyRole): pass
 
     Note that the metaclass has changed to RoleFactoryType:
 
     >>> MyRole.__class__
     <class 'roles.factory.RoleFactoryType'>
 
-    >>> MyRole(A())            # doctest: +ELLIPSIS
+    >>> MyRole(A())           # doctest: +ELLIPSIS
     <roles.factory.A+MySubRole object at 0x...>
 
     This also works for subclasses of A:
@@ -106,7 +102,7 @@ def assignto(cls):
     >>> MyRole(c)             # doctest: +ELLIPSIS
     <roles.factory.C+MySubRole object at 0x...>
 
-    >>> MyRole.revoke(c)     # doctest: +ELLIPSIS
+    >>> MyRole.revoke(c)      # doctest: +ELLIPSIS
     <roles.factory.C object at 0x...>
 
     All other class fall back to the default role:
@@ -139,7 +135,7 @@ def assignto(cls):
 
     And this still works:
 
-    >>> MyRole(A())            # doctest: +ELLIPSIS
+    >>> MyRole(A())           # doctest: +ELLIPSIS
     <roles.factory.A+MySubRole object at 0x...>
 
     The usage of ``@assignto()`` is resticted to role types:
@@ -168,7 +164,6 @@ def assignto(cls):
         if not toprolecls:
             raise NotARoleError('Could not apply @assignto() to class %s: not a role' % (rolecls,))
         return toprolecls
-
 
     def wrapper(rolecls):
         toprolecls = toprole(rolecls)

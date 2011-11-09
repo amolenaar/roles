@@ -3,21 +3,29 @@ from roles import RoleType
 
 
 class A(object):
-    def a(self): pass
+    def a(self):
+        pass
+
 
 class B(A):
-    def b(self): pass
+    def b(self):
+        pass
+
 
 class C(B):
-    def c(self): pass
+    def c(self):
+        pass
 
 
 class R(object):
     __metaclass__ = RoleType
 
+
 class U(R):
     "clashes with class A"
-    def b(self): pass
+
+    def b(self):
+        pass
 
 
 class CachingTestCase(unittest.TestCase):
@@ -26,7 +34,6 @@ class CachingTestCase(unittest.TestCase):
         a = A()
         b = A()
         assert R(a).__class__ is R(b).__class__
-
 
     def test_application_classes(self):
         """
@@ -47,13 +54,11 @@ class CachingTestCase(unittest.TestCase):
         self.assertEquals(id(cls1), id(cls2))
         assert cls1 is cls2, (cls1, cls2)
 
-
     def test_played_by_before(self):
         a = A()
         with R.played_by(a):
             pass
         assert a.__class__ is A, (a.__class__, A)
-
 
     def test_played_by_already_assigned(self):
         a = A()
@@ -61,7 +66,6 @@ class CachingTestCase(unittest.TestCase):
         with R.played_by(a):
             pass
         assert isinstance(a, R)
-
 
     def test_played_by_e(self):
         a = A()
@@ -76,7 +80,6 @@ class CachingTestCase(unittest.TestCase):
 
         assert cls1 is cls2, (cls1, cls2)
 
-
     def test_played_by(self):
         a = A()
         with R.played_by(a):
@@ -86,7 +89,6 @@ class CachingTestCase(unittest.TestCase):
             cls2 = b.__class__
         assert a.__class__ is b.__class__
         assert cls1 is cls2, (cls1, cls2)
-
 
     def test_played_by_nested(self):
         a = A()
@@ -107,16 +109,15 @@ class TraitTestCase(unittest.TestCase):
 
         c = C()
         with R.played_by(c):
-            pass # okay
+            pass  # okay
 
         try:
             with U.played_by(c):
-                pass # okay
+                pass  # okay
         except TypeError, e:
             self.assertEquals('Can not apply role when overriding methods: b', str(e))
         else:
             self.fail('should not pass')
-
 
     def test_instance_overrides(self):
         """
@@ -125,12 +126,12 @@ class TraitTestCase(unittest.TestCase):
 
         a = A()
         with U.played_by(a):
-            pass # okay
+            pass  # okay
 
         a.b = 3
         try:
             with U.played_by(a):
-                pass # okay
+                pass  # okay
         except TypeError, e:
             self.assertEquals('Can not apply role when overriding methods: b', str(e))
         else:

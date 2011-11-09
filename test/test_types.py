@@ -7,6 +7,7 @@ from roles import RoleType, clone
 class SimpleRole(object):
     __metaclass__ = RoleType
     __slots__ = ()
+
     def inrole(self):
         return "in role"
 
@@ -26,22 +27,23 @@ class TypesTest(unittest.TestCase):
 
     def test_class_with_args(self):
         class Cls(object):
-            def __init__(self, a, b): pass
+            def __init__(self, a, b):
+                pass
 
         c = Cls(1, 2)
         SimpleRole(c)
         c.inrole()
 
-
     def test_class_with_slots(self):
         class Cls(object):
             __slots__ = ('a', 'b')
-            def __init__(self): pass
+
+            def __init__(self):
+                pass
 
         c = Cls()
         SimpleRole(c)
         c.inrole()
-
 
     def test_dict(self):
         d = dict()
@@ -53,14 +55,14 @@ class TypesTest(unittest.TestCase):
             assert False, "should not be reached"
 
     def test_dict_subclass(self):
-        class Dict(dict): pass
+        class Dict(dict):
+            pass
         d = Dict()
         d['a'] = 3
         SimpleRole(d)
         self.assertEquals('Dict+SimpleRole', d.__class__.__name__)
         self.assertEquals(3, d['a'])
         d.inrole()
-
 
     def test_list(self):
         d = ['a', 'b']
@@ -71,15 +73,14 @@ class TypesTest(unittest.TestCase):
         else:
             assert False, "should not be reached"
 
-
     def test_list_subclass(self):
-        class List(list): pass
+        class List(list):
+            pass
         d = List(['a', 'b'])
         SimpleRole(d)
         self.assertEquals('List+SimpleRole', d.__class__.__name__)
         self.assertEquals('a', d[0])
         d.inrole()
-
 
     def test_tuple(self):
         d = ('a', 'b')
@@ -90,19 +91,18 @@ class TypesTest(unittest.TestCase):
         else:
             assert False, "should not be reached"
 
-
     def test_tuple_subclass(self):
-        class Tuple(tuple): pass
+        class Tuple(tuple):
+            pass
         d = Tuple(['a', 'b'])
         SimpleRole(d)
         self.assertEquals('Tuple+SimpleRole', d.__class__.__name__)
         self.assertEquals('a', d[0])
         d.inrole()
 
-
     def test_userdict(self):
         import sys
-        if sys.version_info >= (3,0,0):
+        if sys.version_info >= (3, 0, 0):
             return
 
         from UserDict import UserDict
@@ -114,7 +114,6 @@ class TypesTest(unittest.TestCase):
         else:
             assert False, "should not be reached"
 
-
     def test_namedtuple(self):
         """
         Can't assign roles to namedtuple's.
@@ -123,7 +122,7 @@ class TypesTest(unittest.TestCase):
         import math
 
         Point = namedtuple('Point', 'x y')
-        p = Point(1,2)
+        p = Point(1, 2)
 
         class Vector(object):
             __metaclass__ = RoleType

@@ -2,6 +2,7 @@
 from roles import RoleType
 from roles.context import context, in_context
 
+
 class Account(object):
 
     def __init__(self, amount):
@@ -20,16 +21,19 @@ class Account(object):
 
 class MoneySource(object):
     __metaclass__ = RoleType
+
     def transfer(self, amount):
         if self.balance >= amount:
             self.withdraw(amount)
             context.to_account.receive(amount)
+
 
 class MoneySink(object):
     __metaclass__ = RoleType
 
     def receive(self, amount):
         self.deposit(amount)
+
 
 class TransferMoney(object):
 
@@ -92,6 +96,7 @@ def test_context_set_values():
 
 def test_context_manager_multi_threading():
     import threading
+
     class ContextClass(object):
         def doit(self):
             with context(self):
@@ -104,13 +109,15 @@ def test_context_manager_multi_threading():
     thread.start()
     cc1.doit()
     thread.join()
-    
+
     # ensure both stacks are different objects
     assert cc1.stack is not cc2.stack, '%d != %d' % (id(cc1.stack), id(cc2.stack))
 
 
 def test_context_manager_multi_threading_nesting():
-    import threading, time
+    import threading
+    import time
+
     class ContextClass(object):
         def doit(self, level=100):
             if level == 0:
@@ -127,7 +134,7 @@ def test_context_manager_multi_threading_nesting():
     thread.start()
     cc1.doit()
     thread.join()
-    
+
     # ensure both stacks are different objects
     assert cc1.depth == 100, cc1.depth
     assert cc2.depth == 100, cc2.depth

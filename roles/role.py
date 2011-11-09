@@ -78,8 +78,10 @@ def clone(rolecls, subj):
 class AdapterMixin(object):
     def __getattr__(self, key):
         return getattr(self.role_subject, key)
+
     def __setattr(self, key, val):
         return setattr(self.role_subject, key, val)
+
 
 def adapter(rolecls, subj):
     """
@@ -135,7 +137,7 @@ def cached(func):
     {('a',): 'A', ('b',): 'B'}
 
     Clear the cache:
-    
+
     >>> cap.cache.clear()
     >>> cap.cache
     {}
@@ -154,7 +156,7 @@ def cached(func):
         try:
             return cache[key]
         except KeyError:
-            pass # not in cache
+            pass  # not in cache
         cache[key] = result = func(*args)
         return result
 
@@ -250,7 +252,7 @@ class RoleType(type):
     <roles.role.Person+Carpenter+Biker object at 0x...>
     >>> biker.__class__.__bases__
     (<class 'roles.role.Person'>, <class 'roles.role.Carpenter'>, <class 'roles.role.Biker'>)
-    
+
     Note that a new class is assigned, with the roles applied (roles first).
 
     Roles can be revoked:
@@ -318,7 +320,6 @@ class RoleType(type):
         return class_fields(self)\
                 .intersection(class_fields(subj.__class__).union(instance_fields))
 
-
     def newclassname(self, bases):
         """
         Generate a new name bases on the base classes. The last field is the data
@@ -329,15 +330,13 @@ class RoleType(type):
         #names.reverse()
         return "+".join(names)
 
-
     @cached
     def newclass(self, cls, rolebases):
         """
         Create a new role class.
         """
         # Role class not yet defined, define a new class
-        d = { '__module__': cls.__module__,
-              '__doc__': cls.__doc__ }
+        d = {'__module__': cls.__module__, '__doc__': cls.__doc__}
         try:
             d['__slots__'] = cls.__slots__
         except AttributeError:
@@ -345,7 +344,6 @@ class RoleType(type):
 
         rolecls = type(self.newclassname(rolebases), rolebases, d)
         return rolecls
-
 
     def assign(self, subj, method=instance):
         """
@@ -363,7 +361,7 @@ class RoleType(type):
 
         if isinstance(cls, RoleType):
             # Create a sibling class
-            rolebases = cls.__bases__ + (self,) 
+            rolebases = cls.__bases__ + (self,)
         else:
             # First role class
             rolebases = (cls, self)
@@ -371,7 +369,6 @@ class RoleType(type):
         rolecls = self.newclass(cls, rolebases)
 
         return method(rolecls, subj)
-
 
     def revoke(self, subj, method=instance):
         """
@@ -390,9 +387,7 @@ class RoleType(type):
             rolecls = rolebases[0]
         return method(rolecls, subj)
 
-
     __call__ = assign
-
 
     @contextmanager
     def played_by(self, subj):
