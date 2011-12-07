@@ -42,8 +42,12 @@ class TypesTest(unittest.TestCase):
                 pass
 
         c = Cls()
-        SimpleRole(c)
-        c.inrole()
+        try:
+            SimpleRole(c)
+        except TypeError, e:
+            self.assertEquals("__class__ assignment: 'Cls' object layout differs from 'Cls+SimpleRole'", str(e))
+        else:
+            assert False, "should not be reached"
 
     def test_dict(self):
         d = dict()
