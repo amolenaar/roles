@@ -1,3 +1,8 @@
+"""
+Context.
+"""
+
+from __future__ import absolute_import
 
 from functools import wraps
 import threading

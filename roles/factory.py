@@ -7,7 +7,9 @@ cryptic and not easier to reason about.
 Author: Arjan Molenaar
 """
 
-from role import RoleType, cached, instance
+from __future__ import absolute_import
+
+from .role import RoleType, cached, instance
 
 
 class RoleFactoryType(RoleType):
