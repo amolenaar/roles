@@ -79,7 +79,7 @@ class AdapterMixin(object):
     def __getattr__(self, key):
         return getattr(self.role_subject, key)
 
-    def __setattr(self, key, val):
+    def __setattr__(self, key, val):
         return setattr(self.role_subject, key, val)
 
 
@@ -99,7 +99,7 @@ def adapter(rolecls, subj):
     >>> person = Person('Joe')
     >>> biker = Biker(person, method=adapter)
     >>> biker # doctest: +ELLIPSIS
-    <roles.role.Person+Biker+AdapterMixin object at 0x...>
+    <roles.role.AdapterMixin+Person+Biker object at 0x...>
     >>> person # doctest: +ELLIPSIS
     <roles.role.Person object at 0x...>
     >>> biker.role_subject # doctest: +ELLIPSIS
@@ -112,9 +112,14 @@ def adapter(rolecls, subj):
     True
     >>> biker.bike()
     Joe bikes
+    >>> biker.am()
+    Joe is
+    >>> biker.name = 'Jake'
+    >>> person.name
+    'Jake'
     """
 
-    adaptercls = rolecls.newclass(rolecls, (rolecls, AdapterMixin))
+    adaptercls = rolecls.newclass(rolecls, (AdapterMixin,) + rolecls.__bases__)
     newsubj = adaptercls.__new__(adaptercls)
     newsubj.__dict__['role_subject'] = subj
     return newsubj
@@ -161,7 +166,7 @@ def cached(func):
         return result
 
     wrapper.cache = cache
-    wrapper.wrapped_func = func
+    #wrapper.wrapped_func = func
     wrapper.__doc__ = func.__doc__
     return wrapper
 
