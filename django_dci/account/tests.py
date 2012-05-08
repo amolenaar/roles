@@ -10,7 +10,6 @@ from models import Account
 
 from roles.django import ModelRoleType
 from roles.context import context
-from contextlib import nested
 
 
 class MoneySource(object):
@@ -39,9 +38,9 @@ class TransferMoney(object):
         """
         The interaction.
         """
-        with nested(context(self),
-                    MoneySource.played_by(self.source),
-                    MoneySink.played_by(self.sink)):
+        with context(self),\
+                    MoneySource.played_by(self.source),\
+                    MoneySink.played_by(self.sink):
             self.source.transfer(amount)
             print "We can still access the original attributes", self.sink.balance
             print "Is it still an Account?", isinstance(self.sink, Account)

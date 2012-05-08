@@ -35,9 +35,9 @@ saving objects should be done outside the role context.
 ...         """
 ...         The interaction.
 ...         """
-...         with nested(context(self),
-...                     MoneySource.played_by(self.source),
-...                     MoneySink.played_by(self.sink)):
+...         with context(self),\
+...                     MoneySource.played_by(self.source),\
+...                     MoneySink.played_by(self.sink):
 ...             # Let roles interact, in context
 ...             self.source.transfer(amount)
 ...         # Do storage when roles are removed

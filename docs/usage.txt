@@ -60,7 +60,6 @@ source account and the other plays the role of target account.
 
 
 >>> from roles.context import context
->>> from contextlib import nested
 
 Say we have this simple account class:
 
@@ -115,9 +114,9 @@ the context.
 ...         """
 ...         The interaction.
 ...         """
-...         with nested(context(self),
-...                     MoneySource.played_by(self.source),
-...                     MoneySink.played_by(self.sink)):
+...         with context(self),\
+...                     MoneySource.played_by(self.source),\
+...                     MoneySink.played_by(self.sink):
 ...             self.source.transfer(amount)
 
 
@@ -137,8 +136,8 @@ considered the context object:
 ...         """
 ...         The interaction.
 ...         """
-...         with nested(MoneySource.played_by(self.source),
-...                     MoneySink.played_by(self.sink)):
+...         with MoneySource.played_by(self.source),\
+...                     MoneySink.played_by(self.sink):
 ...             self.source.transfer(amount)
 
 .. vim:syntax=rst
