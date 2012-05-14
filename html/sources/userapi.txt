@@ -11,20 +11,6 @@ RoleType metaclass
    :members: assign, revoke, played_by
 
 
-Ways to assign roles
---------------------
-
-There are basically 2 ways to assign a role to an instance. The first one is
-to manipulate the instance's class (this is the default) and the second is
-to proxy the object.
-
-.. autofunction:: instance
-
-.. autofunction:: clone
-
-.. autofunction:: adapter
-
-
 Using roles in a context
 ------------------------
 
@@ -37,6 +23,20 @@ role's code simpler and more readable.
 .. autofunction:: context
 
 .. autofunction:: in_context
+
+
+Ways to assign roles
+--------------------
+
+There are basically 3 ways to assign a role to an instance. The first one is
+to manipulate the instance's class (this is the default) and the second is
+to proxy the object by referencing the same instance dict (Borg pattern). The this (last resort) is to create an adapter on top of the data instance.
+
+.. autofunction:: instance
+
+.. autofunction:: clone
+
+.. autofunction:: adapter
 
 
 Generic roles

@@ -1,12 +1,20 @@
 Change History
 ==============
 
+*0.10*
+
+- Allow saving domain instances with roles applied. Thanks to Ben Scherrey and
+  Chokchai Phatharamalai
+- Deal with __slots__
+- Can assign roles bindings to be used in the Context
+
 *0.9*
 
 - It is no longer allowed to let roles override methods.
 - Added module roles.django
 - Added Django application example (django_dci module)
 - context is thread safe
+- added adapter method for role assignment
 
 *0.8*
 

@@ -19,7 +19,7 @@ particular role:
 >>> class Carpenter(object):
 ...     __metaclass__ = RoleType
 ...     def chop(self):
-...          return "chop, chop"
+...         return "chop, chop"
 
 Assign the role to the person:
 
@@ -45,8 +45,19 @@ To revoke a role from an instance do
 
 It is much more convenient, though, to apply roles only in a specific context:
 
->>> with Carpenter.played_by(person):
-...     person.chop()
+>>> from roles.context import context
+
+>>> class WoodChopping(object):
+...     def __init__(self, person):
+...         self.person = person
+...         self.chopping_context = context(self, person=Carpenter)
+...
+...     def __call__(self):
+...         with self.chopping_context:
+...             return self.person.chop()
+...
+>>> ctx = WoodChopping(person)
+>>> ctx()
 'chop, chop'
 
 
@@ -60,7 +71,6 @@ source account and the other plays the role of target account.
 
 
 >>> from roles.context import context
->>> from contextlib import nested
 
 Say we have this simple account class:
 
@@ -110,15 +120,16 @@ the context.
 ...     def __init__(self, source, sink):
 ...         self.source = source
 ...         self.sink = sink
+...         self.transfer_context = context(self,
+...                     source=MoneySource,
+...                     sink=MoneySink)
 ... 
 ...     def transfer_money(self, amount):
 ...         """
 ...         The interaction.
 ...         """
-...         with nested(context(self),
-...                     MoneySource.played_by(self.source),
-...                     MoneySink.played_by(self.sink)):
-...             self.source.transfer(amount)
+...         with self.transfer_context as ctx:
+...             ctx.source.transfer(amount)
 
 
 Another way is to make the method itself act as context (well, the first argument is
@@ -137,8 +148,8 @@ considered the context object:
 ...         """
 ...         The interaction.
 ...         """
-...         with nested(MoneySource.played_by(self.source),
-...                     MoneySink.played_by(self.sink)):
+...         with MoneySource.played_by(self.source),\
+...                     MoneySink.played_by(self.sink):
 ...             self.source.transfer(amount)
 
 .. vim:syntax=rst
