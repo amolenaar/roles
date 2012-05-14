@@ -10,7 +10,7 @@ except ImportError:
 from contextlib import closing
 import glob
 
-VERSION = '0.9'
+VERSION = '0.10'
 
 with closing(open('README.txt')) as f:
     doc = f.read()
