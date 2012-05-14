@@ -15,14 +15,14 @@ cd $OUTDIR
 
 for underscore_folder in  _*
 do 
-	echo "Processing matches for: " $underscore_folder
 
-	folder_without_underscore=`echo -n $underscore_folder | sed 's/^.//'`
+	folder_without_underscore=`echo $underscore_folder | sed 's/^.//'`
 
+	echo "Processing matches for: $underscore_folder -> $folder_without_underscore"
 	for underscore_file in $( find $underscore_folder -type f )
 	do
 		echo "Check occurences of $underscore_file"
-		file_without_underscore=`echo -n $underscore_file | sed 's/^.//'`
+		file_without_underscore=`echo $underscore_file | sed 's/^.//'`
 
 		for file in $( find . -type f -name "*.html" )
 		do
