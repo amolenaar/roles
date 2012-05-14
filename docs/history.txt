@@ -1,11 +1,12 @@
 Change History
 ==============
 
-*0.9.1*
+*0.10*
 
 - Allow saving domain instances with roles applied. Thanks to Ben Scherrey and
   Chokchai Phatharamalai
 - Deal with __slots__
+- Can assign roles bindings to be used in the Context
 
 *0.9*
 
