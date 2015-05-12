@@ -2,7 +2,7 @@
 Context.
 """
 
-from __future__ import absolute_import
+
 
 from functools import wraps
 import threading
@@ -24,14 +24,14 @@ class ManagedContext(object):
         """
         ctx = self.ctx
         self.stack.append(self.ctx)
-        for var, role in self.bindings.iteritems():
+        for var, role in self.bindings.items():
             role.assign(getattr(ctx, var))
         return ctx
 
     def __exit__(self, exc_type, exc_value, traceback):
         ctx = self.stack.pop()
         assert ctx is self.ctx
-        for var, role in self.bindings.iteritems():
+        for var, role in self.bindings.items():
             role.revoke(getattr(ctx, var))
 
 
@@ -76,8 +76,8 @@ You can provide additional bindings to be performed:
 
 >>> from role import RoleType
 
->>> class SomeRole(object):
-...     __metaclass__ = RoleType
+>>> class SomeRole(object, metaclass=RoleType):
+...     pass
 
 >>> class SomeContext(object):
 ...     def __init__(self, data_object):

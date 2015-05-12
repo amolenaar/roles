@@ -8,7 +8,7 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-from __future__ import absolute_import
+
 
 from operator import attrgetter
 from contextlib import contextmanager
@@ -21,10 +21,9 @@ def instance(rolecls, subj):
 
     >>> class Person(object):
     ...     def __init__(self, name): self.name = name
-    ...     def am(self): print self.name, 'is'
-    >>> class Biker(object):
-    ...     __metaclass__ = RoleType
-    ...     def bike(self): print self.name, 'bikes'
+    ...     def am(self): print(self.name, 'is')
+    >>> class Biker(object, metaclass=RoleType):
+    ...     def bike(self): print(self.name, 'bikes')
     ...
     >>> person = Person('Joe')
     >>> biker = Biker(person, method=instance)
@@ -48,10 +47,9 @@ def clone(rolecls, subj):
 
     >>> class Person(object):
     ...     def __init__(self, name): self.name = name
-    ...     def am(self): print self.name, 'is'
-    >>> class Biker(object):
-    ...     __metaclass__ = RoleType
-    ...     def bike(self): print self.name, 'bikes'
+    ...     def am(self): print(self.name, 'is')
+    >>> class Biker(object, metaclass=RoleType):
+    ...     def bike(self): print(self.name, 'bikes')
     ...
     >>> person = Person('Joe')
     >>> biker = Biker(person, method=clone)
@@ -91,10 +89,9 @@ def adapter(rolecls, subj):
 
     >>> class Person(object):
     ...     def __init__(self, name): self.name = name
-    ...     def am(self): print self.name, 'is'
-    >>> class Biker(object):
-    ...     __metaclass__ = RoleType
-    ...     def bike(self): print self.name, 'bikes'
+    ...     def am(self): print(self.name, 'is')
+    >>> class Biker(object, metaclass=RoleType):
+    ...     def bike(self): print(self.name, 'bikes')
     ...
     >>> person = Person('Joe')
     >>> biker = Biker(person, method=adapter)
@@ -138,8 +135,8 @@ def cached(func):
 
     Show cache contents:
 
-    >>> cap.cache
-    {('a',): 'A', ('b',): 'B'}
+    >>> sorted(cap.cache)
+    [('a',), ('b',)]
 
     Clear the cache:
 
@@ -171,7 +168,7 @@ def cached(func):
     return wrapper
 
 
-EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__metaclass__', '__slots__'])
+EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__slots__'])
 
 
 @cached
@@ -185,7 +182,7 @@ def class_fields(cls, exclude=EXCLUDED):
     for c in cls.__mro__:
         if c in (type, object):
             break
-        attrs.update(c.__dict__.keys())
+        attrs.update(list(c.__dict__.keys()))
     return attrs.difference(exclude)
 
 
@@ -199,17 +196,15 @@ class RoleType(type):
 
     >>> class Person(object):
     ...     def __init__(self, name): self.name = name
-    ...     def am(self): print self.name, 'is'
+    ...     def am(self): print(self.name, 'is')
 
     Apart from that a few roles can be defined. Simple objects with a default
     ``__init__()`` (no arguments) and the ``RoleType`` as metaclass:
 
-    >>> class Carpenter(object):
-    ...     __metaclass__ = RoleType
-    ...     def chop(self): print self.name, 'chops'
-    >>> class Biker(object):
-    ...     __metaclass__ = RoleType
-    ...     def bike(self): print self.name, 'bikes'
+    >>> class Carpenter(object, metaclass=RoleType):
+    ...     def chop(self): print(self.name, 'chops')
+    >>> class Biker(object, metaclass=RoleType):
+    ...     def bike(self): print(self.name, 'bikes')
 
     Now, by default an object has no roles (in this case our person).
 
@@ -275,8 +270,7 @@ class RoleType(type):
 
     Roles do not allow for overriding methods.
 
-    >>> class Incognito(object):
-    ...     __metaclass__ = RoleType
+    >>> class Incognito(object, metaclass=RoleType):
     ...     def am(self): return 'under cover'
     >>> Incognito(Person)                # doctest: +ELLIPSIS
     Traceback (most recent call last):
@@ -318,7 +312,7 @@ class RoleType(type):
         subject instance.
         """
         try:
-            instance_fields = subj.__dict__.keys()
+            instance_fields = list(subj.__dict__.keys())
         except AttributeError:
             instance_fields = ()
 
@@ -399,8 +393,7 @@ class RoleType(type):
         """
         Shorthand for using roles in with statements
 
-        >>> class Biker(object):
-        ...     __metaclass__ = RoleType
+        >>> class Biker(object, metaclass=RoleType):
         ...     def bike(self): return 'bike, bike'
         >>> class Person(object):
         ...     pass

@@ -7,7 +7,7 @@ cryptic and not easier to reason about.
 Author: Arjan Molenaar
 """
 
-from __future__ import absolute_import
+
 
 from .role import RoleType, cached, instance
 
@@ -80,8 +80,7 @@ def assignto(cls):
 
     And a role:
 
-    >>> class MyRole(object):
-    ...     __metaclass__ = RoleType
+    >>> class MyRole(object, metaclass=RoleType): pass
 
     You can provide implementations for several roles like this:
 
@@ -117,8 +116,7 @@ def assignto(cls):
     You can also apply the decorator to the root role directly:
 
     >>> @assignto(A)
-    ... class AnyRole(object):
-    ...     __metaclass__ = RoleType
+    ... class AnyRole(object, metaclass=RoleType): pass
 
     >>> a = A()
     >>> AnyRole(a)            # doctest: +ELLIPSIS
@@ -133,7 +131,7 @@ def assignto(cls):
     >>> AnyRole(X())          # doctest: +ELLIPSIS
     Traceback (most recent call last):
       ...
-    NoRoleError: No role found for <class 'roles.factory.X'>
+    roles.factory.NoRoleError: No role found for <class 'roles.factory.X'>
 
     And this still works:
 
@@ -147,7 +145,7 @@ def assignto(cls):
     ...     pass
     Traceback (most recent call last):
       ...
-    NotARoleError: Could not apply @assignto() to class <class 'roles.factory.NotARole'>: not a role
+    roles.factory.NotARoleError: Could not apply @assignto() to class <class 'roles.factory.NotARole'>: not a role
 
     """
 

@@ -16,8 +16,7 @@ As a basic example, consider a data class:
 The instance should participate in a collaboration in which it fulfills a
 particular role:
 
->>> class Carpenter(object):
-...     __metaclass__ = RoleType
+>>> class Carpenter(object, metaclass=RoleType):
 ...     def chop(self):
 ...         return "chop, chop"
 
@@ -89,16 +88,14 @@ Say we have this simple account class:
 If you want to transfer money from one account to another, we're normally calling one the
 source account and the other the destination account. Let's make that clear in code:
 
->>> class MoneySource(object):
-...     __metaclass__ = RoleType
+>>> class MoneySource(object, metaclass=RoleType):
 ... 
 ...     def transfer(self, amount):
 ...         if self.balance >= amount:
 ...             self.withdraw(amount)
 ...             context.sink.receive(amount)
 ... 
->>> class MoneySink(object):
-...     __metaclass__ = RoleType
+>>> class MoneySink(object, metaclass=RoleType):
 ... 
 ...     def receive(self, amount):
 ...         self.deposit(amount)

@@ -6,31 +6,27 @@ from roles.context import context, in_context
 class Account(object):
 
     def __init__(self, amount):
-        print "Creating a new account with balance of " + str(amount)
+        print("Creating a new account with balance of " + str(amount))
         self.balance = amount
         super(Account, self).__init__()
 
     def withdraw(self, amount):
-        print "Withdraw " + str(amount) + " from " + str(self)
+        print("Withdraw " + str(amount) + " from " + str(self))
         self.balance -= amount
 
     def deposit(self, amount):
-        print "Deposit " + str(amount) + " in " + str(self)
+        print("Deposit " + str(amount) + " in " + str(self))
         self.balance += amount
 
 
-class MoneySource(object):
-    __metaclass__ = RoleType
-
+class MoneySource(object, metaclass=RoleType):
     def transfer(self, amount):
         if self.balance >= amount:
             self.withdraw(amount)
             context.to_account.receive(amount)
 
 
-class MoneySink(object):
-    __metaclass__ = RoleType
-
+class MoneySink(object, metaclass=RoleType):
     def receive(self, amount):
         self.deposit(amount)
 
@@ -64,9 +60,9 @@ def test_context_context_manager_style():
 
     tm.transfer_money__with(100)
 
-    print src, src.balance
+    print(src, src.balance)
     assert src.balance == 900
-    print dst, dst.balance
+    print(dst, dst.balance)
     assert dst.balance == 100
 
 
@@ -78,9 +74,9 @@ def test_context_decorator():
 
     tm.transfer_money__decorator(100)
 
-    print src, src.balance
+    print(src, src.balance)
     assert src.balance == 900
-    print dst, dst.balance
+    print(dst, dst.balance)
     assert dst.balance == 100
 
 
@@ -124,7 +120,7 @@ def test_context_manager_multi_threading_nesting():
                 context.depth = len(context.__dict__['__stack'])
             else:
                 with context(self):
-                    print (context.__dict__['__stack']), level
+                    print((context.__dict__['__stack']), level)
                     self.doit(level - 1)
                     time.sleep(0.001)
 

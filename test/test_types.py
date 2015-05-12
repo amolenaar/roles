@@ -4,8 +4,7 @@ import unittest
 from roles import RoleType, clone
 
 
-class SimpleRole(object):
-    __metaclass__ = RoleType
+class SimpleRole(object, metaclass=RoleType):
     __slots__ = ()
 
     def inrole(self):
@@ -44,8 +43,8 @@ class TypesTest(unittest.TestCase):
         c = Cls()
         try:
             SimpleRole(c)
-        except TypeError, e:
-            self.assertEquals("__class__ assignment: 'Cls' object layout differs from 'Cls+SimpleRole'", str(e))
+        except TypeError as e:
+            self.assertEqual("__class__ assignment: 'Cls+SimpleRole' object layout differs from 'Cls'", str(e))
         else:
             assert False, "should not be reached"
 
@@ -53,8 +52,8 @@ class TypesTest(unittest.TestCase):
         d = dict()
         try:
             SimpleRole(d)
-        except TypeError, e:
-            self.assertEquals("__class__ assignment: only for heap types", str(e))
+        except TypeError as e:
+            self.assertEqual("__class__ assignment: only for heap types", str(e))
         else:
             assert False, "should not be reached"
 
@@ -64,16 +63,16 @@ class TypesTest(unittest.TestCase):
         d = Dict()
         d['a'] = 3
         SimpleRole(d)
-        self.assertEquals('Dict+SimpleRole', d.__class__.__name__)
-        self.assertEquals(3, d['a'])
+        self.assertEqual('Dict+SimpleRole', d.__class__.__name__)
+        self.assertEqual(3, d['a'])
         d.inrole()
 
     def test_list(self):
         d = ['a', 'b']
         try:
             SimpleRole(d)
-        except TypeError, e:
-            self.assertEquals("__class__ assignment: only for heap types", str(e))
+        except TypeError as e:
+            self.assertEqual("__class__ assignment: only for heap types", str(e))
         else:
             assert False, "should not be reached"
 
@@ -82,16 +81,16 @@ class TypesTest(unittest.TestCase):
             pass
         d = List(['a', 'b'])
         SimpleRole(d)
-        self.assertEquals('List+SimpleRole', d.__class__.__name__)
-        self.assertEquals('a', d[0])
+        self.assertEqual('List+SimpleRole', d.__class__.__name__)
+        self.assertEqual('a', d[0])
         d.inrole()
 
     def test_tuple(self):
         d = ('a', 'b')
         try:
             SimpleRole(d)
-        except TypeError, e:
-            self.assertEquals("__class__ assignment: only for heap types", str(e))
+        except TypeError as e:
+            self.assertEqual("__class__ assignment: only for heap types", str(e))
         else:
             assert False, "should not be reached"
 
@@ -100,8 +99,8 @@ class TypesTest(unittest.TestCase):
             pass
         d = Tuple(['a', 'b'])
         SimpleRole(d)
-        self.assertEquals('Tuple+SimpleRole', d.__class__.__name__)
-        self.assertEquals('a', d[0])
+        self.assertEqual('Tuple+SimpleRole', d.__class__.__name__)
+        self.assertEqual('a', d[0])
         d.inrole()
 
     def test_userdict(self):
@@ -113,8 +112,8 @@ class TypesTest(unittest.TestCase):
         d = UserDict()
         try:
             SimpleRole(d)
-        except AttributeError, e:
-            self.assertEquals("class UserDict has no attribute '__mro__'", str(e))
+        except AttributeError as e:
+            self.assertEqual("class UserDict has no attribute '__mro__'", str(e))
         else:
             assert False, "should not be reached"
 
@@ -128,8 +127,8 @@ class TypesTest(unittest.TestCase):
         Point = namedtuple('Point', 'x y')
         p = Point(1, 2)
 
-        class Vector(object):
-            __metaclass__ = RoleType
+        class Vector(object, metaclass=RoleType):
+            pass
             #def m(self):
             #    "Manhattan style distance calculation"
             #    return p.x + p.y
@@ -138,8 +137,8 @@ class TypesTest(unittest.TestCase):
 
         try:
             Vector(p)
-        except TypeError, e:
-            self.assertEquals("__class__ assignment: 'Point' object layout differs from 'Point+Vector'", str(e))
+        except TypeError as e:
+            self.assertEqual("__class__ assignment: 'Point+Vector' object layout differs from 'Point'", str(e))
 #        except AttributeError, e:
 #            self.assertEquals("'Point' object has no attribute '__dict__'", str(e))
         else:
