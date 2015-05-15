@@ -19,10 +19,10 @@ def instance(rolecls, subj):
     Apply the role class to the subject. This is the default role assignment
     method.
 
-    >>> class Person(object):
+    >>> class Person:
     ...     def __init__(self, name): self.name = name
     ...     def am(self): print(self.name, 'is')
-    >>> class Biker(object, metaclass=RoleType):
+    >>> class Biker(metaclass=RoleType):
     ...     def bike(self): print(self.name, 'bikes')
     ...
     >>> person = Person('Joe')
@@ -45,10 +45,10 @@ def clone(rolecls, subj):
     Returns a new subject instance with role applied. Both instances refer to
     the same instance dict.
 
-    >>> class Person(object):
+    >>> class Person:
     ...     def __init__(self, name): self.name = name
     ...     def am(self): print(self.name, 'is')
-    >>> class Biker(object, metaclass=RoleType):
+    >>> class Biker(metaclass=RoleType):
     ...     def bike(self): print(self.name, 'bikes')
     ...
     >>> person = Person('Joe')
@@ -73,7 +73,7 @@ def clone(rolecls, subj):
     return newsubj
 
 
-class AdapterMixin(object):
+class AdapterMixin:
     def __getattr__(self, key):
         return getattr(self.role_subject, key)
 
@@ -87,10 +87,10 @@ def adapter(rolecls, subj):
     This is a kind of last resort method. If you need to use this method a lot, then
     maybe the roles are not the right tool for the job.
 
-    >>> class Person(object):
+    >>> class Person:
     ...     def __init__(self, name): self.name = name
     ...     def am(self): print(self.name, 'is')
-    >>> class Biker(object, metaclass=RoleType):
+    >>> class Biker(metaclass=RoleType):
     ...     def bike(self): print(self.name, 'bikes')
     ...
     >>> person = Person('Joe')
@@ -194,16 +194,16 @@ class RoleType(type):
 
     It starts with a normal class:
 
-    >>> class Person(object):
+    >>> class Person:
     ...     def __init__(self, name): self.name = name
     ...     def am(self): print(self.name, 'is')
 
     Apart from that a few roles can be defined. Simple objects with a default
     ``__init__()`` (no arguments) and the ``RoleType`` as metaclass:
 
-    >>> class Carpenter(object, metaclass=RoleType):
+    >>> class Carpenter(metaclass=RoleType):
     ...     def chop(self): print(self.name, 'chops')
-    >>> class Biker(object, metaclass=RoleType):
+    >>> class Biker(metaclass=RoleType):
     ...     def bike(self): print(self.name, 'bikes')
 
     Now, by default an object has no roles (in this case our person).
@@ -270,7 +270,7 @@ class RoleType(type):
 
     Roles do not allow for overriding methods.
 
-    >>> class Incognito(object, metaclass=RoleType):
+    >>> class Incognito(metaclass=RoleType):
     ...     def am(self): return 'under cover'
     >>> Incognito(Person)                # doctest: +ELLIPSIS
     Traceback (most recent call last):
@@ -393,9 +393,9 @@ class RoleType(type):
         """
         Shorthand for using roles in with statements
 
-        >>> class Biker(object, metaclass=RoleType):
+        >>> class Biker(metaclass=RoleType):
         ...     def bike(self): return 'bike, bike'
-        >>> class Person(object):
+        >>> class Person:
         ...     pass
         >>> john = Person()
         >>> with Biker.played_by(john):

@@ -22,7 +22,7 @@ Using Roles
 
 As a basic example, consider a domain class:
 
->>> class Person(object):
+>>> class Person:
 ...     def __init__(self, name):
 ...         self.name = name
 >>> person = Person("John")

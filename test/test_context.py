@@ -3,7 +3,7 @@ from roles import RoleType
 from roles.context import context, in_context
 
 
-class Account(object):
+class Account:
 
     def __init__(self, amount):
         print("Creating a new account with balance of " + str(amount))
@@ -19,19 +19,19 @@ class Account(object):
         self.balance += amount
 
 
-class MoneySource(object, metaclass=RoleType):
+class MoneySource(metaclass=RoleType):
     def transfer(self, amount):
         if self.balance >= amount:
             self.withdraw(amount)
             context.to_account.receive(amount)
 
 
-class MoneySink(object, metaclass=RoleType):
+class MoneySink(metaclass=RoleType):
     def receive(self, amount):
         self.deposit(amount)
 
 
-class TransferMoney(object):
+class TransferMoney:
 
     def __init__(self, from_account, to_account):
         self.from_account = MoneySource(from_account)
@@ -81,7 +81,7 @@ def test_context_decorator():
 
 
 def test_context_set_values():
-    class Test(object):
+    class Test:
         @in_context
         def test(self):
             context.foo = 1
@@ -93,7 +93,7 @@ def test_context_set_values():
 def test_context_manager_multi_threading():
     import threading
 
-    class ContextClass(object):
+    class ContextClass:
         def doit(self):
             with context(self):
                 # Save stack to ensure it's different
@@ -114,7 +114,7 @@ def test_context_manager_multi_threading_nesting():
     import threading
     import time
 
-    class ContextClass(object):
+    class ContextClass:
         def doit(self, level=100):
             if level == 0:
                 context.depth = len(context.__dict__['__stack'])

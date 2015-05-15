@@ -1,4 +1,5 @@
 *.pyc
+*.bak
 html
 django_dci/django.db
 docs/NEWS.txt

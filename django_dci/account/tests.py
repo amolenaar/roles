@@ -12,8 +12,7 @@ from roles.django import ModelRoleType
 from roles.context import context
 
 
-class MoneySource(object):
-    __metaclass__ = ModelRoleType
+class MoneySource(metaclass=ModelRoleType):
 
     def transfer(self, amount):
         if self.balance >= amount:
@@ -21,14 +20,13 @@ class MoneySource(object):
             context.sink.receive(amount)
 
 
-class MoneySink(object):
-    __metaclass__ = ModelRoleType
+class MoneySink(metaclass=ModelRoleType):
 
     def receive(self, amount):
         self.deposit(amount)
 
 
-class TransferMoney(object):
+class TransferMoney:
 
     def __init__(self, source, sink):
         self.source = source

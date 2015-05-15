@@ -8,7 +8,7 @@ Using Roles
 
 As a basic example, consider a data class:
 
->>> class Person(object):
+>>> class Person:
 ...     def __init__(self, name):
 ...         self.name = name
 >>> person = Person("John")
@@ -16,7 +16,7 @@ As a basic example, consider a data class:
 The instance should participate in a collaboration in which it fulfills a
 particular role:
 
->>> class Carpenter(object, metaclass=RoleType):
+>>> class Carpenter(metaclass=RoleType):
 ...     def chop(self):
 ...         return "chop, chop"
 
@@ -46,7 +46,7 @@ It is much more convenient, though, to apply roles only in a specific context:
 
 >>> from roles.context import context
 
->>> class WoodChopping(object):
+>>> class WoodChopping:
 ...     def __init__(self, person):
 ...         self.person = person
 ...         self.chopping_context = context(self, person=Carpenter)
@@ -73,7 +73,7 @@ source account and the other plays the role of target account.
 
 Say we have this simple account class:
 
->>> class Account(object):
+>>> class Account:
 ... 
 ...     def __init__(self, amount):
 ...         self.balance = amount
@@ -88,14 +88,14 @@ Say we have this simple account class:
 If you want to transfer money from one account to another, we're normally calling one the
 source account and the other the destination account. Let's make that clear in code:
 
->>> class MoneySource(object, metaclass=RoleType):
+>>> class MoneySource(metaclass=RoleType):
 ... 
 ...     def transfer(self, amount):
 ...         if self.balance >= amount:
 ...             self.withdraw(amount)
 ...             context.sink.receive(amount)
 ... 
->>> class MoneySink(object, metaclass=RoleType):
+>>> class MoneySink(metaclass=RoleType):
 ... 
 ...     def receive(self, amount):
 ...         self.deposit(amount)
@@ -112,7 +112,7 @@ around. Also contexts can be used as intermediate data store (for the duration
 of the context): note how the money source is finding its destination through
 the context.
 
->>> class TransferMoney(object):
+>>> class TransferMoney:
 ... 
 ...     def __init__(self, source, sink):
 ...         self.source = source
@@ -134,7 +134,7 @@ considered the context object:
 
 >>> from roles.context import in_context
 
->>> class TransferMoney(object):
+>>> class TransferMoney:
 ... 
 ...     def __init__(self, source, sink):
 ...         self.source = source

@@ -2,7 +2,7 @@ import unittest
 from roles import RoleType
 
 
-class A(object):
+class A:
     def a(self):
         pass
 
@@ -17,7 +17,7 @@ class C(B):
         pass
 
 
-class R(object, metaclass=RoleType):
+class R(metaclass=RoleType):
     pass
 
 

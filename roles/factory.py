@@ -76,11 +76,11 @@ def assignto(cls):
 
     Given a class:
 
-    >>> class A(object): pass
+    >>> class A: pass
 
     And a role:
 
-    >>> class MyRole(object, metaclass=RoleType): pass
+    >>> class MyRole(metaclass=RoleType): pass
 
     You can provide implementations for several roles like this:
 
@@ -108,7 +108,7 @@ def assignto(cls):
 
     All other class fall back to the default role:
 
-    >>> class D(object): pass
+    >>> class D: pass
     >>> d = D()
     >>> MyRole(d)             # doctest: +ELLIPSIS
     <roles.factory.D+MyRole object at 0x...>
@@ -116,7 +116,7 @@ def assignto(cls):
     You can also apply the decorator to the root role directly:
 
     >>> @assignto(A)
-    ... class AnyRole(object, metaclass=RoleType): pass
+    ... class AnyRole(metaclass=RoleType): pass
 
     >>> a = A()
     >>> AnyRole(a)            # doctest: +ELLIPSIS
@@ -127,7 +127,7 @@ def assignto(cls):
 
     Now some other class should not be assigned this role:
 
-    >>> class X(object): pass
+    >>> class X: pass
     >>> AnyRole(X())          # doctest: +ELLIPSIS
     Traceback (most recent call last):
       ...
@@ -141,7 +141,7 @@ def assignto(cls):
     The usage of ``@assignto()`` is resticted to role types:
 
     >>> @assignto(A)
-    ... class NotARole(object):
+    ... class NotARole:
     ...     pass
     Traceback (most recent call last):
       ...

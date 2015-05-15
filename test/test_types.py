@@ -1,10 +1,10 @@
 
 
 import unittest
-from roles import RoleType, clone
+from roles import RoleType
 
 
-class SimpleRole(object, metaclass=RoleType):
+class SimpleRole(metaclass=RoleType):
     __slots__ = ()
 
     def inrole(self):
@@ -17,7 +17,7 @@ class TypesTest(unittest.TestCase):
     """
 
     def test_class(self):
-        class Cls(object):
+        class Cls:
             pass
 
         c = Cls()
@@ -25,7 +25,7 @@ class TypesTest(unittest.TestCase):
         c.inrole()
 
     def test_class_with_args(self):
-        class Cls(object):
+        class Cls:
             def __init__(self, a, b):
                 pass
 
@@ -34,7 +34,7 @@ class TypesTest(unittest.TestCase):
         c.inrole()
 
     def test_class_with_slots(self):
-        class Cls(object):
+        class Cls:
             __slots__ = ('a', 'b')
 
             def __init__(self):
@@ -127,7 +127,7 @@ class TypesTest(unittest.TestCase):
         Point = namedtuple('Point', 'x y')
         p = Point(1, 2)
 
-        class Vector(object, metaclass=RoleType):
+        class Vector(metaclass=RoleType):
             pass
             #def m(self):
             #    "Manhattan style distance calculation"

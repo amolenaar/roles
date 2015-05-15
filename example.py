@@ -5,12 +5,12 @@ Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-from roles import RoleType, clone
+from roles import RoleType
 from roles.context import context
 
 
 
-class Account(object):
+class Account:
 
     def __init__(self, amount):
         print("Creating a new account with balance of " + str(amount))
@@ -26,18 +26,18 @@ class Account(object):
         self.balance += amount
 
 
-class MoneySource(object, metaclass=RoleType):
+class MoneySource(metaclass=RoleType):
     def transfer(self, amount):
         if self.balance >= amount:
             self.withdraw(amount)
             context.sink.receive(amount)
 
-class MoneySink(object, metaclass=RoleType):
+class MoneySink(metaclass=RoleType):
     def receive(self, amount):
         self.deposit(amount)
 
 
-class TransferMoney(object):
+class TransferMoney:
 
     def __init__(self, source, sink):
         self.source = source

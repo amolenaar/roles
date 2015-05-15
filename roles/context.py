@@ -11,7 +11,7 @@ import threading
 __all__ = ['context', 'in_context']
 
 
-class ManagedContext(object):
+class ManagedContext:
 
     def __init__(self, stack, ctx, bindings):
         self.stack = stack
@@ -63,7 +63,7 @@ The default application wide context stack.
 Put a new context class on the context stack. This functionality should
 be called with the context class as first argument.
 
->>> class SomeContext(object):
+>>> class SomeContext:
 ...     pass # define some methods, define some roles
 ...     def execute(self):
 ...         with context(self):
@@ -76,10 +76,10 @@ You can provide additional bindings to be performed:
 
 >>> from role import RoleType
 
->>> class SomeRole(object, metaclass=RoleType):
+>>> class SomeRole(metaclass=RoleType):
 ...     pass
 
->>> class SomeContext(object):
+>>> class SomeContext:
 ...     def __init__(self, data_object):
 ...         self.data_object = data_object
 ...     def execute(self):

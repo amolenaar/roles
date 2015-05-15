@@ -11,11 +11,10 @@ setup_role = \
 """
 from roles import RoleType
 
-class A(object):
+class A:
     pass
 
-class Role(object):
-    __metaclass__ = RoleType
+class Role(metaclass=RoleType):
     def func(self): pass
 
 a = A()
@@ -26,11 +25,10 @@ setup_rolefactory = \
 from roles import RoleType
 from roles.factory import assignto
 
-class A(object):
+class A:
     pass
 
-class Role(object):
-    __metaclass__ = RoleType
+class Role(metaclass=RoleType):
     def func(self): pass
 
 @assignto(A)
@@ -45,13 +43,13 @@ setup_zope = \
 """
 from zope import interface, component
 
-class A(object):
+class A:
     pass
 
 class Iface(interface.Interface):
     pass
 
-class Adapter(object):
+class Adapter:
     interface.implements(Iface)
     component.adapts(A)
     def __init__(self, ctx): self.ctx = ctx
@@ -75,11 +73,10 @@ def profile():
 
     from roles import RoleType
 
-    class A(object):
+    class A:
         def func(self): pass
 
-    class Role(object):
-        __metaclass__ = RoleType
+    class Role(metaclass=RoleType):
         def func(self): pass
 
     a = A()
