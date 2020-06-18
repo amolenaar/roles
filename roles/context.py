@@ -23,7 +23,7 @@ class ManagedContext(object):
         Activate the context, bind roles to instances defined in the context.
         """
         ctx = self.ctx
-        self.stack.append(self.ctx)
+        self.stack.append(ctx)
         for var, role in self.bindings.iteritems():
             role.assign(getattr(ctx, var))
         return ctx

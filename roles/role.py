@@ -347,8 +347,7 @@ class RoleType(type):
         except AttributeError:
             pass
 
-        rolecls = type(self.newclassname(rolebases), rolebases, d)
-        return rolecls
+        return type(self.newclassname(rolebases), rolebases, d)
 
     def assign(self, subj, method=instance):
         """
@@ -386,10 +385,7 @@ class RoleType(type):
         cls = type(subj)
         rolebases = tuple(b for b in cls.__bases__ if b is not self)
         # Fall back to original class as soon as no roles are attached anymore
-        if len(rolebases) > 1:
-            rolecls = self.newclass(cls, rolebases)
-        else:
-            rolecls = rolebases[0]
+        rolecls = self.newclass(cls, rolebases) if len(rolebases) > 1 else rolebases[0]
         return method(rolecls, subj)
 
     __call__ = assign
