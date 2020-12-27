@@ -99,6 +99,3 @@ def in_context(func):
         with context(self):
             return func(self, *args, **kwargs)
     return in_context_wrapper
-
-
-# vim:sw=4:et:ai

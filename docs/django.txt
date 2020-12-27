@@ -42,6 +42,3 @@ saving objects should be done outside the role context.
 ...         # Do storage when roles are removed
 ...         self.source.save()
 ...         self.sink.save()
-
-
-.. vim:syntax=rst

@@ -136,9 +136,3 @@ class TraitTestCase(unittest.TestCase):
             self.assertEqual('Can not apply role when overriding methods: b', str(e))
         else:
             self.fail('should not pass')
-
-
-if __name__ == '__main__':
-    unittest.main()
-
-# vim:sw=4:et:ai

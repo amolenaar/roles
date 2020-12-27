@@ -66,6 +66,3 @@ print(src, src.balance)
 assert src.balance == 900
 print(dst, dst.balance)
 assert dst.balance == 100
-
-
-# vim:sw=4:et:ai

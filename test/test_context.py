@@ -134,5 +134,3 @@ def test_context_manager_multi_threading_nesting():
     # ensure both stacks are different objects
     assert cc1.depth == 100, cc1.depth
     assert cc2.depth == 100, cc2.depth
-
-# vim:sw=4:et:ai

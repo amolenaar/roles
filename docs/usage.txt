@@ -74,14 +74,14 @@ source account and the other plays the role of target account.
 Say we have this simple account class:
 
 >>> class Account:
-... 
+...
 ...     def __init__(self, amount):
 ...         self.balance = amount
 ...         super(Account, self).__init__()
-... 
+...
 ...     def withdraw(self, amount):
 ...         self.balance -= amount
-... 
+...
 ...     def deposit(self, amount):
 ...         self.balance += amount
 
@@ -89,14 +89,14 @@ If you want to transfer money from one account to another, we're normally callin
 source account and the other the destination account. Let's make that clear in code:
 
 >>> class MoneySource(metaclass=RoleType):
-... 
+...
 ...     def transfer(self, amount):
 ...         if self.balance >= amount:
 ...             self.withdraw(amount)
 ...             context.sink.receive(amount)
-... 
+...
 >>> class MoneySink(metaclass=RoleType):
-... 
+...
 ...     def receive(self, amount):
 ...         self.deposit(amount)
 
@@ -113,14 +113,14 @@ of the context): note how the money source is finding its destination through
 the context.
 
 >>> class TransferMoney:
-... 
+...
 ...     def __init__(self, source, sink):
 ...         self.source = source
 ...         self.sink = sink
 ...         self.transfer_context = context(self,
 ...                     source=MoneySource,
 ...                     sink=MoneySink)
-... 
+...
 ...     def transfer_money(self, amount):
 ...         """
 ...         The interaction.
@@ -135,11 +135,11 @@ considered the context object:
 >>> from roles.context import in_context
 
 >>> class TransferMoney:
-... 
+...
 ...     def __init__(self, source, sink):
 ...         self.source = source
 ...         self.sink = sink
-... 
+...
 ...     @in_context
 ...     def transfer_money(self, amount):
 ...         """
@@ -148,5 +148,3 @@ considered the context object:
 ...         with MoneySource.played_by(self.source),\
 ...                     MoneySink.played_by(self.sink):
 ...             self.source.transfer(amount)
-
-.. vim:syntax=rst

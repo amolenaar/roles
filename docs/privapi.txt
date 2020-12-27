@@ -32,5 +32,3 @@ Context internals
 
 .. autoclass:: ctxman
    :members:
-
-.. vim:syntax=rst

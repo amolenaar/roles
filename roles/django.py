@@ -20,6 +20,3 @@ else:
     class ModelRoleType(RoleType, ModelBase):
         class Meta:
             proxy = True
-
-
-# vim:sw=4:et:ai

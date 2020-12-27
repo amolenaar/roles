@@ -74,7 +74,3 @@ class MoneyTransferTest(TestCase):
         accounts = Account.objects.all()
         assert accounts[0].balance == 900, accounts[0].balance
         assert accounts[1].balance == 100, accounts[1].balance
-
-
-
-# vim:sw=4:et:ai

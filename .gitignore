@@ -5,3 +5,4 @@ django_dci/django.db
 docs/NEWS.txt
 docs/README.txt
 profile.prof
+.venv

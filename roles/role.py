@@ -410,6 +410,3 @@ class RoleType(type):
                 yield subj
             finally:
                 self.revoke(subj)
-
-
-# vim:sw=4:et:ai

@@ -193,6 +193,3 @@ class NoRoleError(TypeError):
     instance.
     """
     pass
-
-
-# vim:sw=4:et:ai
