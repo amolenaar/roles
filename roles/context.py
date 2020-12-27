@@ -2,7 +2,7 @@
 Context.
 """
 
-from __future__ import absolute_import
+
 
 from functools import wraps
 import threading
@@ -11,7 +11,7 @@ import threading
 __all__ = ['context', 'in_context']
 
 
-class ManagedContext(object):
+class ManagedContext:
 
     def __init__(self, stack, ctx, bindings):
         self.stack = stack
@@ -24,14 +24,14 @@ class ManagedContext(object):
         """
         ctx = self.ctx
         self.stack.append(ctx)
-        for var, role in self.bindings.iteritems():
+        for var, role in self.bindings.items():
             role.assign(getattr(ctx, var))
         return ctx
 
     def __exit__(self, exc_type, exc_value, traceback):
         ctx = self.stack.pop()
         assert ctx is self.ctx
-        for var, role in self.bindings.iteritems():
+        for var, role in self.bindings.items():
             role.revoke(getattr(ctx, var))
 
 
@@ -63,7 +63,7 @@ The default application wide context stack.
 Put a new context class on the context stack. This functionality should
 be called with the context class as first argument.
 
->>> class SomeContext(object):
+>>> class SomeContext:
 ...     pass # define some methods, define some roles
 ...     def execute(self):
 ...         with context(self):
@@ -76,10 +76,10 @@ You can provide additional bindings to be performed:
 
 >>> from role import RoleType
 
->>> class SomeRole(object):
-...     __metaclass__ = RoleType
+>>> class SomeRole(metaclass=RoleType):
+...     pass
 
->>> class SomeContext(object):
+>>> class SomeContext:
 ...     def __init__(self, data_object):
 ...         self.data_object = data_object
 ...     def execute(self):
@@ -99,6 +99,3 @@ def in_context(func):
         with context(self):
             return func(self, *args, **kwargs)
     return in_context_wrapper
-
-
-# vim:sw=4:et:ai

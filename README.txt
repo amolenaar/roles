@@ -22,7 +22,7 @@ Using Roles
 
 As a basic example, consider a domain class:
 
->>> class Person(object):
+>>> class Person:
 ...     def __init__(self, name):
 ...         self.name = name
 >>> person = Person("John")
@@ -31,8 +31,7 @@ The instance should participate in a collaboration in which it fulfills a
 particular role:
 
 >>> from roles import RoleType
->>> class Carpenter(object):
-...     __metaclass__ = RoleType
+>>> class Carpenter(metaclass=RoleType):
 ...     def chop(self):
 ...          return "chop, chop"
 

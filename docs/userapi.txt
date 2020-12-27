@@ -51,6 +51,3 @@ specific tasks it may help. Use it wisely.
 .. module:: roles.factory
 
 .. autofunction:: assignto
-
-
-.. vim:syntax=rst

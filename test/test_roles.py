@@ -2,7 +2,7 @@ import unittest
 from roles import RoleType
 
 
-class A(object):
+class A:
     def a(self):
         pass
 
@@ -17,8 +17,8 @@ class C(B):
         pass
 
 
-class R(object):
-    __metaclass__ = RoleType
+class R(metaclass=RoleType):
+    pass
 
 
 class U(R):
@@ -51,7 +51,7 @@ class CachingTestCase(unittest.TestCase):
         cls2 = b.__class__
         R.revoke(b)
 
-        self.assertEquals(id(cls1), id(cls2))
+        self.assertEqual(id(cls1), id(cls2))
         assert cls1 is cls2, (cls1, cls2)
 
     def test_played_by_before(self):
@@ -114,8 +114,8 @@ class TraitTestCase(unittest.TestCase):
         try:
             with U.played_by(c):
                 pass  # okay
-        except TypeError, e:
-            self.assertEquals('Can not apply role when overriding methods: b', str(e))
+        except TypeError as e:
+            self.assertEqual('Can not apply role when overriding methods: b', str(e))
         else:
             self.fail('should not pass')
 
@@ -132,13 +132,7 @@ class TraitTestCase(unittest.TestCase):
         try:
             with U.played_by(a):
                 pass  # okay
-        except TypeError, e:
-            self.assertEquals('Can not apply role when overriding methods: b', str(e))
+        except TypeError as e:
+            self.assertEqual('Can not apply role when overriding methods: b', str(e))
         else:
             self.fail('should not pass')
-
-
-if __name__ == '__main__':
-    unittest.main()
-
-# vim:sw=4:et:ai

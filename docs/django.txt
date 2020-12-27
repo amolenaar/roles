@@ -13,8 +13,7 @@ obvious) should use ``roles.django.ModelRoleType`` as metaclass.
 
 Then roles can be applied in the regular way.
 
->>> class MoneySource(object):                           # doctest: +SKIP
-...    __metaclass__ = ModelRoleType
+>>> class MoneySource(metaclass=ModelRoleType):          # doctest: +SKIP
 ...
 ...    def transfer(self, amount):
 ...        if self.balance >= amount:
@@ -25,7 +24,7 @@ Then roles can be applied in the regular way.
 Since the roles module changes the class names (it adds the roles that are applied at a certain time), those can not be used directly for storing. For now,
 saving objects should be done outside the role context.
 
->>> class TransferMoney(object):                         # doctest: +SKIP
+>>> class TransferMoney:                                 # doctest: +SKIP
 ...
 ...     def __init__(self, source, sink):
 ...         self.source = source
@@ -43,6 +42,3 @@ saving objects should be done outside the role context.
 ...         # Do storage when roles are removed
 ...         self.source.save()
 ...         self.sink.save()
-
-
-.. vim:syntax=rst

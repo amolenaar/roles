@@ -17,16 +17,8 @@ with closing(open('README.txt')) as f:
 
 
 setup(
-    name='roles',
     version=VERSION,
-    description='Role based development',
     long_description=doc,
-    author='Arjan Molenaar',
-    author_email='gaphor@gmail.com',
-    url='http://github.com/amolenaar/roles',
-    license="BSD License",
-    packages = [ 'roles' ],
-    keywords="role DCI data context interaction",
     platforms=["All"],
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
@@ -36,5 +28,3 @@ setup(
                  'Programming Language :: Python',
                  'Topic :: Software Development :: Libraries']
     )
-
-#vim:sw=4:et:ai

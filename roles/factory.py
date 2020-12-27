@@ -7,7 +7,7 @@ cryptic and not easier to reason about.
 Author: Arjan Molenaar
 """
 
-from __future__ import absolute_import
+
 
 from .role import RoleType, cached, instance
 
@@ -76,12 +76,11 @@ def assignto(cls):
 
     Given a class:
 
-    >>> class A(object): pass
+    >>> class A: pass
 
     And a role:
 
-    >>> class MyRole(object):
-    ...     __metaclass__ = RoleType
+    >>> class MyRole(metaclass=RoleType): pass
 
     You can provide implementations for several roles like this:
 
@@ -109,7 +108,7 @@ def assignto(cls):
 
     All other class fall back to the default role:
 
-    >>> class D(object): pass
+    >>> class D: pass
     >>> d = D()
     >>> MyRole(d)             # doctest: +ELLIPSIS
     <roles.factory.D+MyRole object at 0x...>
@@ -117,8 +116,7 @@ def assignto(cls):
     You can also apply the decorator to the root role directly:
 
     >>> @assignto(A)
-    ... class AnyRole(object):
-    ...     __metaclass__ = RoleType
+    ... class AnyRole(metaclass=RoleType): pass
 
     >>> a = A()
     >>> AnyRole(a)            # doctest: +ELLIPSIS
@@ -129,11 +127,11 @@ def assignto(cls):
 
     Now some other class should not be assigned this role:
 
-    >>> class X(object): pass
+    >>> class X: pass
     >>> AnyRole(X())          # doctest: +ELLIPSIS
     Traceback (most recent call last):
       ...
-    NoRoleError: No role found for <class 'roles.factory.X'>
+    roles.factory.NoRoleError: No role found for <class 'roles.factory.X'>
 
     And this still works:
 
@@ -143,11 +141,11 @@ def assignto(cls):
     The usage of ``@assignto()`` is resticted to role types:
 
     >>> @assignto(A)
-    ... class NotARole(object):
+    ... class NotARole:
     ...     pass
     Traceback (most recent call last):
       ...
-    NotARoleError: Could not apply @assignto() to class <class 'roles.factory.NotARole'>: not a role
+    roles.factory.NotARoleError: Could not apply @assignto() to class <class 'roles.factory.NotARole'>: not a role
 
     """
 
@@ -195,6 +193,3 @@ class NoRoleError(TypeError):
     instance.
     """
     pass
-
-
-# vim:sw=4:et:ai

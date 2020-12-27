@@ -60,5 +60,3 @@ Note that conversion of doctests is trivial with::
 *0.1.0*
 
 - Initial release: roles.py
-
-.. vim:syntax=rst
