@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 
 from roles import RoleType
@@ -15,8 +17,9 @@ def test_class():
         pass
 
     c = Cls()
-    SimpleRole(c)
-    c.inrole()
+    SimpleRole(c)  # type: ignore[call-arg]
+
+    assert c.inrole()  # type: ignore[attr-defined]
 
 
 def test_class_with_args():
@@ -25,8 +28,9 @@ def test_class_with_args():
             pass
 
     c = Cls(1, 2)
-    SimpleRole(c)
-    c.inrole()
+    SimpleRole(c)  # type: ignore[call-arg]
+
+    assert c.inrole()  # type: ignore[attr-defined]
 
 
 def test_class_with_slots():
@@ -38,7 +42,7 @@ def test_class_with_slots():
 
     c = Cls()
     with pytest.raises(TypeError) as exc_info:
-        SimpleRole(c)
+        SimpleRole(c)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
         == "__class__ assignment: 'Cls+SimpleRole' object layout differs from 'Cls'"
@@ -46,9 +50,9 @@ def test_class_with_slots():
 
 
 def test_dict():
-    d = dict()
+    d: Dict[int, int] = dict()
     with pytest.raises(TypeError) as exc_info:
-        SimpleRole(d)
+        SimpleRole(d)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
         == "__class__ assignment only supported for heap types or ModuleType subclasses"
@@ -61,16 +65,17 @@ def test_dict_subclass():
 
     d = Dict()
     d["a"] = 3
-    SimpleRole(d)
+    SimpleRole(d)  # type: ignore[call-arg]
     assert "Dict+SimpleRole" == d.__class__.__name__
     assert 3 == d["a"]
-    d.inrole()
+
+    assert d.inrole()  # type: ignore[attr-defined]
 
 
 def test_list():
     d = ["a", "b"]
     with pytest.raises(TypeError) as exc_info:
-        SimpleRole(d)
+        SimpleRole(d)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
         == "__class__ assignment only supported for heap types or ModuleType subclasses"
@@ -82,16 +87,16 @@ def test_list_subclass():
         pass
 
     d = List(["a", "b"])
-    SimpleRole(d)
+    SimpleRole(d)  # type: ignore[call-arg]
     assert "List+SimpleRole" == d.__class__.__name__
     assert "a" == d[0]
-    d.inrole()
+    assert d.inrole()  # type: ignore[attr-defined]
 
 
 def test_tuple():
     d = ("a", "b")
     with pytest.raises(TypeError) as exc_info:
-        SimpleRole(d)
+        SimpleRole(d)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
         == "__class__ assignment only supported for heap types or ModuleType subclasses"
@@ -103,10 +108,10 @@ def test_tuple_subclass():
         pass
 
     d = Tuple(["a", "b"])
-    SimpleRole(d)
+    SimpleRole(d)  # type: ignore[call-arg]
     assert "Tuple+SimpleRole" == d.__class__.__name__
     assert "a" == d[0]
-    d.inrole()
+    assert d.inrole()  # type: ignore[attr-defined]
 
 
 def test_userdict():
@@ -119,7 +124,7 @@ def test_userdict():
 
     d = UserDict()
     with pytest.raises(TypeError) as exc_info:
-        SimpleRole(d)
+        SimpleRole(d)  # type: ignore[call-arg]
     assert str(exc_info) == "class UserDict has no attribute '__mro__'"
 
 
@@ -134,7 +139,7 @@ def test_namedtuple():
         pass
 
     with pytest.raises(TypeError) as exc_info:
-        Vector(p)
+        Vector(p)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
         == "__class__ assignment: 'Point+Vector' object layout differs from 'Point'"

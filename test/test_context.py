@@ -1,12 +1,23 @@
+from typing import List, Protocol
+
 from roles import RoleType
 from roles.context import context, in_context
 
 
-class Account:
+class Account(Protocol):
+    balance: float
+
+    def withdraw(self, amount: float) -> None:
+        ...
+
+    def deposit(self, amount: float) -> None:
+        ...
+
+
+class PaymentAccount:
     def __init__(self, amount):
         print("Creating a new account with balance of " + str(amount))
         self.balance = amount
-        super(Account, self).__init__()
 
     def withdraw(self, amount):
         print("Withdraw " + str(amount) + " from " + str(self))
@@ -18,36 +29,38 @@ class Account:
 
 
 class MoneySource(metaclass=RoleType):
-    def transfer(self, amount):
+    def transfer(self: Account, amount):
         if self.balance >= amount:
             self.withdraw(amount)
             context.to_account.receive(amount)
 
 
 class MoneySink(metaclass=RoleType):
-    def receive(self, amount):
+    def receive(self: Account, amount):
         self.deposit(amount)
 
 
 class TransferMoney:
-    def __init__(self, from_account, to_account):
-        self.from_account = MoneySource(from_account)
-        self.to_account = MoneySink(to_account)
+    def __init__(self, from_account: Account, to_account: Account):
+        self.from_account = MoneySource(from_account)  # type: ignore[call-arg]
+        self.to_account = MoneySink(to_account)  # type: ignore[call-arg]
 
     def transfer_money__with(self, amount):
         """The interaction."""
         with context(self):
+            assert isinstance(self.from_account, PaymentAccount)
             self.from_account.transfer(amount)
 
     @in_context
     def transfer_money__decorator(self, amount):
         """The interaction."""
+        assert isinstance(self.from_account, PaymentAccount)
         self.from_account.transfer(amount)
 
 
 def test_context_context_manager_style():
-    src = Account(1000)
-    dst = Account(0)
+    src = PaymentAccount(1000)
+    dst = PaymentAccount(0)
 
     tm = TransferMoney(src, dst)
 
@@ -60,8 +73,8 @@ def test_context_context_manager_style():
 
 
 def test_context_decorator():
-    src = Account(1000)
-    dst = Account(0)
+    src = PaymentAccount(1000)
+    dst = PaymentAccount(0)
 
     tm = TransferMoney(src, dst)
 
@@ -87,6 +100,8 @@ def test_context_manager_multi_threading():
     import threading
 
     class ContextClass:
+        stack: List[object]
+
         def doit(self):
             with context(self):
                 # Save stack to ensure it's different
@@ -108,6 +123,8 @@ def test_context_manager_multi_threading_nesting():
     import time
 
     class ContextClass:
+        depth: int
+
         def doit(self, level=100):
             if level == 0:
                 context.depth = len(context.__dict__["__stack"])

@@ -1,9 +1,12 @@
 import unittest
+from typing import Union
 
 from roles import RoleType
 
 
 class A:
+    b: int
+
     def a(self):
         pass
 
@@ -33,7 +36,8 @@ class CachingTestCase(unittest.TestCase):
     def test_application(self):
         a = A()
         b = A()
-        assert R(a).__class__ is R(b).__class__
+
+        assert R(a).__class__ is R(b).__class__  # type: ignore[call-arg]
 
     def test_application_classes(self):
         """This is basically what happens:"""
@@ -41,11 +45,11 @@ class CachingTestCase(unittest.TestCase):
         a = A()
         b = A()
 
-        R(a)
+        R(a)  # type: ignore[call-arg]
         cls1 = a.__class__
         R.revoke(a)
 
-        R(b)
+        R(b)  # type: ignore[call-arg]
         cls2 = b.__class__
         R.revoke(b)
 
@@ -56,25 +60,27 @@ class CachingTestCase(unittest.TestCase):
         a = A()
         with R.played_by(a):
             pass
+
         assert a.__class__ is A, (a.__class__, A)
 
     def test_played_by_already_assigned(self):
         a = A()
-        R(a)
+        R(a)  # type: ignore[call-arg]
         with R.played_by(a):
             pass
+
         assert isinstance(a, R)
 
-    def test_played_by_e(self):
+    def test_played_by_as(self):
         a = A()
         b = A()
-        ctx: R = R.played_by(a)
-        a_in_role = ctx.__enter__()
-        cls1 = a_in_role.__class__
+        a_in_role: Union[A, R]
+        with R.played_by(a) as a_in_role:
+            cls1 = a_in_role.__class__  # type: ignore[attr-defined]
 
-        ctx2: R = R.played_by(b)
-        b_in_role = ctx2.__enter__()
-        cls2 = b_in_role.__class__
+        b_in_role: Union[B, R]
+        with R.played_by(b) as b_in_role:  # type: ignore[assignment]
+            cls2 = b_in_role.__class__  # type: ignore[attr-defined]
 
         assert cls1 is cls2, (cls1, cls2)
 

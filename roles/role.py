@@ -21,10 +21,12 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
+    Union,
 )
 
 T = TypeVar("T", bound=Hashable)
 R = TypeVar("R", bound=Hashable)
+G = TypeVar("G", bound=Hashable)
 
 
 def instance(rolecls: Type[R], subj: T) -> R:
@@ -304,7 +306,9 @@ class RoleType(type):
 
         return type(self.newclassname(rolebases), rolebases, d)
 
-    def assign(self, subj: T, method: Callable[[Type[R], T], R] = instance) -> R:
+    def assign(
+        self, subj: T, method: Callable[[Type[R], T], R] = instance
+    ) -> Union[T, R]:
         """Call is invoked when a role should be assigned to an object."""
         if isinstance(subj, self):
             return subj  # type: ignore[return-value]
@@ -346,7 +350,7 @@ class RoleType(type):
     __call__ = assign  # type: ignore[assignment]
 
     @contextmanager
-    def played_by(self, subj: T) -> Iterator[R]:
+    def played_by(self, subj: T) -> Iterator[Union[T, R]]:
         """Shorthand for using roles in with statements.
 
         >>> class Biker(metaclass=RoleType):
@@ -361,7 +365,7 @@ class RoleType(type):
         if isinstance(subj, self):
             yield subj  # type: ignore[misc]
         else:
-            newsubj: R = self.assign(subj)
+            newsubj: Union[T, R] = self.assign(subj)
             try:
                 yield newsubj
             finally:
