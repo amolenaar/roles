@@ -6,14 +6,28 @@ Author: Arjan Molenaar
 Inspired by the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
+from __future__ import annotations
 
-from typing import Dict
 from contextlib import contextmanager
-from operator import attrgetter
 from functools import lru_cache
+from operator import attrgetter
+from typing import (
+    Callable,
+    Dict,
+    Hashable,
+    Iterator,
+    Sequence,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+)
+
+T = TypeVar("T", bound=Hashable)
+R = TypeVar("R", bound=Hashable)
 
 
-def instance(rolecls, subj):
+def instance(rolecls: Type[R], subj: T) -> R:
     """Apply the role class to the subject. This is the default role assignment
     method.
 
@@ -34,11 +48,11 @@ def instance(rolecls, subj):
     >>> biker.bike()
     Joe bikes
     """
-    subj.__class__ = rolecls
-    return subj
+    subj.__class__ = rolecls  # type: ignore[assignment]
+    return subj  # type: ignore[return-value]
 
 
-def clone(rolecls, subj):
+def clone(rolecls: Type[R], subj: T) -> R:
     """Returns a new subject instance with role applied. Both instances refer
     to the same instance dict.
 
@@ -65,7 +79,8 @@ def clone(rolecls, subj):
     cloned, everything defined in the class (properties, methods) are not
     accessible by the role.
     """
-    newsubj = rolecls.__new__(rolecls)
+
+    newsubj: R = rolecls.__new__(rolecls)
     newsubj.__dict__ = subj.__dict__
     return newsubj
 
@@ -118,11 +133,11 @@ def adapter(rolecls, subj):
     return newsubj
 
 
-EXCLUDED = frozenset(["__doc__", "__module__", "__dict__", "__weakref__", "__slots__"])
+EXCLUDED = ("__doc__", "__module__", "__dict__", "__weakref__", "__slots__")
 
 
 @lru_cache(maxsize=None)
-def class_fields(cls, exclude=EXCLUDED):
+def class_fields(cls: Type, exclude: Sequence[str] = EXCLUDED) -> Set[str]:
     """Get all fields declared in a class, including superclasses.
 
     Don't forget to clear the cache if fields are added to a class or
@@ -255,19 +270,19 @@ class RoleType(type):
     Joe bikes
     """
 
-    def overrides(self, subj):
+    def overrides(self, subj: T) -> Set[str]:
         """Return a set of attributes (methods alike) found in both the role
         and subject instance."""
         try:
             instance_fields = list(subj.__dict__.keys())
         except AttributeError:
-            instance_fields = ()
+            instance_fields = []
 
         return class_fields(self).intersection(
             class_fields(subj.__class__).union(instance_fields)
         )
 
-    def newclassname(self, bases):
+    def newclassname(self, bases: Tuple[Type, ...]) -> str:
         """Generate a new name bases on the base classes.
 
         The last field is the data class.
@@ -278,10 +293,10 @@ class RoleType(type):
         return "+".join(names)
 
     @lru_cache(maxsize=None)
-    def newclass(self, cls, rolebases):
+    def newclass(self, cls: Type[T], rolebases: Tuple[Type, ...]) -> Type[R]:
         """Create a new role class."""
         # Role class not yet defined, define a new class
-        d = {"__module__": cls.__module__, "__doc__": cls.__doc__}
+        d: Dict[str, object] = {"__module__": cls.__module__, "__doc__": cls.__doc__}
         try:
             d["__slots__"] = cls.__slots__
         except AttributeError:
@@ -289,12 +304,10 @@ class RoleType(type):
 
         return type(self.newclassname(rolebases), rolebases, d)
 
-    def assign(self, subj, method=instance):
+    def assign(self, subj: T, method: Callable[[Type[R], T], R] = instance) -> R:
         """Call is invoked when a role should be assigned to an object."""
-        cls = type(subj)
-
-        if issubclass(cls, self):
-            return subj
+        if isinstance(subj, self):
+            return subj  # type: ignore[return-value]
 
         # Trait check should go here; provide @override for explicit overrides.
         o = self.overrides(subj)
@@ -302,6 +315,8 @@ class RoleType(type):
             raise TypeError(
                 "Can not apply role when overriding methods: %s" % ", ".join(o)
             )
+
+        cls = type(subj)
 
         if isinstance(cls, RoleType):
             # Create a sibling class
@@ -314,13 +329,13 @@ class RoleType(type):
 
         return method(rolecls, subj)
 
-    def revoke(self, subj, method=instance):
+    def revoke(self, subj: R, method: Callable[[Type[T], R], T] = instance) -> T:
         """Retract the role from subj.
 
         By default the ``instance`` strategy is used.
         """
         if not isinstance(subj, self):
-            return subj
+            return subj  # type: ignore[return-value]
 
         cls = type(subj)
         rolebases = tuple(b for b in cls.__bases__ if b is not self)
@@ -328,10 +343,10 @@ class RoleType(type):
         rolecls = self.newclass(cls, rolebases) if len(rolebases) > 1 else rolebases[0]
         return method(rolecls, subj)
 
-    __call__ = assign
+    __call__ = assign  # type: ignore[assignment]
 
     @contextmanager
-    def played_by(self, subj):
+    def played_by(self, subj: T) -> Iterator[R]:
         """Shorthand for using roles in with statements.
 
         >>> class Biker(metaclass=RoleType):
@@ -344,10 +359,10 @@ class RoleType(type):
         'bike, bike'
         """
         if isinstance(subj, self):
-            yield subj
+            yield subj  # type: ignore[misc]
         else:
-            self.assign(subj)
+            newsubj: R = self.assign(subj)
             try:
-                yield subj
+                yield newsubj
             finally:
-                self.revoke(subj)
+                self.revoke(newsubj)

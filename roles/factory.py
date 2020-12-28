@@ -7,6 +7,7 @@ Author: Arjan Molenaar
 """
 
 from functools import lru_cache
+
 from .role import RoleType, instance
 
 

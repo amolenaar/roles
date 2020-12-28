@@ -24,14 +24,14 @@ class Account:
 
 
 class MoneySource(metaclass=RoleType):
-    def transfer(self, amount):
+    def transfer(self: Account, amount):
         if self.balance >= amount:
             self.withdraw(amount)
             context.sink.receive(amount)
 
 
 class MoneySink(metaclass=RoleType):
-    def receive(self, amount):
+    def receive(self: Account, amount):
         self.deposit(amount)
 
 

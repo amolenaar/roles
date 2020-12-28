@@ -30,8 +30,7 @@ class ManagedContext:
 
 
 class CurrentContextManager(threading.local):
-    """
-    The default application wide context stack.
+    """The default application wide context stack.
 
     Put a new context class on the context stack. This functionality should
     be called with the context class as first argument.
