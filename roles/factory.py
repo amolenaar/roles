@@ -6,8 +6,8 @@ more cryptic and not easier to reason about.
 Author: Arjan Molenaar
 """
 
-
-from .role import RoleType, cached, instance
+from functools import lru_cache
+from .role import RoleType, instance
 
 
 class RoleFactoryType(RoleType):
@@ -36,7 +36,7 @@ class RoleFactoryType(RoleType):
             self._strict = strict
             self.lookup.cache.clear()
 
-    @cached
+    @lru_cache(maxsize=None)
     def lookup(self, cls):
         """Find a specific Role type for a subject.
 

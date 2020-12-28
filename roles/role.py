@@ -10,6 +10,7 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 from typing import Dict
 from contextlib import contextmanager
 from operator import attrgetter
+from functools import lru_cache
 
 
 def instance(rolecls, subj):
@@ -117,55 +118,10 @@ def adapter(rolecls, subj):
     return newsubj
 
 
-def cached(func):
-    """Cache the output of the function invocation.
-
-    >>> @cached
-    ... def cap(s): return s.upper()
-    >>> cap('a')
-    'A'
-    >>> cap('b')
-    'B'
-
-    Show cache contents:
-
-    >>> sorted(cap.cache)
-    [('a',), ('b',)]
-
-    Clear the cache:
-
-    >>> cap.cache.clear()
-    >>> cap.cache
-    {}
-
-    Due to the caching, we can not take key-value arguments:
-
-    >>> cap(s='a')     # doctest: +ELLIPSIS
-    Traceback (most recent call last):
-      ...
-    TypeError: wrapper() got an unexpected keyword argument 's'
-    """
-    cache: Dict[Tuple[...]] = {}
-
-    def wrapper(*args):
-        key = args
-        try:
-            return cache[key]
-        except KeyError:
-            pass  # not in cache
-        cache[key] = result = func(*args)
-        return result
-
-    wrapper.cache = cache
-    # wrapper.wrapped_func = func
-    wrapper.__doc__ = func.__doc__
-    return wrapper
-
-
 EXCLUDED = frozenset(["__doc__", "__module__", "__dict__", "__weakref__", "__slots__"])
 
 
-@cached
+@lru_cache(maxsize=None)
 def class_fields(cls, exclude=EXCLUDED):
     """Get all fields declared in a class, including superclasses.
 
@@ -321,7 +277,7 @@ class RoleType(type):
         # names.reverse()
         return "+".join(names)
 
-    @cached
+    @lru_cache(maxsize=None)
     def newclass(self, cls, rolebases):
         """Create a new role class."""
         # Role class not yet defined, define a new class
