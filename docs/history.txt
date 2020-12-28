@@ -1,11 +1,20 @@
 Change History
 ==============
 
+*1.0.0*
+
+- Python 3.8+ only
+- Removed ``roles.factory``, use `functools.singledispatch`` instead
+- Added type annotations
+- Publish docs on readthedocs.io
+- Build with Poetry
+- CI on Github Actions
+
 *0.10*
 
 - Allow saving domain instances with roles applied. Thanks to Ben Scherrey and
   Chokchai Phatharamalai
-- Deal with __slots__
+- Deal with ``__slots__``
 - Can assign roles bindings to be used in the Context
 
 *0.9*
@@ -48,11 +57,6 @@ Change History
 *0.3.0*
 
 - Module works for Python 2.6 as well as Python 3.x. Doctests still run under 2.6.
-
-*1.0.0*
-
-- Python 3.6+ only
-
 
 *0.2.0*
 

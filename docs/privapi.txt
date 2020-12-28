@@ -11,18 +11,10 @@ Utility classes
 
 .. autofunction:: class_fields
 
-Generic role factory
---------------------
-
-.. module:: roles.factory
-
-.. autoclass:: RoleFactoryType
-   :members:
-
-.. module:: roles.context
-
 Context internals
 -----------------
+
+.. module:: roles.context
 
 .. autoclass:: CurrentContextManager
    :members:
