@@ -7,8 +7,9 @@ Author: Arjan Molenaar
 """
 
 from functools import lru_cache
+from typing import Dict, Type
 
-from .role import RoleType, instance
+from .role import RoleType, T, instance
 
 
 class RoleFactoryType(RoleType):
@@ -23,6 +24,8 @@ class RoleFactoryType(RoleType):
     ``@assignto`` is used to decorate a role class. There is no need
     to assign ``RoleFactoryType`` explicitly.
     """
+
+    _factory: Dict[Type, Type]
 
     def register(self, cls, rolecls, strict):
         """Register a new roleclass for a specific class.
@@ -53,15 +56,15 @@ class RoleFactoryType(RoleType):
                 raise NoRoleError("No role found for %s" % cls)
             return self
 
-    def assign(self, subj, method=instance):
+    def assign(self, subj: T, method=instance):
         rolecls = self.lookup(type(subj))
         return RoleType.assign(rolecls, subj, method)
 
-    def revoke(self, subj, method=instance):
+    def revoke(self, subj: T, method=instance):
         rolecls = self.lookup(type(subj))
         return RoleType.revoke(rolecls, subj, method)
 
-    __call__ = assign
+    __call__ = assign  # type: ignore[assignment]
 
 
 def assignto(cls):

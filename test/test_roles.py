@@ -68,11 +68,11 @@ class CachingTestCase(unittest.TestCase):
     def test_played_by_e(self):
         a = A()
         b = A()
-        ctx = R.played_by(a)
+        ctx: R = R.played_by(a)
         a_in_role = ctx.__enter__()
         cls1 = a_in_role.__class__
 
-        ctx2 = R.played_by(b)
+        ctx2: R = R.played_by(b)
         b_in_role = ctx2.__enter__()
         cls2 = b_in_role.__class__
 
