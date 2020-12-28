@@ -1,21 +1,19 @@
-"""
-This is a not-so-DCI extension that allows multiple role implementations to be
-dispatched. This means that it allows you to have role implementations specific
-for certain object types. Counterside is that the code becomes a lot more
-cryptic and not easier to reason about.
+"""This is a not-so-DCI extension that allows multiple role implementations to
+be dispatched. This means that it allows you to have role implementations
+specific for certain object types. Counterside is that the code becomes a lot
+more cryptic and not easier to reason about.
 
 Author: Arjan Molenaar
 """
-
 
 
 from .role import RoleType, cached, instance
 
 
 class RoleFactoryType(RoleType):
-    """
-    ``RoleFactoryType`` is a special kind of RoleType: with the ``@assignto``
-    class decorator this class is applied to any RoleType instance.
+    """``RoleFactoryType`` is a special kind of RoleType: with the
+    ``@assignto`` class decorator this class is applied to any RoleType
+    instance.
 
     Now subroles are able to be automatically applied to specific instances.
     Thus, the Role class is acting as a factory for it's own types.
@@ -23,12 +21,10 @@ class RoleFactoryType(RoleType):
     Note that this metaclass is automatically applied the first time
     ``@assignto`` is used to decorate a role class. There is no need
     to assign ``RoleFactoryType`` explicitly.
-
     """
 
     def register(self, cls, rolecls, strict):
-        """
-        Register a new roleclass for a specific class.
+        """Register a new roleclass for a specific class.
 
         Note: ``strict`` is set if the topmost role has ``assignto()`` applied.
         """
@@ -42,9 +38,9 @@ class RoleFactoryType(RoleType):
 
     @cached
     def lookup(self, cls):
-        """
-        Find a specific Role type for a subject. The returned role class
-        is a subclass of the factory role.
+        """Find a specific Role type for a subject.
+
+        The returned role class is a subclass of the factory role.
         """
         get = self._factory.get
         for t in cls.__mro__:
@@ -53,7 +49,7 @@ class RoleFactoryType(RoleType):
                 return rolecls
         else:
             if self._strict:
-                raise NoRoleError('No role found for %s' % cls)
+                raise NoRoleError("No role found for %s" % cls)
             return self
 
     def assign(self, subj, method=instance):
@@ -68,8 +64,7 @@ class RoleFactoryType(RoleType):
 
 
 def assignto(cls):
-    """
-    Class decorator for RoleTypes.
+    """Class decorator for RoleTypes.
 
     If a role type is defined as metaclass, this class is used to tell the
     factory which concrete role to use for a certain subject instance.
@@ -146,13 +141,12 @@ def assignto(cls):
     Traceback (most recent call last):
       ...
     roles.factory.NotARoleError: Could not apply @assignto() to class <class 'roles.factory.NotARole'>: not a role
-
     """
 
     def toprole(rolecls):
-        """
-        Find topmost RoleType class. This is where the role should be
-        registered.
+        """Find topmost RoleType class.
+
+        This is where the role should be registered.
         """
         toprolecls = None
         for r in rolecls.__mro__:
@@ -162,7 +156,9 @@ def assignto(cls):
                 break
 
         if not toprolecls:
-            raise NotARoleError('Could not apply @assignto() to class %s: not a role' % (rolecls,))
+            raise NotARoleError(
+                "Could not apply @assignto() to class %s: not a role" % (rolecls,)
+            )
         return toprolecls
 
     def wrapper(rolecls):
@@ -180,16 +176,14 @@ def assignto(cls):
 
 
 class NotARoleError(TypeError):
-    """
-    Exception thrown by role factory if the assigned type is not a role
-    (hence, the metaclass is not ``RoleType``).
-    """
+    """Exception thrown by role factory if the assigned type is not a role
+    (hence, the metaclass is not ``RoleType``)."""
+
     pass
 
 
 class NoRoleError(TypeError):
-    """
-    Exception thrown by role factory if no role could be applied to an
-    instance.
-    """
+    """Exception thrown by role factory if no role could be applied to an
+    instance."""
+
     pass

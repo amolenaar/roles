@@ -1,4 +1,5 @@
 import unittest
+
 from roles import RoleType
 
 
@@ -22,23 +23,20 @@ class R(metaclass=RoleType):
 
 
 class U(R):
-    "clashes with class A"
+    """clashes with class A."""
 
     def b(self):
         pass
 
 
 class CachingTestCase(unittest.TestCase):
-
     def test_application(self):
         a = A()
         b = A()
         assert R(a).__class__ is R(b).__class__
 
     def test_application_classes(self):
-        """
-        This is basically what happens:
-        """
+        """This is basically what happens:"""
 
         a = A()
         b = A()
@@ -101,11 +99,8 @@ class CachingTestCase(unittest.TestCase):
 
 
 class TraitTestCase(unittest.TestCase):
-
     def test_overrides(self):
-        """
-        Test if TypeError is raised when field clashes exist.
-        """
+        """Test if TypeError is raised when field clashes exist."""
 
         c = C()
         with R.played_by(c):
@@ -115,14 +110,12 @@ class TraitTestCase(unittest.TestCase):
             with U.played_by(c):
                 pass  # okay
         except TypeError as e:
-            self.assertEqual('Can not apply role when overriding methods: b', str(e))
+            self.assertEqual("Can not apply role when overriding methods: b", str(e))
         else:
-            self.fail('should not pass')
+            self.fail("should not pass")
 
     def test_instance_overrides(self):
-        """
-        Test if TypeError is raised when field clashes exist.
-        """
+        """Test if TypeError is raised when field clashes exist."""
 
         a = A()
         with U.played_by(a):
@@ -133,6 +126,6 @@ class TraitTestCase(unittest.TestCase):
             with U.played_by(a):
                 pass  # okay
         except TypeError as e:
-            self.assertEqual('Can not apply role when overriding methods: b', str(e))
+            self.assertEqual("Can not apply role when overriding methods: b", str(e))
         else:
-            self.fail('should not pass')
+            self.fail("should not pass")

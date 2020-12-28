@@ -1,5 +1,4 @@
-"""
-Classic roles example, using the roles module.
+"""Classic roles example, using the roles module.
 
 Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
@@ -9,9 +8,7 @@ from roles import RoleType
 from roles.context import context
 
 
-
 class Account:
-
     def __init__(self, amount):
         print("Creating a new account with balance of " + str(amount))
         self.balance = amount
@@ -32,19 +29,17 @@ class MoneySource(metaclass=RoleType):
             self.withdraw(amount)
             context.sink.receive(amount)
 
+
 class MoneySink(metaclass=RoleType):
     def receive(self, amount):
         self.deposit(amount)
 
 
 class TransferMoney:
-
     def __init__(self, source, sink):
         self.source = source
         self.sink = sink
-        self.transfer_context = context(self,
-                source=MoneySource,
-                sink=MoneySink)
+        self.transfer_context = context(self, source=MoneySource, sink=MoneySink)
 
     def perform_transfer(self, amount):
         with self.transfer_context as ctx:

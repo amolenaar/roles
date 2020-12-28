@@ -1,14 +1,8 @@
-"""
-Test performance between roles and zope3 implementations
-"""
+"""Test performance between roles and zope3 implementations."""
 
 from timeit import timeit
 
-import roles
-
-
-setup_role = \
-"""
+setup_role = """
 from roles import RoleType
 
 class A:
@@ -20,8 +14,7 @@ class Role(metaclass=RoleType):
 a = A()
 """
 
-setup_rolefactory = \
-"""
+setup_rolefactory = """
 from roles import RoleType
 from roles.factory import assignto
 
@@ -39,8 +32,7 @@ a = A()
 """
 
 
-setup_zope = \
-"""
+setup_zope = """
 from zope import interface, component
 
 class A:
@@ -54,17 +46,30 @@ class Adapter:
     component.adapts(A)
     def __init__(self, ctx): self.ctx = ctx
     def func(self): pass
-component.provideAdapter(Adapter)
-"""
+component.provideAdapter(Adapter)"""
 
-print 'Construction of object				%2.3fs' % timeit('a=A()', setup=setup_role)
-print 'Construction of roles				%2.3fs' % timeit('a=A();Role(a).func()', setup=setup_role)
-print 'Construction of roles in context		%2.3fs' % timeit('a=A()\nwith Role.played_by(a): a.func()', setup=setup_role)
+print("Construction of object				%2.3fs" % timeit("a=A()", setup=setup_role))
+print(
+    "Construction of roles				%2.3fs" % timeit("a=A();Role(a).func()", setup=setup_role)
+)
+print(
+    "Construction of roles in context		%2.3fs"
+    % timeit("a=A()\nwith Role.played_by(a): a.func()", setup=setup_role)
+)
 
-print 'Construction of roles from factory		%2.3fs' % timeit('a=A();Role(a).func()', setup=setup_rolefactory)
-print 'Construction of roles from factory in context	%.3fs' % timeit('a=A()\nwith Role.played_by(a): a.func()', setup=setup_rolefactory)
+print(
+    "Construction of roles from factory		%2.3fs"
+    % timeit("a=A();Role(a).func()", setup=setup_rolefactory)
+)
+print(
+    "Construction of roles from factory in context	%.3fs"
+    % timeit("a=A()\nwith Role.played_by(a): a.func()", setup=setup_rolefactory)
+)
 
-print 'Construction of zope adapters			%.3fs' % timeit('a=A();b=Iface(a);b.func()', setup=setup_zope)
+print(
+    "Construction of zope adapters			%.3fs"
+    % timeit("a=A();b=Iface(a);b.func()", setup=setup_zope)
+)
 
 
 def profile():
@@ -74,15 +79,13 @@ def profile():
     from roles import RoleType
 
     class A:
-        def func(self): pass
+        def func(self):
+            pass
 
     class Role(metaclass=RoleType):
-        def func(self): pass
+        def func(self):
+            pass
 
-    a = A()
-
-    #cProfile.run('timeit("Role(a)", setup=setup)', 'profile.prof')
-    cProfile.run('for x in xrange(10000): Role(a)', 'profile.prof')
-    p = pstats.Stats('profile.prof')
-    p.strip_dirs().sort_stats('time').print_stats(40)
- 
+    cProfile.run("for x in xrange(10000): Role(a)", "profile.prof")
+    p = pstats.Stats("profile.prof")
+    p.strip_dirs().sort_stats("time").print_stats(40)

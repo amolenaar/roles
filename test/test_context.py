@@ -1,10 +1,8 @@
-
 from roles import RoleType
 from roles.context import context, in_context
 
 
 class Account:
-
     def __init__(self, amount):
         print("Creating a new account with balance of " + str(amount))
         self.balance = amount
@@ -32,23 +30,18 @@ class MoneySink(metaclass=RoleType):
 
 
 class TransferMoney:
-
     def __init__(self, from_account, to_account):
         self.from_account = MoneySource(from_account)
         self.to_account = MoneySink(to_account)
 
     def transfer_money__with(self, amount):
-        """
-        The interaction.
-        """
+        """The interaction."""
         with context(self):
             self.from_account.transfer(amount)
 
     @in_context
     def transfer_money__decorator(self, amount):
-        """
-        The interaction.
-        """
+        """The interaction."""
         self.from_account.transfer(amount)
 
 
@@ -97,7 +90,7 @@ def test_context_manager_multi_threading():
         def doit(self):
             with context(self):
                 # Save stack to ensure it's different
-                context.stack = context.__dict__.get('__stack')
+                context.stack = context.__dict__.get("__stack")
 
     cc1 = ContextClass()
     cc2 = ContextClass()
@@ -107,7 +100,7 @@ def test_context_manager_multi_threading():
     thread.join()
 
     # ensure both stacks are different objects
-    assert cc1.stack is not cc2.stack, '%d != %d' % (id(cc1.stack), id(cc2.stack))
+    assert cc1.stack is not cc2.stack, "%d != %d" % (id(cc1.stack), id(cc2.stack))
 
 
 def test_context_manager_multi_threading_nesting():
@@ -117,10 +110,10 @@ def test_context_manager_multi_threading_nesting():
     class ContextClass:
         def doit(self, level=100):
             if level == 0:
-                context.depth = len(context.__dict__['__stack'])
+                context.depth = len(context.__dict__["__stack"])
             else:
                 with context(self):
-                    print((context.__dict__['__stack']), level)
+                    print((context.__dict__["__stack"]), level)
                     self.doit(level - 1)
                     time.sleep(0.001)
 

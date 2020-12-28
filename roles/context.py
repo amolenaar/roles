@@ -1,27 +1,21 @@
-"""
-Context.
-"""
+"""Context."""
 
 
-
-from functools import wraps
 import threading
+from functools import wraps
 
-
-__all__ = ['context', 'in_context']
+__all__ = ["context", "in_context"]
 
 
 class ManagedContext:
-
     def __init__(self, stack, ctx, bindings):
         self.stack = stack
         self.ctx = ctx
         self.bindings = bindings
 
     def __enter__(self):
-        """
-        Activate the context, bind roles to instances defined in the context.
-        """
+        """Activate the context, bind roles to instances defined in the
+        context."""
         ctx = self.ctx
         self.stack.append(ctx)
         for var, role in self.bindings.items():
@@ -36,18 +30,17 @@ class ManagedContext:
 
 
 class CurrentContextManager(threading.local):
-
     def __init__(self):
         # Access dict directly, prevent __{gs}etattr__ from being called
-        self.__dict__['__stack'] = []
+        self.__dict__["__stack"] = []
 
     def __call__(self, ctxobj, **bindings):
-        assert ctxobj, 'Should provide a context object'
-        return ManagedContext(self.__dict__['__stack'], ctxobj, bindings)
+        assert ctxobj, "Should provide a context object"
+        return ManagedContext(self.__dict__["__stack"], ctxobj, bindings)
 
     @property
     def current_context(self):
-        return self.__dict__['__stack'][-1]
+        return self.__dict__["__stack"][-1]
 
     def __getattr__(self, key):
         return getattr(self.current_context, key)
@@ -57,7 +50,9 @@ class CurrentContextManager(threading.local):
 
 
 context = CurrentContextManager()
-context.__dict__['__doc__'] = """
+context.__dict__[
+    "__doc__"
+] = """
 The default application wide context stack.
 
 Put a new context class on the context stack. This functionality should
@@ -91,11 +86,14 @@ Those bindings are applied when the context is entered (in this case immediately
 
 
 def in_context(func):
+    """Decorator for running methods in context.
+
+    The context is the object (self).
     """
-    Decorator for running methods in context. The context is the object (self).
-    """
+
     @wraps(func)
     def in_context_wrapper(self, *args, **kwargs):
         with context(self):
             return func(self, *args, **kwargs)
+
     return in_context_wrapper

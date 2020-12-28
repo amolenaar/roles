@@ -1,5 +1,4 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
+"""This file demonstrates two different styles of tests (one doctest and one
 unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
@@ -8,12 +7,11 @@ Replace these with more appropriate tests for your application.
 from django.test import TestCase
 from models import Account
 
-from roles.django import ModelRoleType
 from roles.context import context
+from roles.django import ModelRoleType
 
 
 class MoneySource(metaclass=ModelRoleType):
-
     def transfer(self, amount):
         if self.balance >= amount:
             self.withdraw(amount)
@@ -21,38 +19,30 @@ class MoneySource(metaclass=ModelRoleType):
 
 
 class MoneySink(metaclass=ModelRoleType):
-
     def receive(self, amount):
         self.deposit(amount)
 
 
 class TransferMoney:
-
     def __init__(self, source, sink):
         self.source = source
         self.sink = sink
 
     def transfer_money(self, amount):
-        """
-        The interaction.
-        """
-        with context(self),\
-                    MoneySource.played_by(self.source),\
-                    MoneySink.played_by(self.sink):
+        """The interaction."""
+        with context(self), MoneySource.played_by(self.source), MoneySink.played_by(
+            self.sink
+        ):
             self.source.transfer(amount)
-            print "We can still access the original attributes", self.sink.balance
-            print "Is it still an Account?", isinstance(self.sink, Account)
-            #print "Object equality?", dst == self.sink
+            print("We can still access the original attributes", self.sink.balance)
+            print("Is it still an Account?", isinstance(self.sink, Account))
             self.source.save()
             self.sink.save()
 
 
 class MoneyTransferTest(TestCase):
-
     def test_basic_addition(self):
-        """
-        Test roles on Django model classes.
-        """
+        """Test roles on Django model classes."""
         src = Account(balance=1000)
         dst = Account(balance=0)
         src.save()
@@ -66,9 +56,9 @@ class MoneyTransferTest(TestCase):
 
         ctx.transfer_money(amount=100)
 
-        print src, src.balance
+        print(src, src.balance)
         assert src.balance == 900
-        print dst, dst.balance
+        print(dst, dst.balance)
         assert dst.balance == 100
 
         accounts = Account.objects.all()

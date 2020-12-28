@@ -1,3 +1,1 @@
-
-
-from .role import RoleType, clone, instance, adapter
+from .role import RoleType, adapter, clone, instance  # noqa

@@ -1,5 +1,4 @@
-"""
-Pythonic implementation of the DCI (Data Context Interaction) pattern
+"""Pythonic implementation of the DCI (Data Context Interaction) pattern
 (http://www.artima.com/articles/dci_vision.html).
 
 Author: Arjan Molenaar
@@ -8,15 +7,13 @@ Inspired by the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-
-
-from operator import attrgetter
+from typing import Dict
 from contextlib import contextmanager
+from operator import attrgetter
 
 
 def instance(rolecls, subj):
-    """
-    Apply the role class to the subject. This is the default role assignment
+    """Apply the role class to the subject. This is the default role assignment
     method.
 
     >>> class Person:
@@ -41,9 +38,8 @@ def instance(rolecls, subj):
 
 
 def clone(rolecls, subj):
-    """
-    Returns a new subject instance with role applied. Both instances refer to
-    the same instance dict.
+    """Returns a new subject instance with role applied. Both instances refer
+    to the same instance dict.
 
     >>> class Person:
     ...     def __init__(self, name): self.name = name
@@ -82,10 +78,9 @@ class AdapterMixin:
 
 
 def adapter(rolecls, subj):
-    """
-    Create a wrapper object. The subject is defined as ``subject`` attribute.
-    This is a kind of last resort method. If you need to use this method a lot, then
-    maybe the roles are not the right tool for the job.
+    """Create a wrapper object. The subject is defined as ``subject``
+    attribute. This is a kind of last resort method. If you need to use this
+    method a lot, then maybe the roles are not the right tool for the job.
 
     >>> class Person:
     ...     def __init__(self, name): self.name = name
@@ -118,13 +113,12 @@ def adapter(rolecls, subj):
 
     adaptercls = rolecls.newclass(rolecls, (AdapterMixin,) + rolecls.__bases__)
     newsubj = adaptercls.__new__(adaptercls)
-    newsubj.__dict__['role_subject'] = subj
+    newsubj.__dict__["role_subject"] = subj
     return newsubj
 
 
 def cached(func):
-    """
-    Cache the output of the function invocation.
+    """Cache the output of the function invocation.
 
     >>> @cached
     ... def cap(s): return s.upper()
@@ -151,7 +145,7 @@ def cached(func):
       ...
     TypeError: wrapper() got an unexpected keyword argument 's'
     """
-    cache = {}
+    cache: Dict[Tuple[...]] = {}
 
     def wrapper(*args):
         key = args
@@ -163,20 +157,20 @@ def cached(func):
         return result
 
     wrapper.cache = cache
-    #wrapper.wrapped_func = func
+    # wrapper.wrapped_func = func
     wrapper.__doc__ = func.__doc__
     return wrapper
 
 
-EXCLUDED = frozenset(['__doc__', '__module__', '__dict__', '__weakref__', '__slots__'])
+EXCLUDED = frozenset(["__doc__", "__module__", "__dict__", "__weakref__", "__slots__"])
 
 
 @cached
 def class_fields(cls, exclude=EXCLUDED):
-    """
-    Get all fields declared in a class, including superclasses.
+    """Get all fields declared in a class, including superclasses.
 
-    Don't forget to clear the cache if fields are added to a class or role!
+    Don't forget to clear the cache if fields are added to a class or
+    role!
     """
     attrs = set()
     for c in cls.__mro__:
@@ -187,8 +181,7 @@ def class_fields(cls, exclude=EXCLUDED):
 
 
 class RoleType(type):
-    """
-    ``RoleType`` is a metaclass that provides role support to classes. The
+    """``RoleType`` is a metaclass that provides role support to classes. The
     initialization process has been altered to provide addition and removal of
     roles.
 
@@ -307,46 +300,41 @@ class RoleType(type):
     """
 
     def overrides(self, subj):
-        """
-        Return a set of attributes (methods alike) found in both the role and
-        subject instance.
-        """
+        """Return a set of attributes (methods alike) found in both the role
+        and subject instance."""
         try:
             instance_fields = list(subj.__dict__.keys())
         except AttributeError:
             instance_fields = ()
 
-        return class_fields(self)\
-                .intersection(class_fields(subj.__class__).union(instance_fields))
+        return class_fields(self).intersection(
+            class_fields(subj.__class__).union(instance_fields)
+        )
 
     def newclassname(self, bases):
+        """Generate a new name bases on the base classes.
+
+        The last field is the data class.
         """
-        Generate a new name bases on the base classes. The last field is the data
-        class.
-        """
-        namegetter = attrgetter('__name__')
+        namegetter = attrgetter("__name__")
         names = list(map(namegetter, bases))
-        #names.reverse()
+        # names.reverse()
         return "+".join(names)
 
     @cached
     def newclass(self, cls, rolebases):
-        """
-        Create a new role class.
-        """
+        """Create a new role class."""
         # Role class not yet defined, define a new class
-        d = {'__module__': cls.__module__, '__doc__': cls.__doc__}
+        d = {"__module__": cls.__module__, "__doc__": cls.__doc__}
         try:
-            d['__slots__'] = cls.__slots__
+            d["__slots__"] = cls.__slots__
         except AttributeError:
             pass
 
         return type(self.newclassname(rolebases), rolebases, d)
 
     def assign(self, subj, method=instance):
-        """
-        Call is invoked when a role should be assigned to an object.
-        """
+        """Call is invoked when a role should be assigned to an object."""
         cls = type(subj)
 
         if issubclass(cls, self):
@@ -355,7 +343,9 @@ class RoleType(type):
         # Trait check should go here; provide @override for explicit overrides.
         o = self.overrides(subj)
         if o:
-            raise TypeError('Can not apply role when overriding methods: %s' % ', '.join(o))
+            raise TypeError(
+                "Can not apply role when overriding methods: %s" % ", ".join(o)
+            )
 
         if isinstance(cls, RoleType):
             # Create a sibling class
@@ -369,9 +359,9 @@ class RoleType(type):
         return method(rolecls, subj)
 
     def revoke(self, subj, method=instance):
-        """
-        Retract the role from subj. By default the ``instance`` strategy is
-        used.
+        """Retract the role from subj.
+
+        By default the ``instance`` strategy is used.
         """
         if not isinstance(subj, self):
             return subj
@@ -386,8 +376,7 @@ class RoleType(type):
 
     @contextmanager
     def played_by(self, subj):
-        """
-        Shorthand for using roles in with statements
+        """Shorthand for using roles in with statements.
 
         >>> class Biker(metaclass=RoleType):
         ...     def bike(self): return 'bike, bike'
