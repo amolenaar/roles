@@ -6,3 +6,5 @@ docs/NEWS.txt
 docs/README.txt
 profile.prof
 .venv
+.coverage
+*.egg-info

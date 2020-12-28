@@ -30,6 +30,38 @@ class ManagedContext:
 
 
 class CurrentContextManager(threading.local):
+    """
+    The default application wide context stack.
+
+    Put a new context class on the context stack. This functionality should
+    be called with the context class as first argument.
+
+    >>> class SomeContext:
+    ...     pass # define some methods, define some roles
+    ...     def execute(self):
+    ...         with context(self):
+    ...             pass # do something
+
+    Roles can be fetched from the context by calling ``context.name``.
+    Just like that.
+
+    You can provide additional bindings to be performed:
+
+    >>> from roles.role import RoleType
+
+    >>> class SomeRole(metaclass=RoleType):
+    ...     pass
+
+    >>> class SomeContext:
+    ...     def __init__(self, data_object):
+    ...         self.data_object = data_object
+    ...     def execute(self):
+    ...         with context(self, data_object=SomeRole):
+    ...             pass # do something
+
+    Those bindings are applied when the context is entered (in this case immediately).
+    """
+
     def __init__(self):
         # Access dict directly, prevent __{gs}etattr__ from being called
         self.__dict__["__stack"] = []
@@ -40,7 +72,10 @@ class CurrentContextManager(threading.local):
 
     @property
     def current_context(self):
-        return self.__dict__["__stack"][-1]
+        try:
+            return self.__dict__["__stack"][-1]
+        except IndexError:
+            return None
 
     def __getattr__(self, key):
         return getattr(self.current_context, key)
@@ -50,39 +85,6 @@ class CurrentContextManager(threading.local):
 
 
 context = CurrentContextManager()
-context.__dict__[
-    "__doc__"
-] = """
-The default application wide context stack.
-
-Put a new context class on the context stack. This functionality should
-be called with the context class as first argument.
-
->>> class SomeContext:
-...     pass # define some methods, define some roles
-...     def execute(self):
-...         with context(self):
-...             pass # do something
-
-Roles can be fetched from the context by calling ``context.name``.
-Just like that.
-
-You can provide additional bindings to be performed:
-
->>> from role import RoleType
-
->>> class SomeRole(metaclass=RoleType):
-...     pass
-
->>> class SomeContext:
-...     def __init__(self, data_object):
-...         self.data_object = data_object
-...     def execute(self):
-...         with context(self, data_object=SomeRole):
-...             pass # do something
-
-Those bindings are applied when the context is entered (in this case immediately).
-"""
 
 
 def in_context(func):

@@ -34,7 +34,7 @@ class RoleFactoryType(RoleType):
             self._factory = {}
             self._factory[cls] = rolecls
             self._strict = strict
-            self.lookup.cache.clear()
+            self.lookup.cache_clear()
 
     @lru_cache(maxsize=None)
     def lookup(self, cls):

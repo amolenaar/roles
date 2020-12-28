@@ -83,7 +83,7 @@ testpaths = [
     "test",
     "docs",
     ]
-# addopts = "--doctest-modules --doctest-glob='*.md'"
+addopts = "--doctest-modules --doctest-glob='*.md' --doctest-glob='*.txt'"
 
 [tool.isort]
 multi_line_output = 3

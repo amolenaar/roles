@@ -23,9 +23,9 @@ particular role:
 Assign the role to the person:
 
 >>> Carpenter(person)				# doctest: +ELLIPSIS
-<Person+Carpenter object at 0x...>
+<__main__.Person+Carpenter object at 0x...>
 >>> person					# doctest: +ELLIPSIS
-<Person+Carpenter object at 0x...>
+<__main__.Person+Carpenter object at 0x...>
 
 The person is still a Person:
 
@@ -40,7 +40,7 @@ True
 To revoke a role from an instance do
 
 >>> Carpenter.revoke(person)			# doctest: +ELLIPSIS
-<Person object at 0x...>
+<__main__.Person object at 0x...>
 
 It is much more convenient, though, to apply roles only in a specific context:
 
