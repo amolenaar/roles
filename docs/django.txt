@@ -27,7 +27,7 @@ saving objects should be done outside the role context.
 >>> class TransferMoney:                                 # doctest: +SKIP
 ...
 ...     def __init__(self, source, sink):
-...         self.source = source
+...        self.source = source
 ...        self.sink = sink
 ...
 ...     def transfer_money(self, amount):

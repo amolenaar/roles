@@ -49,9 +49,10 @@ Change History
 
 - Module works for Python 2.6 as well as Python 3.x. Doctests still run under 2.6.
 
-Note that conversion of doctests is trivial with::
+*1.0.0*
 
-  $ 2to3 -d -w roles.py
+- Python 3.6+ only
+
 
 *0.2.0*
 

@@ -1,0 +1,98 @@
+[tool.poetry]
+name = "roles"
+version = "1.0.0"
+description = "Role based software development"
+authors = [
+    "Arjan Molenaar <gaphor@gmail.com>"
+]
+maintainers = [
+    "Arjan Molenaar <gaphor@gmail.com>",
+]
+
+license = "BSD License"
+readme = "README.md"
+homepage = "https://github.com/amolenaar/roles"
+repository = "https://github.com/amolenaar/roles"
+documentation = "https://github.com/amolenaar/roles"
+
+keywords = ["role", "DCI", "data", "context", "interaction"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Libraries"
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.1"
+pytest-cov = "^2.10"
+pytest-runner = "^5.1"
+black = { version = "^20.8b1", python = "^3.7" }
+mypy = "0.790"
+pre-commit = "^2.9"
+tox = "^3.20"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+envlist = clean, py37, py38, py39, report
+
+[gh-actions]
+python =
+    3.7: py37
+    3.8: py38
+    3.9: py39
+
+[testenv]
+commands =
+    pytest --cov --cov-append --cov-report=term-missing {posargs}
+deps =
+    pytest
+    pytest-cov
+depends =
+    {py37,py38,py39}: clean
+    report: py37,py38,py39
+
+[testenv:report]
+deps = coverage[toml]
+skip_install = true
+commands =
+    coverage report
+    coverage html
+
+[testenv:clean]
+deps = coverage[toml]
+skip_install = true
+commands = coverage erase
+"""
+
+[tool.pytest.ini_options]
+testpaths = [
+    "test",
+    "docs",
+    ]
+# addopts = "--doctest-modules --doctest-glob='*.md'"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+known_third_party = ["pytest"]
+skip = ".venv,build,dist"
+
+[tool.coverage.run]
+source = ["generic"]
