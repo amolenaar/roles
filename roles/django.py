@@ -2,7 +2,7 @@
 
 
 try:
-    from django.db.models.base import ModelBase
+    from django.db.models.base import ModelBase  # type: ignore[import]
 except ImportError as e:
     import logging
 

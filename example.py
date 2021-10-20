@@ -4,43 +4,46 @@ Based on the DCI PoC of David Byers and Serge Beaumont
 (see: http://groups.google.com/group/object-composition/files)
 """
 
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from roles import RoleType
 from roles.context import context
 
 
+@runtime_checkable
 class Account(Protocol):
-    balance: float
+    balance: int
 
-    def withdraw(self, amount: float) -> None:
+    def withdraw(self, amount: int) -> None:
         ...
 
-    def deposit(self, amount: float) -> None:
+    def deposit(self, amount: int) -> None:
         ...
 
 
 class PaymentAccount:
-    def __init__(self, amount):
+    def __init__(self, amount: int) -> None:
         print("Creating a new account with balance of " + str(amount))
         self.balance = amount
 
-    def withdraw(self, amount):
+    def withdraw(self, amount: int) -> None:
         print("Withdraw " + str(amount) + " from " + str(self))
         self.balance -= amount
 
-    def deposit(self, amount):
+    def deposit(self, amount: int) -> None:
         print("Deposit " + str(amount) + " in " + str(self))
         self.balance += amount
 
 
 class MoneySink(metaclass=RoleType):
-    def receive(self: Account, amount):
+    def receive(self, amount: int):
+        assert isinstance(self, Account)
         self.deposit(amount)
 
 
 class MoneySource(metaclass=RoleType):
-    def transfer_to(self: Account, amount, sink: MoneySink):  # type:ignore[misc]
+    def transfer_to(self, amount: int, sink: MoneySink):
+        assert isinstance(self, Account)
         if self.balance >= amount:
             self.withdraw(amount)
             sink.receive(amount)
