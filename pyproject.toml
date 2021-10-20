@@ -32,7 +32,7 @@ python = "^3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1"
-pytest-cov = "^2.10"
+pytest-cov = "^3.0"
 pytest-runner = "^5.1"
 black = { version = "^20.8b1", python = "^3.7" }
 mypy = "0.910"
@@ -57,7 +57,7 @@ python =
 
 [testenv]
 commands =
-    pytest --cov --cov-append --cov-report=term-missing {posargs}
+    pytest --cov=roles --cov-append --cov-report=term-missing {posargs}
 deps =
     pytest
     pytest-cov
