@@ -34,27 +34,26 @@ class PaymentAccount:
         self.balance += amount
 
 
-class MoneySource(metaclass=RoleType):
-    def transfer(self: Account, amount):  # type:ignore[misc]
-        if self.balance >= amount:
-            self.withdraw(amount)
-            context.sink.receive(amount)
-
-
 class MoneySink(metaclass=RoleType):
     def receive(self: Account, amount):
         self.deposit(amount)
+
+
+class MoneySource(metaclass=RoleType):
+    def transfer_to(self: Account, amount, sink: MoneySink):  # type:ignore[misc]
+        if self.balance >= amount:
+            self.withdraw(amount)
+            sink.receive(amount)
 
 
 class TransferMoney:
     def __init__(self, source: Account, sink: Account):
         self.source = source
         self.sink = sink
-        self.transfer_context = context(self, source=MoneySource, sink=MoneySink)
 
     def perform_transfer(self, amount):
-        with self.transfer_context as ctx:
-            ctx.source.transfer(amount)
+        with context(self, source=MoneySource, sink=MoneySink) as ctx:
+            ctx.source.transfer_to(amount, ctx.sink)
 
             print("We can still access the original attributes", self.sink.balance)
             print("Is it still an Account?", isinstance(self.sink, PaymentAccount))
