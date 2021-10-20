@@ -114,20 +114,6 @@ def test_tuple_subclass():
     assert d.inrole()  # type: ignore[attr-defined]
 
 
-def test_userdict():
-    import sys
-
-    if sys.version_info >= (3, 0, 0):
-        return
-
-    from UserDict import UserDict
-
-    d = UserDict()
-    with pytest.raises(TypeError) as exc_info:
-        SimpleRole(d)  # type: ignore[call-arg]
-    assert str(exc_info) == "class UserDict has no attribute '__mro__'"
-
-
 def test_namedtuple():
     """Can't assign roles to namedtuple's."""
     from collections import namedtuple
