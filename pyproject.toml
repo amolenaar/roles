@@ -31,12 +31,9 @@ classifiers = [
 python = "^3.7"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.1"
-pytest-cov = "^3.0"
-pytest-runner = "^5.1"
-black = { version = "^20.8b1", python = "^3.7" }
-mypy = "0.910"
-pre-commit = "^2.9"
+pytest = "^7.4"
+pytest-cov = "^4.0"
+mypy = "^1.4"
 tox = "^3.20"
 
 [build-system]
@@ -85,14 +82,17 @@ testpaths = [
     ]
 addopts = "--doctest-modules --doctest-glob='*.md' --doctest-glob='*.txt'"
 
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-line_length = 88
-known_third_party = ["pytest"]
-skip = ".venv,build,dist"
-
 [tool.coverage.run]
-source = ["generic"]
+source = ["roles"]
+
+[tool.ruff]
+ignore = ["E501", "B019"]
+line-length = 88
+select = [
+    "B",
+    "B9",
+    "C",
+    "E",
+    "F",
+    "W",
+]

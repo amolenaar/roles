@@ -50,12 +50,12 @@ def test_class_with_slots():
 
 
 def test_dict():
-    d: Dict[int, int] = dict()
+    d: Dict[int, int] = {}
     with pytest.raises(TypeError) as exc_info:
         SimpleRole(d)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
-        == "__class__ assignment only supported for heap types or ModuleType subclasses"
+        == "__class__ assignment only supported for mutable types or ModuleType subclasses"
     )
 
 
@@ -78,7 +78,7 @@ def test_list():
         SimpleRole(d)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
-        == "__class__ assignment only supported for heap types or ModuleType subclasses"
+        == "__class__ assignment only supported for mutable types or ModuleType subclasses"
     )
 
 
@@ -99,7 +99,7 @@ def test_tuple():
         SimpleRole(d)  # type: ignore[call-arg]
     assert (
         exc_info.value.args[0]
-        == "__class__ assignment only supported for heap types or ModuleType subclasses"
+        == "__class__ assignment only supported for mutable types or ModuleType subclasses"
     )
 
 

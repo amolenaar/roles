@@ -300,7 +300,7 @@ class RoleType(type):
         # Role class not yet defined, define a new class
         d: Dict[str, object] = {"__module__": cls.__module__, "__doc__": cls.__doc__}
         try:
-            d["__slots__"] = cls.__slots__
+            d["__slots__"] = cls.__slots__  # type: ignore[attr-defined]
         except AttributeError:
             pass
 

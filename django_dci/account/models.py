@@ -4,7 +4,6 @@ from django.db import models
 
 
 class Account(models.Model):
-
     balance = models.DecimalField(decimal_places=2, max_digits=12)
 
     def withdraw(self, amount):
