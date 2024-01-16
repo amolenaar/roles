@@ -329,7 +329,7 @@ class RoleType(type):
             # First role class
             rolebases = (cls, self)
 
-        rolecls = self.newclass(cls, rolebases)
+        rolecls: type = self.newclass(cls, rolebases)
 
         return method(rolecls, subj)
 
@@ -350,7 +350,7 @@ class RoleType(type):
     __call__ = assign  # type: ignore[assignment]
 
     @contextmanager
-    def played_by(self, subj: T) -> Iterator[Union[T, R]]:
+    def played_by(self, subj: T) -> Iterator[T]:
         """Shorthand for using roles in with statements.
 
         >>> class Biker(metaclass=RoleType):
@@ -363,9 +363,9 @@ class RoleType(type):
         'bike, bike'
         """
         if isinstance(subj, self):
-            yield subj  # type: ignore[misc]
+            yield subj
         else:
-            newsubj: Union[T, R] = self.assign(subj)
+            newsubj: T = self.assign(subj)
             try:
                 yield newsubj
             finally:
