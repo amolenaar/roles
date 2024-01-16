@@ -33,49 +33,6 @@ python = "^3.7"
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
 pytest-cov = "^4.0"
-mypy = "^1.4"
-tox = "^3.20"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-isolated_build = true
-envlist = clean, py37, py38, py39, py310, py311, report
-
-[gh-actions]
-python =
-    3.7: py37
-    3.8: py38
-    3.9: py39
-    3.10: py310
-    3.11: py311
-
-[testenv]
-commands =
-    pytest --cov=roles --cov-append --cov-report=term-missing {posargs}
-deps =
-    pytest
-    pytest-cov
-depends =
-    {py37,py38,py39,py310,py311}: clean
-    report: py37,py38,py39,py310,py311
-
-[testenv:report]
-deps = coverage[toml]
-skip_install = true
-commands =
-    coverage report
-    coverage html
-
-[testenv:clean]
-deps = coverage[toml]
-skip_install = true
-commands = coverage erase
-"""
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -98,3 +55,7 @@ select = [
     "F",
     "W",
 ]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
