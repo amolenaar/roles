@@ -28,11 +28,11 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.4"
-pytest-cov = "^4.0"
+pytest = "^8.3"
+pytest-cov = "^5.0"
 
 [tool.pytest.ini_options]
 testpaths = [
